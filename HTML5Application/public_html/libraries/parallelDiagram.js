@@ -16,10 +16,10 @@ function drawParallelCoordinates(visualElement, csvPath){
     width = 600 - margin.left - margin.right,
     height = 300 - margin.top - margin.bottom;
 
-    var rangeArraySex = calculateRangeArray(2, height);
-    var rangeArrayAge = calculateRangeArray(6, height);
-    var rangeArrayGeneration = calculateRangeArray(6, height);
-    var rangeArrayYear = calculateRangeArray(28, height);
+    var rangeSex = calculateRangeArray(2, height);
+    var rangeAge = calculateRangeArray(6, height);
+    var rangeGeneration = calculateRangeArray(6, height);
+    var rangeYear = calculateRangeArray(28, height);
     
     // append the svg object to the body of the page
     var svg = d3.select(visualElement)
@@ -43,9 +43,25 @@ function drawParallelCoordinates(visualElement, csvPath){
     var y = {}
     for (i in dimensions) {
       name = dimensions[i]
+      switch(name){
+          case "year":
+              range = rangeYear;
+              //console.log(range)
+          case "age":
+              range = rangeAge;
+              //console.log(range)
+          case "sex":
+              range = rangeSex;
+              //console.log(range)
+          case "generation":
+              range = rangeGeneration;
+              //console.log(range)
+          //default: range = [0, height]
+      }
+      console.log(name)
       y[name] = d3.scaleOrdinal()
         .domain( d3.extent(data, function(d) { return +d[name]; }) )
-        .range(rangeArrayYear)
+        .range(rangeYear)
     }
 
       // Build the X scale -> it find the best position for each Y axis

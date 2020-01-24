@@ -3,73 +3,128 @@
  * (Sex, Age, Generation)
  */
 
-function drawParallelCoordinates(visualElement, data){
+function drawParallelCoordinates(visualElement, csvPath){
     
-    // set the dimensions and margins of the graph
-    var margin = {top: 30, right: 10, bottom: 10, left: 0},
-      width = 500 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    var margin = {top: 30, right: 40, bottom: 20, left: 200},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
 
-    // append the svg object to the body of the page
-    var svg = d3.select(visualElement)
-    .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");    
-
-      // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-      dimensions = d3.keys(data[0]).filter(function(d) { 
-          return d != "country" && d != "sex" && d != "age"&& 
-                  d != "generation"&& d != "suicides/100k pop"&& 
-                  d != "country-year" && d != "hdi"&& d != " gdp_for_year ($) " 
-                  && d != "gdp_per_capita ($)"})
-
-      // For each dimension, I build a linear scale. I store all in a y object
-      var y = {}
-      for (i in dimensions) {
-        name = dimensions[i]
-        y[name] = d3.scaleLinear()
-          .domain( d3.extent(data, function(d) { return +d[name]; }) )
-          .range([height, 0])
+    var dimensions = [
+      {
+        name: "sex",
+        scale: d3.scale.ordinal().rangePoints([0, height]),
+        type: "string"
+      },
+      {
+        name: "age",
+        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        type: "string"
+      },
+      {
+        name: "generation",
+        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        type: "string"
+      },
+      {
+        name: "year",
+        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        type: "string"
       }
+    ];
 
-      // Build the X scale -> it find the best position for each Y axis
-      x = d3.scalePoint()
-        .range([0, width])
-        .padding(1)
-        .domain(dimensions);
+    var x = d3.scale.ordinal()
+        .domain(dimensions.map(function(d) { return d.name; }))
+        .rangePoints([0, width]);
 
-      // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
-      function path(d) {
-          return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
-      }
+    var line = d3.svg.line()
+        .defined(function(d) { return !isNaN(d[1]); });
 
-      // Draw the lines
-      svg
-        .selectAll("myPath")
-        .data(data)
+    var yAxis = d3.svg.axis()
+        .orient("left");
+
+    var svg = d3.select(visualElement).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var dimension = svg.selectAll(".dimension")
+        .data(dimensions)
+      .enter().append("g")
+        .attr("class", "dimension")
+        .attr("transform", function(d) { return "translate(" + x(d.name) + ")"; });
+
+    d3.csv(csvPath, function(data) {
+      dimensions.forEach(function(dimension) {
+        dimension.scale.domain(dimension.type === "number"
+            ? d3.extent(data, function(d) { return +d[dimension.name]; })
+            : data.map(function(d) { return d[dimension.name]; }).sort());
+      });
+
+      svg.append("g")
+          .attr("class", "background")
+        .selectAll("path")
+          .data(data)
         .enter().append("path")
-        .attr("d",  path)
-        .style("fill", "none")
-        .style("stroke", "#69b3a2")
-        .style("opacity", 0.5)
+          .attr("d", draw);
 
-      // Draw the axis:
-      svg.selectAll("myAxis")
-        // For each dimension of the dataset I add a 'g' element:
-        .data(dimensions).enter()
-        .append("g")
-        // I translate this element to its right position on the x axis
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-        // And I build the axis with the call function
-        .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
-        // Add axis title
+      svg.append("g")
+          .attr("class", "foreground")
+        .selectAll("path")
+          .data(data)
+        .enter().append("path")
+          .attr("d", draw);
+
+      dimension.append("g")
+          .attr("class", "axis")
+          .each(function(d) { d3.select(this).call(yAxis.scale(d.scale)); })
         .append("text")
-          .style("text-anchor", "middle")
+          .attr("class", "title")
+          .attr("text-anchor", "middle")
           .attr("y", -9)
-          .text(function(d) { return d; })
-          .style("fill", "black")
+          .text(function(d) { return d.name; });
+/*
+      var ordinal_labels = svg.selectAll(".axis text")
+          .on("mouseover", mouseover)
+          .on("mouseout", mouseout);
+
+      var projection = svg.selectAll(".background path,.foreground path")
+          .on("mouseover", mouseover)
+          .on("mouseout", mouseout);
+
+      function mouseover(d) {
+        svg.classed("active", true);
+
+        // this could be more elegant
+        if (typeof d === "string") {
+          projection.classed("inactive", function(p) { return p.name !== d; });
+          projection.filter(function(p) { return p.name === d; }).each(moveToFront);
+          ordinal_labels.classed("inactive", function(p) { return p !== d; });
+          ordinal_labels.filter(function(p) { return p === d; }).each(moveToFront);
+        } else {
+          projection.classed("inactive", function(p) { return p !== d; });
+          projection.filter(function(p) { return p === d; }).each(moveToFront);
+          ordinal_labels.classed("inactive", function(p) { return p !== d.name; });
+          ordinal_labels.filter(function(p) { return p === d.name; }).each(moveToFront);
+        }
+      }
+
+      function mouseout(d) {
+        svg.classed("active", false);
+        projection.classed("inactive", false);
+        ordinal_labels.classed("inactive", false);
+      }
+
+      function moveToFront() {
+        this.parentNode.appendChild(this);
+      }
+      */
+    });
+
+    function draw(d) {
+      return line(dimensions.map(function(dimension) {
+        return [x(dimension.name), dimension.scale(d[dimension.name])];
+      }));
+    }
 
 }

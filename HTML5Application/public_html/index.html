@@ -11,37 +11,8 @@ Academic Year: 2019-2020
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <title>Suicides rate and analysis</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://d3js.org/d3.v2.min.js"></script>
-        <!-- <script type="text/javascript" src="libraries/d3.js"></script> -->
+        <script type="text/javascript" src="libraries/d3.js"></script>
         <script type="text/javascript" src="libraries/parallelDiagram.js"></script>
-        
-        <style>
-            svg {
-              font: 12px sans-serif;
-            }
-
-            .background path {
-              fill: none;
-              stroke: none;
-              stroke-width: 20px;
-              pointer-events: stroke;
-            }
-
-            .foreground path {
-              fill: none;
-              stroke: steelblue;
-              stroke-width: 1.5px;
-            }
-
-
-            .axis line,
-            .axis path {
-              fill: none;
-              stroke: #000;
-              shape-rendering: crispEdges;
-            }
-        </style>
-
     </head>
   
     <body> <br>
@@ -58,9 +29,6 @@ Academic Year: 2019-2020
     </body>
     
     <script>
-        /*d3.csv("dataset/suicidesCopy.csv", function(data) {
-            drawParallelCoordinates("#parallelDiagram", data)
-        })*/
         drawParallelCoordinates("#parallelDiagram", "dataset/suicidesCopy.csv")
     </script>
 </html>

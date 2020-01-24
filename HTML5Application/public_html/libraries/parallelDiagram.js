@@ -1,6 +1,6 @@
 /* 
  * Script for the management of the parallel diagram containing the parameters
- * (Sex, Age, Generation)
+ * (Sex, Age, Generation, Year)
  */
 function calculateRangeArray(numDiffValue, height){
     var rangeArray = [];
@@ -21,122 +21,70 @@ function drawParallelCoordinates(visualElement, csvPath){
     var rangeArrayGeneration = calculateRangeArray(6, height);
     var rangeArrayYear = calculateRangeArray(28, height);
     
-    var dimensions = [
-      {
-        name: "sex",
-        scale: d3.scale.ordinal().rangePoints(rangeArraySex),
-        type: "string"
-      },
-      {
-        name: "age",
-        scale: d3.scale.ordinal().range(rangeArrayAge),
-        type: "string"
-      },
-      {
-        name: "generation",
-        scale: d3.scale.ordinal().range(rangeArrayGeneration),
-        type: "string"
-      },
-      {
-        name: "year",
-        scale: d3.scale.ordinal().range(rangeArrayYear),
-        type: "string"
-      }
-    ];
+    // append the svg object to the body of the page
+    var svg = d3.select(visualElement)
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-    var x = d3.scale.ordinal()
-        .domain(dimensions.map(function(d) { return d.name; }))
-        .rangePoints([0, width]);
-
-    var line = d3.svg.line()
-        .defined(function(d) { return !isNaN(d[1]); });
-
-    var yAxis = d3.svg.axis()
-        .orient("left");
-
-    var svg = d3.select(visualElement).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var dimension = svg.selectAll(".dimension")
-        .data(dimensions)
-      .enter().append("g")
-        .attr("class", "dimension")
-        .attr("transform", function(d) { return "translate(" + x(d.name) + ")"; });
-
+    // Parse the Data
     d3.csv(csvPath, function(data) {
-      dimensions.forEach(function(dimension) {
-        dimension.scale.domain(dimension.type === "number"
-            ? d3.extent(data, function(d) { return +d[dimension.name]; })
-            : data.map(function(d) { return d[dimension.name]; }).sort());
-      });
 
-      svg.append("g")
-          .attr("class", "background")
-        .selectAll("path")
-          .data(data)
-        .enter().append("path")
-          .attr("d", draw);
+    // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
+    dimensions = d3.keys(data[0]).filter(function(d) { 
+        return d != "country" && d != "suicides_no" && d != "population" && 
+                d != "suicides/100k pop" && d != "country-year" && d != "hdi" 
+                && d != " gdp_for_year ($) " && d != "gdp_per_capita ($)"})
 
-      svg.append("g")
-          .attr("class", "foreground")
-        .selectAll("path")
-          .data(data)
-        .enter().append("path")
-          .attr("d", draw);
-
-      dimension.append("g")
-          .attr("class", "axis")
-          .each(function(d) { d3.select(this).call(yAxis.scale(d.scale)); })
-        .append("text")
-          .attr("class", "title")
-          .attr("text-anchor", "middle")
-          .attr("y", -9)
-          .text(function(d) { return d.name; });
-/*
-      var ordinal_labels = svg.selectAll(".axis text")
-          .on("mouseover", mouseover)
-          .on("mouseout", mouseout);
-
-      var projection = svg.selectAll(".background path,.foreground path")
-          .on("mouseover", mouseover)
-          .on("mouseout", mouseout);
-
-      function mouseover(d) {
-        svg.classed("active", true);
-
-        // this could be more elegant
-        if (typeof d === "string") {
-          projection.classed("inactive", function(p) { return p.name !== d; });
-          projection.filter(function(p) { return p.name === d; }).each(moveToFront);
-          ordinal_labels.classed("inactive", function(p) { return p !== d; });
-          ordinal_labels.filter(function(p) { return p === d; }).each(moveToFront);
-        } else {
-          projection.classed("inactive", function(p) { return p !== d; });
-          projection.filter(function(p) { return p === d; }).each(moveToFront);
-          ordinal_labels.classed("inactive", function(p) { return p !== d.name; });
-          ordinal_labels.filter(function(p) { return p === d.name; }).each(moveToFront);
-        }
-      }
-
-      function mouseout(d) {
-        svg.classed("active", false);
-        projection.classed("inactive", false);
-        ordinal_labels.classed("inactive", false);
-      }
-
-      function moveToFront() {
-        this.parentNode.appendChild(this);
-      }
-      */
-    });
-
-    function draw(d) {
-      return line(dimensions.map(function(dimension) {
-        return [x(dimension.name), dimension.scale(d[dimension.name])];
-      }));
+    // For each dimension, I build a linear scale. I store all in a y object
+    var y = {}
+    for (i in dimensions) {
+      name = dimensions[i]
+      y[name] = d3.scaleOrdinal()
+        .domain( d3.extent(data, function(d) { return +d[name]; }) )
+        .range(rangeArrayYear)
     }
 
+      // Build the X scale -> it find the best position for each Y axis
+      x = d3.scalePoint()
+        .range([0, width])
+        .padding(1)
+        .domain(dimensions);
+
+      // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
+      function path(d) {
+          return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+      }
+
+      // Draw the lines
+      svg
+        .selectAll("myPath")
+        .data(data)
+        .enter().append("path")
+        .attr("d",  path)
+        .style("fill", "none")
+        .style("stroke", "#69b3a2")
+        .style("opacity", 0.5)
+
+      // Draw the axis:
+      svg.selectAll("myAxis")
+        // For each dimension of the dataset I add a 'g' element:
+        .data(dimensions).enter()
+        .append("g")
+        // I translate this element to its right position on the x axis
+        .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+        // And I build the axis with the call function
+        .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+        // Add axis title
+        .append("text")
+          .style("text-anchor", "middle")
+          .attr("y", -9)
+          .text(function(d) { return d; })
+          .style("fill", "black")
+
+    })
+    
 }

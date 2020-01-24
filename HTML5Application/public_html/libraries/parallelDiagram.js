@@ -2,32 +2,44 @@
  * Script for the management of the parallel diagram containing the parameters
  * (Sex, Age, Generation)
  */
+function calculateRangeArray(numDiffValue, height){
+    var rangeArray = [];
+    for(i=0; i<numDiffValue; i++){
+        rangeArray.push(height*(i/numDiffValue));
+    }
+    return rangeArray;
+}
 
 function drawParallelCoordinates(visualElement, csvPath){
     
     var margin = {top: 30, right: 40, bottom: 20, left: 200},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = 600 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
 
+    var rangeArraySex = calculateRangeArray(2, height);
+    var rangeArrayAge = calculateRangeArray(6, height);
+    var rangeArrayGeneration = calculateRangeArray(6, height);
+    var rangeArrayYear = calculateRangeArray(28, height);
+    
     var dimensions = [
       {
         name: "sex",
-        scale: d3.scale.ordinal().rangePoints([0, height]),
+        scale: d3.scale.ordinal().rangePoints(rangeArraySex),
         type: "string"
       },
       {
         name: "age",
-        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        scale: d3.scale.ordinal().range(rangeArrayAge),
         type: "string"
       },
       {
         name: "generation",
-        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        scale: d3.scale.ordinal().range(rangeArrayGeneration),
         type: "string"
       },
       {
         name: "year",
-        scale: d3.scale.ordinal().range([0, height*(1/5), height*(2/5), height*(3/5), height*(4/5), height]),
+        scale: d3.scale.ordinal().range(rangeArrayYear),
         type: "string"
       }
     ];

@@ -22,14 +22,15 @@ Academic Year: 2019-2020
         </div>
         
         <div id="lateralBar">
-            <div id="parallelDiagram">
-                <script>
-                    drawParallelCoordinates();
-                </script>
-            </div>
+            <div id="parallelDiagram"> </div>
         </div>
         
         <div id="provenanceBar"> </div>
     </body>
-  
+    
+    <script>
+        d3.csv("dataset/suicidesCopy.csv", function(data) {
+            drawParallelCoordinates("#parallelDiagram", data)
+        })
+    </script>
 </html>

@@ -6,29 +6,53 @@ Academic Year: 2019-2020
 
 <!DOCTYPE html>
 
+
 <html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Suicides rate and analysis</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="libraries/d3.js"></script>
-        <script type="text/javascript" src="libraries/parallelDiagram.js"></script>
-    </head>
-  
-    <body> <br>
-        <div id="mainWrapper">
-            <div id="mainDiagram"> </div>
-            <div id="secondDiagram"> </div>
-        </div>
-        
-        <div id="lateralBar">
-            <div id="parallelDiagram"> </div>
-        </div>
-        
-        <div id="provenanceBar"> </div>
-    </body>
-    
-    <script>
-        drawParallelCoordinates("#parallelDiagram", "dataset/suicidesCopy.csv")
-    </script>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Suicides rate and analysis</title>
+    <link rel="stylesheet" href="libraries/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="libraries/d3.js"></script>
+    <script type="text/javascript" src="libraries/parallelDiagram.js"></script>
+    <script type="text/javascript" src="libraries/mainDiagram.js"></script>
+    <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
+    <script type="text/javascript" src="libraries/historyView.js"></script>
+
+</head>
+
+<body>
+
+<div id="mainWrapper">
+    <div id="mainDiagram">
+
+    </div>
+
+    <div class="tab">
+        <button>Diag1</button>
+        <button>Diag2</button>
+        <button>Diag3</button>
+    </div>
+    <div id="secondDiagram">
+
+    </div>
+</div>
+
+<div id="parallelDiagram">
+
+</div>
+
+
+<div id="provenanceBar" >
+
+</div>
+</body>
+
+<script>
+    drawMainDiagram("#mainDiagram", "dataset/pca.csv");
+    drawParallelCoordinates("#parallelDiagram", "dataset/suicidesCopy.csv");
+    drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
+    drawHistory("#provenanceBar", "dataset/suicidesCopy.csv");
+</script>
+
 </html>

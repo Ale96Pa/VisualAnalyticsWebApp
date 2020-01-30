@@ -10,7 +10,7 @@ function calculateRangeArray(numDiffValue, height){
         rangeArray.push(height*(i/(numDiffValue)));
     }
     rangeArray.push(height);
-    return rangeArray.reverse();
+    return rangeArray;
 }
 
 function drawParallelCoordinates(visualElement, csvPath){
@@ -53,7 +53,7 @@ function drawParallelCoordinates(visualElement, csvPath){
             y[name] = d3.scaleOrdinal()
                 .range(range)
                 //.domain( d3.extent(data, function(d) { return +d[name]; }) );
-                .domain( data.map(function(d) { return +d[name];}).sort());
+                .domain( data.map(function(d) { return d[name];}).sort());
         }
 
         // Build the X scale -> it find the best position for each Y axis

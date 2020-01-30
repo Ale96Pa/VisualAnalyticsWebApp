@@ -18,39 +18,53 @@ Academic Year: 2019-2020
     <script type="text/javascript" src="libraries/mainDiagram.js"></script>
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
+    <script type="text/javascript" src="libraries/filterParameter.js"></script>
 
 </head>
 
 <body>
 
-<div id="mainWrapper">
-    <div id="mainDiagram">
+    <div id="mainWrapper">
+        <div id="mainDiagram">
 
+        </div>
+
+        <div class="tab">
+            <button>Diag1</button>
+            <button>Diag2</button>
+            <button>Diag3</button>
+        </div>
+        <div id="secondDiagram">
+
+        </div>
     </div>
 
-    <div class="tab">
-        <button>Diag1</button>
-        <button>Diag2</button>
-        <button>Diag3</button>
+    <div id="filterBar">
+        <div id="filters">
+            <br><i>Population: </i>
+            <input type="range" class="filter" id="popRange"
+                   data-show-value="true"> <output id="popVal">50</output>
+            <!--<br><i>Gdp: </i>
+            <input type="range" class="filter" id="gdpRange"
+                   data-show-value="true" onchange="updateInput(this.value);"
+                   oninput="updateInput(this.value)"> <output id="gdpVal">50</output>
+            <br><i>Hdi: </i>
+            <input type="range" class="filter" id="hdiRange"
+                   data-show-value="true" onchange="updateInput(this.value);"
+                   oninput="updateInput(this.value)"> <output id="hdiVal">50</output>
+            <br>--->
+        </div>
     </div>
-    <div id="secondDiagram">
+
+    <div id="provenanceBar" >
 
     </div>
-</div>
-
-<div id="parallelDiagram">
-
-</div>
-
-
-<div id="provenanceBar" >
-
-</div>
 </body>
 
 <script>
     drawMainDiagram("#mainDiagram", "dataset/pca.csv");
-    drawParallelCoordinates("#parallelDiagram", "dataset/suicidesCopy.csv");
+    filters("#filters");
+    drawParallelCoordinates("#filterBar", "dataset/suicidesCopy.csv");
     drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
     drawHistory("#provenanceBar", "dataset/suicidesCopy.csv");
 </script>

@@ -6,10 +6,11 @@
 //TODO: RIVEDERE TUTTI I COMMENTI E FARLI BENE
 function calculateRangeArray(numDiffValue, height){
     var rangeArray = [];
-    for(i=0; i<numDiffValue; i++){
-        rangeArray.push(height*(i/(numDiffValue)));
+    //rangeArray.push(0);
+    for(i=1; i<=numDiffValue; i++){
+        rangeArray.push(height*(i/(numDiffValue+1)));
     }
-    rangeArray.push(height);
+    //rangeArray.push(height);
     return rangeArray;
 }
 
@@ -37,9 +38,9 @@ function drawParallelCoordinates(visualElement, csvPath){
 
         // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
         dimensions = d3.keys(data[0]).filter(function(d) { 
-            return d != "country" && d != "suicides_no" && d != "population" && 
-                    d != "suicides/100k pop" && d != "country-year" && d != "hdi" 
-                    && d != " gdp_for_year ($) " && d != "gdp_per_capita ($)"})
+            return d !== "country" && d !== "suicides_no" && d !== "population" && 
+                    d !== "suicides/100k pop" && d !== "country-year" && d !== "hdi" 
+                    && d !== " gdp_for_year ($) " && d !== "gdp_per_capita ($)"})
 
         // For each dimension, I build a ordinal scale. I store all in a y object
         var y = {};
@@ -52,8 +53,7 @@ function drawParallelCoordinates(visualElement, csvPath){
 
             y[name] = d3.scaleOrdinal()
                 .range(range)
-                //.domain( d3.extent(data, function(d) { return +d[name]; }) );
-                .domain( data.map(function(d) { return d[name];}).sort());
+                .domain( data.map(function(d) {return d[name];}).sort());
         }
 
         // Build the X scale -> it find the best position for each Y axis

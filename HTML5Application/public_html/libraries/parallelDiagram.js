@@ -15,9 +15,9 @@ function calculateRangeArray(numDiffValue, height){
 
 function drawParallelCoordinates(visualElement, csvPath){
     
-    var margin = {top: 30, right: 40, bottom: 20, left: 200},
-    width = 600 - margin.left - margin.right,
-    height = 300 - margin.top - margin.bottom;
+    var margin = {top: 50, right: 20, bottom: 20, left: 20},
+    width = 650 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
     var rangeSex = calculateRangeArray(2, height);
     var rangeAge = calculateRangeArray(6, height);

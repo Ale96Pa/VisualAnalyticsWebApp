@@ -1,17 +1,18 @@
-/* 
- * Script for the management of the provenance bar for the recap of the analysis
- */
-function saveSvg(svgId, name) {
-    var svgEl = document.getElementById(svgId);
-    svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    var svgData = svgEl.outerHTML;
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = name;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+
+
+function drawHistory(visualElement, csvPath) {
+
+    var margin = {top: 5, right: 2, bottom: 5, left: 2},
+        width = 150- margin.left - margin.right,
+        height = 750- margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg = d3.select(visualElement)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
 }

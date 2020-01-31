@@ -1,6 +1,6 @@
 
 
-function drawMainDiagram(visualElement, csvPath) {
+function drawMainDiagram(visualElement, data) {
 
     /*2 is hdi axes, 3 is gdp axes*/
     var margin = {top: 50, right: 25, bottom: 105, left: 150},
@@ -192,26 +192,17 @@ function drawMainDiagram(visualElement, csvPath) {
             .call(brushX.move, x2.range());
     }
 
-
-    d3.csv(csvPath, function (error, data) {
-
-        chiavi = d3.keys(data[0])
-        if (error) throw error;
-        var l = data.length;
-        for (i = 0; i < l; i++) {
-            data[i].id = i
-        }
-
-        drawScatter(data)
-
-    });
-
-
+    chiavi = d3.keys(data[0])
+    var l = data.length;
+    for (i = 0; i < l; i++) {
+        data[i].id = i
+    }
+    drawScatter(data)
 
     //create brush function redraw scatterplot with selection
     function brushedX() {
         var selection = d3.event.selection;
-        console.log(selection)
+        //console.log(selection)
         x.domain(selection.map(x2.invert, x2));
         focus.selectAll(".dot")
             .attr("cx", function(d) { return x(d[chiavi[0]]); })
@@ -221,7 +212,7 @@ function drawMainDiagram(visualElement, csvPath) {
 
     function brushedY() {
         var selection = d3.event.selection;
-        console.log(selection)
+        //console.log(selection)
         y.domain(selection.map(y3.invert, y3));
         focus.selectAll(".dot")
             .attr("cx", function(d) { return x(d[chiavi[0]]); })

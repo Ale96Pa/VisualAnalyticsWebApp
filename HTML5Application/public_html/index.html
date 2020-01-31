@@ -51,12 +51,25 @@ Academic Year: 2019-2020
 </body>
 
 <script>
-
-    drawMainDiagram("#mainDiagram", "dataset/pca.csv");
-    filters("#filters","dataset/suicidesCopy.csv");
-    drawParallelCoordinates("#filterBar", "dataset/suicidesCopy.csv");
-    drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
-    drawHistory("#provenanceBar", "dataset/suicidesCopy.csv");
+    
+    async function loadData(){
+        return data = await d3.csv("dataset/suicidesCopy.csv");
+    }
+    loadData().then(data =>{
+        drawParallelCoordinates("#filterBar", data);
+        filters("#filters", data);
+    });
+    
+    async function loadDataPca(){
+        return data = await d3.csv("dataset/pca.csv");
+    }
+    loadDataPca().then(data =>{
+        drawMainDiagram("#mainDiagram", data);
+    });
+    
+    //
+    //drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
+    //drawHistory("#provenanceBar", "dataset/suicidesCopy.csv");
 </script>
 
 </html>

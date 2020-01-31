@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-function filters(visualElement,csvPath) {
+function filters(visualElement, data) {
 
     function newFilterBar(data,name,topPx) {
 
@@ -62,15 +62,8 @@ function filters(visualElement,csvPath) {
         }
     }
 
-
-    d3.csv(csvPath, function (error, data) {
-
-        if (error) throw error;
-
-        newFilterBar(data,"population");
-        newFilterBar(data,"hdi");
-
-    });
+    newFilterBar(data,"population");
+    newFilterBar(data,"hdi");
 
 }
 

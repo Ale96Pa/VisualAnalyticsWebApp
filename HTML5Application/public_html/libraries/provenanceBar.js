@@ -1,18 +1,28 @@
 
 
-function drawHistory(visualElement, csvPath) {
+function drawHistory(visualElement, svgElement, name) {
+    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    var svgData = svgElement.outerHTML;
+    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+    var svgUrl = URL.createObjectURL(svgBlob);
+    var downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = name;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
 
-    var margin = {top: 5, right: 2, bottom: 5, left: 2},
-        width = 150- margin.left - margin.right,
-        height = 750- margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    var svg = d3.select(visualElement)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+function drawAll(visualElement, svgPath){
+    
+    xhr = new XMLHttpRequest();
+    xhr.open("GET",svgPath,false);
+    // Following line is just to be on the safe side;
+    // not needed if your server delivers SVG with correct MIME type
+    xhr.overrideMimeType("image/svg+xml");
+    xhr.send("");
+    document.getElementById(visualElement)
+      .appendChild(xhr.responseXML.documentElement);
 
 }

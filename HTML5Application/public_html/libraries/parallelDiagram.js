@@ -27,6 +27,7 @@ function drawParallelCoordinates(visualElement, data){
     // append the svg object to the body of the page
     var svg = d3.select(visualElement)
         .append("svg")
+        .attr("id", "svgGraph")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -90,4 +91,7 @@ function drawParallelCoordinates(visualElement, data){
     
     svg.selectAll("text")
         .style("fill", "white");
+
+    var svgData = document.getElementById("svgGraph");
+    return svgData;
 }

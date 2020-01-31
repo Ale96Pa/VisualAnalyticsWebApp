@@ -23,7 +23,7 @@ Academic Year: 2019-2020
 </head>
 
 <body>
-
+    <a href id="link"> 
     <div id="mainWrapper">
         <div id="mainDiagram">
 
@@ -56,8 +56,10 @@ Academic Year: 2019-2020
         return data = await d3.csv("dataset/suicidesCopy.csv");
     }
     loadData().then(data =>{
-        drawParallelCoordinates("#filterBar", data);
         filters("#filters", data);
+        var test = drawParallelCoordinates("#filterBar", data);
+        drawHistory("#provenanceBar", test, "test.svg");
+        drawAll("provenanceBar", "libraries/test.svg");
     });
     
     async function loadDataPca(){
@@ -69,7 +71,7 @@ Academic Year: 2019-2020
     
     //
     //drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
-    //drawHistory("#provenanceBar", "dataset/suicidesCopy.csv");
+    //
 </script>
 
 </html>

@@ -58,7 +58,7 @@ function filters(visualElement, data) {
 
         function brushed() {
             var selection = d3.event.selection;
-            console.log(selection.map(x.invert, x));
+            //console.log(selection.map(x.invert, x));
         }
     }
 

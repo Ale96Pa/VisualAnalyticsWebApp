@@ -1,28 +1,30 @@
+/**
+ * 
+ */
 
-
-function drawHistory(visualElement, svgElement, name) {
-    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    var svgData = svgElement.outerHTML;
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = name;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
-
-function drawAll(visualElement, svgPath){
+// Pick an svg and clone it to visualize it in the provenance bar
+//TODO: THE SVG IN THE PROVENANCE BAR MUST BE ALSO COPIED IN ANOTHER PAGE !!!
+function saveSvgFile(visualElement, svgElement) {
     
-    xhr = new XMLHttpRequest();
-    xhr.open("GET",svgPath,false);
-    // Following line is just to be on the safe side;
-    // not needed if your server delivers SVG with correct MIME type
-    xhr.overrideMimeType("image/svg+xml");
-    xhr.send("");
-    document.getElementById(visualElement)
-      .appendChild(xhr.responseXML.documentElement);
-
+    var newSvg = svgElement.cloneNode(true);
+    newSvg.setAttribute("id", "cloned");
+    newSvg.setAttribute("height", 200);
+    newSvg.setAttribute("width", 200);
+    document.getElementById(visualElement).appendChild(newSvg);
+    
+    //localStorage.setItem('someName', newSvg);
+ 
 }
+/*
+function copyToReview(visualElement){
+    var display = localStorage.getItem('someName', display);
+    var svg = display.cloneNode(true);
+    svg = document.createElement("svg");
+    svg.setAttribute("id", "svgReview");
+    svg.setAttribute("height", 450);
+    svg.setAttribute("width", 600);
+    svg.innerHTML = display;
+    console.log(svg);
+      
+    document.getElementById(visualElement).appendChild(svg);
+}*/

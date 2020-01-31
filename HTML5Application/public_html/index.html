@@ -23,7 +23,6 @@ Academic Year: 2019-2020
 </head>
 
 <body>
-    <a href id="link"> 
     <div id="mainWrapper">
         <div id="mainDiagram">
 
@@ -46,7 +45,7 @@ Academic Year: 2019-2020
     </div>
 
     <div id="provenanceBar" >
-
+        <button onclick="window.location.href = 'review.html';">Review</button>
     </div>
 </body>
 
@@ -58,8 +57,10 @@ Academic Year: 2019-2020
     loadData().then(data =>{
         filters("#filters", data);
         var test = drawParallelCoordinates("#filterBar", data);
-        drawHistory("#provenanceBar", test, "test.svg");
-        drawAll("provenanceBar", "libraries/test.svg");
+        
+        // pick svg and copy in provenance bar
+        saveSvgFile("provenanceBar", test);
+        saveSvgFile("provenanceBar", test);
     });
     
     async function loadDataPca(){

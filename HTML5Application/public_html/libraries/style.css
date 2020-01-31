@@ -1,5 +1,5 @@
 body {
-    background-image: linear-gradient(to bottom, white, gray);
+    background-image: linear-gradient(to bottom, black, gray);
     display: table;
     justify-content: left; /*horizontal*/
 }
@@ -27,7 +27,7 @@ body {
     border: 1px solid white;
 }
 
-#parallelDiagram {
+#filterBar {
     width:650px;
     min-width: 610px;
     display:table-cell;

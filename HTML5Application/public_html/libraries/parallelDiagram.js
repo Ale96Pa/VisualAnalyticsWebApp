@@ -15,7 +15,7 @@ function calculateRangeArray(numDiffValue, height){
 
 function drawParallelCoordinates(visualElement, csvPath){
     
-    var margin = {top: 50, right: 20, bottom: 50, left: 20},
+    var margin = {top: 50, right: 10, bottom: 50, left: 20},
     width = 650 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -89,7 +89,10 @@ function drawParallelCoordinates(visualElement, csvPath){
             .append("text")
             .style("text-anchor", "middle")
             .attr("y", -9)
-            .text(function(d) { return d; })
-            .style("fill", "black");
+            .text(function(d) { return d; });
+
+        svg.selectAll("text")
+            .style("fill", "white");
     });
+
 }

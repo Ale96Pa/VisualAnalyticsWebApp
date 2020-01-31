@@ -4,98 +4,78 @@
  * and open the template in the editor.
  */
 
-function filters(visualElement) {
+function filters(visualElement,csvPath) {
 
-    var margin = {top: 10, right: 20, bottom: 500, left: 20},
-        width = 650 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    function newFilterBar(data,name,topPx) {
+
+    var header = d3.keys(data[0]);
+    var index = header.indexOf(name);
+
+    var width = 550,
+        height = 90;
 
     var x = d3.scaleLinear()
-        .range([0, 300])
-        .domain([0,300]);
+        .range([0, 350])
+        .domain( d3.extent(data, function(d) { return +d[name]; }) );
 
     var xAxis = d3.axisBottom(x);
 
     var brush = d3.brushX()
-        .extent([[0, 0], [300, 25]])
+        .extent([[0, 0], [350, 20]])
         .on("brush", brushed);
 
     var svg = d3.select(visualElement)
         .append("svg")
-        .attr("width", 550)
-        .attr("height", 100);
+        .attr("width", width)
+        .attr("height", height)
+        .attr("transform", "translate( 50 , 20)");
 
     svg.append("text")
-        .attr("transform", "translate(50,50)")
+        .attr("transform", "translate(50,30)")
         .style("text-anchor", "middle")
-        .text("Population:");
+        .style("fill", "white")
+        .text(name + ":");
 
     var context = svg.append("g")
         .attr("class", "context")
-        .attr("transform", "translate(100,30)");
+        .attr("transform", "translate(100,15)");
 
     context.append("g")
         .attr("class", "axis axis--x")
-        .attr("transform", "translate(0,13)")
-        .call(xAxis);
+        .attr("transform", "translate(0,17)")
+        .attr("fill","white")
+        .call(xAxis)
+        .selectAll("text")
+        .attr("y", 0)
+        .attr("x", 9)
+        .attr("transform", "rotate(45)")
+        .style("text-anchor", "start");
 
     context.append("g")
         .attr("class", "brush")
         .call(brush)
         .call(brush.move, x.range());
 
+        function brushed() {
+            var selection = d3.event.selection;
+            console.log(selection.map(x.invert, x));
+        }
+    }
+
+
+    d3.csv(csvPath, function (error, data) {
+
+        if (error) throw error;
+
+        newFilterBar(data,"population");
+        newFilterBar(data,"hdi");
+
+    });
+
 }
 
-    function brushed() {
-        var selection = d3.event.selection;
-        console.log(selection)
-    }
-
-    function selected(){
-        dataSelection=[]
-
-        var selection= d3.event.selection;
-
-        if (selection != null){
-            focus.selectAll(".dot")
-
-                .style("opacity",function(d){
-                    if ((x(d[chiavi[0]]) > selection[0][0]) && (x(d[chiavi[0]]) < selection[1][0]) && (y(d[chiavi[1]]) > selection[0][1]) && (y(d[chiavi[1]]) < selection[1][1])) {
-                        dataSelection.push(d.id)
-                        return "1.0"
-                    }
-                    else
-                    {
-                        return "0.3"
-                    }
-                })
-        }
-        else
-        {
-            focus.selectAll(".dot")
-                .style("fill",function(d) {return color(d[chiavi[2]]); })
-                .style("opacity",".3")
-            console.log("reset");
-        }
-
-        d3.select("#parallelArea").selectAll(".forepath")
-            .style("stroke","steelblue")
-
-        var c=d3.select("#parallelArea").selectAll(".forepath")
-            .style("stroke",function(d){
-                if ((x(d[chiavi[0]]) > selection[0][0]) && (x(d[chiavi[0]]) < selection[1][0]) && (y(d[chiavi[1]]) > selection[0][1]) && (y(d[chiavi[1]]) < selection[1][1])) {
-                    dataSelection.push(d.id)
-                    return "red"
-                }
-                else
-                {
-                    return "steelblue"
-                }
 
 
-            })
-        console.log(c)
-    }
 
 
 

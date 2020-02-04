@@ -1,4 +1,4 @@
-country,year,suicides_no,hdi,gdp_per_capita ($)
+country,year,suicides_no,hdi,gdp_per_capita
 Albania,1992,47,0.61,251
 Albania,1993,73,0.613,437
 Albania,1994,50,0.619,697

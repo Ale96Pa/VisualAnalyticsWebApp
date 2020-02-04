@@ -64,6 +64,7 @@ function filters(visualElement, data) {
 
     newFilterBar(data,"population");
     newFilterBar(data,"hdi");
+    newFilterBar(data, "gdp");
 
 }
 

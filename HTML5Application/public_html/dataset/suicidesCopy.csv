@@ -1,4 +1,4 @@
-country,year,sex,age,suicides_no,population,suicides/100k pop,country-year,hdi, gdp_for_year ($) ,gdp_per_capita ($),generation
+country,year,sex,age,suicides_no,population,suicides/100k pop,country-year,hdi,gdp_for_year,gdp_per_capita,generation
 Albania,1992,male,35-54,12,33800,3.49,Albania1992,0.61,709452584,251,Boomers
 Albania,1992,male,15-24,9,263700,3.41,Albania1992,0.61,709452584,251,Generation X
 Albania,1992,male,55-74,5,159500,3.13,Albania1992,0.61,709452584,251,Silent

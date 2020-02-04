@@ -89,7 +89,7 @@ Academic Year: 2019-2020
         drawBarChart("#secondDiagram", filteredData75);
  */       //saveSvgFile("provenanceBar", test);
 
-        drawLinearChart("#secondDiagram", data);
+        //drawLinearChart("#secondDiagram", data);
     });
     
     async function loadDataCountry(){
@@ -101,10 +101,13 @@ Academic Year: 2019-2020
     
     
     async function loadDataPca(){
-        return data = await d3.csv("dataset/pca.csv");
+        return data = await d3.csv("dataset/states_tsne.csv");
     }
     loadDataPca().then(data =>{
-        drawMainDiagram("#mainDiagram", data);
+        filteredData = data.filter(function(row) {
+            return row['year'] == '1990';
+        });
+        drawMainDiagram("#mainDiagram", filteredData);
         
         /*
         var colX = data.map(function(d) { return d.X })

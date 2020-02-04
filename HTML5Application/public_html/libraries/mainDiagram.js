@@ -94,10 +94,10 @@ function drawMainDiagram(visualElement, data) {
             })
             .attr("cy", function (d) {
                 return y(+d[chiavi[1]]);
-            })
-            .style("fill", function (d) {
-                return color(d[chiavi[2]]);
             });
+            /*.style("fill", function (d) {
+                return color(d[chiavi[2]]);
+            });*/
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -193,6 +193,7 @@ function drawMainDiagram(visualElement, data) {
     }
 
     chiavi = d3.keys(data[0])
+
     var l = data.length;
     for (i = 0; i < l; i++) {
         data[i].id = i

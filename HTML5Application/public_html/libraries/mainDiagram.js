@@ -78,7 +78,6 @@ function drawMainDiagram(visualElement, data) {
         x3.domain(x.domain());
         y3.domain(y.domain());
 
-
 // append scatter plot to main chart area
         var dots = focus.append("g");
         dots.attr("clip-path", "url(#clip)");

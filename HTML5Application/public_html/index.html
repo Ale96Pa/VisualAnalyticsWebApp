@@ -14,14 +14,18 @@ Academic Year: 2019-2020
     <link rel="stylesheet" href="libraries/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="libraries/d3.js"></script>
+    <script type="text/javascript" src="libraries/d3-geo.js"></script>
+    <script type="text/javascript" src="libraries/topojson.js"></script>
     <script type="text/javascript" src="libraries/parallelDiagram.js"></script>
     <script type="text/javascript" src="libraries/mainDiagram.js"></script>
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
     <script type="text/javascript" src="libraries/filterParameter.js"></script>
+
 </head>
 
 <body>
+
     <div id="mainWrapper">
         <div id="mainDiagram">
 
@@ -38,7 +42,13 @@ Academic Year: 2019-2020
     </div>
 
     <div id="filterBar">
-        <div id="filters"></div>
+        <div id="filters">
+
+        </div>
+        <div id="selection">
+        </div>
+        <div id="map">
+        </div>
     </div>
 
     <div id="provenanceBar" >
@@ -52,15 +62,17 @@ Academic Year: 2019-2020
         return data = await d3.csv("dataset/suicidesCopy.csv");
     }
     loadData().then(data =>{
-        //filters("#filters", data);
+        filters("#filters", data);
+        selectionChoices("#selection", data)
+        worldMap("map");
         //var test = drawParallelCoordinates("#filterBar", data);
-        
+
         // pick svg and copy in provenance bar
         //var button = document.getElementById("saveOnProvenance");
-        
+
         //document.getElementById("saveOnProvenance").onclick=function(){saveSvgFile("provenanceBar", test, elemToSave);}
         //console.log(data);
- 
+
         ////// DRAW PATTERN OF BARCHART
  /*       filteredData35 = data.filter(function(row) {
             return row['age'] == '35-54';
@@ -91,15 +103,15 @@ Academic Year: 2019-2020
 
         //drawLinearChart("#secondDiagram", data);
     });
-    
+
     async function loadDataCountry(){
         return data = await d3.csv("dataset/suicidesCountryCopy.csv");
     }
     loadDataCountry().then(data =>{
         //drawScatterplot("#secondDiagram", data);
     });
-    
-    
+
+
     async function loadDataPca(){
         return data = await d3.csv("dataset/states_tsne.csv");
     }
@@ -108,7 +120,7 @@ Academic Year: 2019-2020
             return row['year'] == '1990';
         });
         drawMainDiagram("#mainDiagram", filteredData);
-        
+
         /*
         var colX = data.map(function(d) { return d.X })
         var colY = data.map(function(d) { return d.Y })
@@ -121,7 +133,7 @@ Academic Year: 2019-2020
         //drawLinearChart("#secondDiagram", XY_array);
         //console.log(arr);
     });
-    
+
     //drawLinearChart("#secondDiagram");
     //
     //drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");

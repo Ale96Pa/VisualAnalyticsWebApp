@@ -28,10 +28,9 @@ body {
 }
 
 #filterBar {
-    width:650px;
+    width:600px;
     min-width: 610px;
     display:table-cell;
-    vertical-align: top;
     text-align: center;
     border: 1px solid white;
     margin-left: -1px;
@@ -39,13 +38,27 @@ body {
 }
 
 #provenanceBar {
-    width:200px;
+    width:250px;
     min-width: 200px;
     display:table-cell;
-    vertical-align: top;
     text-align: center;
     border: 1px solid white;
 }
+
+
+#selection {
+    display: inline-flex;
+    padding-left: 30px;
+    padding-right: 20px;
+    align-content: center;
+}
+
+#map {
+    width:500px;
+    margin: 20px 30px 5px 5px;
+}
+
+/*---------------------------------------*/
 
 /* Style the tab */
 .tab {
@@ -110,4 +123,36 @@ svg {
 .axis text {
     fill: white;
     cursor: move;
+}
+
+/*--------------------------------------*/
+
+.country:hover, .country::selection{
+    stroke: #fff;
+    stroke-width: .9px;
+}
+div.tooltip {
+    position: absolute;
+    text-align: center;
+    padding: .3rem;
+    background: #FFFFFF;
+    color: #313639;
+    border: 1px solid black;
+    border-radius: 2px;
+    pointer-events: none;
+    font-size: 0.9rem;
+}
+
+/*---------------------------------------*/
+
+.container{
+    width: auto;
+    border: 2px solid white;
+    border-radius: 3%;
+}
+
+input, label{
+    padding-top: 5px;
+    display: -webkit-box;
+    text-align: right;
 }

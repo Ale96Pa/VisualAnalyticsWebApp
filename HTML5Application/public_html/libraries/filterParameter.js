@@ -66,7 +66,7 @@ function filters(visualElement, data) {
     }
 
     newFilterBar(data, "population");
-    newFilterBar(data, "gdp_per_capita ($)");
+    newFilterBar(data, "gdp_per_capita");
     newFilterBar(data, "hdi");
 }
 

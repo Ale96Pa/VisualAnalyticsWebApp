@@ -64,13 +64,44 @@ function filters(visualElement, data) {
             ranges = selection.map(x.invert, x);
         }
         
-        console.log(ranges);
+        //console.log(ranges);
         //return ranges;
     }
 
     newFilterBar(data, "population");
     newFilterBar(data, "gdp_per_capita");
     newFilterBar(data, "hdi");
+}
+
+function filterRangeHdi(data, min, max){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        hdiValue = parseFloat(data[i].hdi);
+        if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
+    }
+    return filteredData;
+}
+function filterRangePopulation(data, min, max){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        hdiValue = parseFloat(data[i].population);
+        if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
+    }
+    return filteredData;
+}
+function filterRangeGdp(data, min, max){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        hdiValue = parseFloat(data[i].gdp_per_capita);
+        if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
+    }
+    return filteredData;
+}
+function filterAllDataBrusher(data, hdiRange, popRange, gdpRange){
+    var filter1 = filterRangeHdi(data, hdiRange[0], hdiRange[1]);
+    var filter2 = filterRangePopulation(filter1, popRange[0], popRange[1]);
+    var filter3 = filterRangeGdp(filter2, gdpRange[0], gdpRange[1]);
+    return filter3;
 }
 
 function filterSex(data, male, female){
@@ -115,7 +146,7 @@ function filterGeneration(data, genGi, genSilent, genBoomers, genX, genMillenial
     return filteredData;
 }
 
-function filterAllData(data, male, female, age5_14, age15_24, age25_34, 
+function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34, 
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
         genMillenials, genZ){
                 

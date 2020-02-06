@@ -147,7 +147,7 @@ Academic Year: 2019-2020
             document.getElementById("pop").innerHTML = min;
         }
 
-        console.log(document.getElementById("pop").innerHTML);
+        //console.log(document.getElementById("pop").innerHTML);
 
         //newFilterBar(data, "population");
         //newFilterBar(data, "gdp_per_capita");
@@ -233,8 +233,14 @@ Academic Year: 2019-2020
             else {genZ = false;}
         };
         
+        var hdiE = [0, 0.6];
+        var popE = [0, 10000];
+        var gdpE = [251, 1000];
+        var filterBrush = filterAllDataBrusher(data, hdiE, popE, gdpE);
+        console.log(filterBrush);
+        
         //TODO: vedere quando e come prendere i valori delle checkbox
-        var filtered_data = filterAllData(data, male, female, age5_14, age15_24, age25_34, 
+        var filtered_data = filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34, 
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
         genMillenials, genZ);
         //console.log(filtered_data);

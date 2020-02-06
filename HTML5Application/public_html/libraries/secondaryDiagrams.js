@@ -143,12 +143,12 @@ function drawScatterplot(visualElement, data){
     var xAxis = d3.axisBottom().scale(xScale);
 
     var yAxis = d3.axisLeft().scale(yScale);
-
+/*
     console.log( yScale(d3.max(dataset, function(d) { return +d[1]; })))
     console.log( yScale(d3.min(dataset, function(d) { return +d[1]; })))
     console.log( xScale(d3.max(dataset, function(d) { return +d[0]; })))
     console.log( xScale(d3.min(dataset, function(d) { return +d[0]; })))
-
+*/
     //create svg element
     var svg = d3.select(visualElement).append("svg")
         .attr("width", width + margin.left + margin.right)

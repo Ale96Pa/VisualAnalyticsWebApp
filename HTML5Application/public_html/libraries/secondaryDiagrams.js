@@ -12,6 +12,7 @@ function drawLinearChart(visualElement, data){
     filteredDataBoomers = data.filter(function(row) {
             return row['generation'] === 'Boomers';
     });
+    var a = data.map(function(d) { return d.X })
     var valueline1 = d3.line()
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.suicides_no); });

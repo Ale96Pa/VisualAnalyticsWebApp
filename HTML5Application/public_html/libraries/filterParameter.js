@@ -60,9 +60,12 @@ function filters(visualElement, data) {
 
         function brushed() {
             var selection = d3.event.selection;
-            console.log(selection.map(x.invert, x));
+            //console.log(selection.map(x.invert, x));
+            ranges = selection.map(x.invert, x);
         }
-
+        
+        console.log(ranges);
+        //return ranges;
     }
 
     newFilterBar(data, "population");
@@ -70,39 +73,57 @@ function filters(visualElement, data) {
     newFilterBar(data, "hdi");
 }
 
-function selectionChoices(visualElement, data){
+function filterSex(data, male, female){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        if(male){if(data[i].sex == 'male'){filteredData.push(data[i]);}}
+        if(female){if(data[i].sex == 'female'){filteredData.push(data[i]);}}
+    }
+    /*
+    if(male){filteredData.push(data.filter(function(row){return row['sex'] == 'male';}));}
+    if(female){filteredData.push(data.filter(function(row){return row['sex'] == 'female';}));}
+    */
+    return filteredData;
+}
+function filterAge(data, age5_14, age15_24, age25_34, age35_54, age55_74, age75){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        //for(j=0; j<data[i].length; j++){
+            if(age5_14){if(data[i].age == '05-14'){filteredData.push(data[i]);}}
+            if(age15_24){if(data[i].age == '15-24'){filteredData.push(data[i]);}}
+            if(age25_34){if(data[i].age == '25-34'){filteredData.push(data[i]);}}
+            if(age35_54){if(data[i].age == '35-54'){filteredData.push(data[i]);}}
+            if(age55_74){if(data[i].age == '55-74'){filteredData.push(data[i]);}}
+            if(age75){if(data[i].age == '75+'){filteredData.push(data[i]);}}
+        //}
+    }
+    return filteredData;
+}
+function filterGeneration(data, genGi, genSilent, genBoomers, genX, genMillenials, genZ){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+        //console.log(data[i].generation);
+        //for(j=0; j<data[i].length; j++){
+            if(genGi){if(data[i].generation == 'G.I. Generation'){filteredData.push(data[i]);}}
+            if(genSilent){if(data[i].generation == 'Silent'){filteredData.push(data[i]);}}
+            if(genBoomers){if(data[i].generation == 'Boomers'){filteredData.push(data[i]);}}
+            if(genX){if(data[i].generation == 'Generation X'){filteredData.push(data[i]);}}
+            if(genMillenials){if(data[i].generation == 'Millenials'){filteredData.push(data[i]);}}
+            if(genZ){if(data[i].generation == 'Generation Z'){filteredData.push(data[i]);}}
+        //}
+    }
+    return filteredData;
+}
 
-    function selectionBox(data, name) {
-        var width = 200,
-            height = 450;
-
-        var div = d3.select(visualElement)
-            .append("div")
-            .attr("height", height)
-            .attr("id",name +"Container")
-            .attr("class", "container")
-            .attr("transform", "translate( 30 , 10)")
-            .append("legend")
-            .html(name);
-
-
-        nameKey = d3.map(data, function(d){return d[name];}).keys()
-        nameKey.forEach(function(k){
-            div.append('label')
-                .text(k)
-                .append("input")
-                .attr("checked", true)
-                .attr("type", "checkbox")
-                .attr("id", k+"Box")
-                .attr("onClick", "change(this)");
-        });
-    };
-
-    selectionBox(data,"generation");
-    selectionBox(data,"sex");
-    selectionBox(data,"age");
-
-
+function filterAllData(data, male, female, age5_14, age15_24, age25_34, 
+        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
+        genMillenials, genZ){
+                
+        var filter1 = filterSex(data, male, female);
+        var filter2 = filterAge(filter1, age5_14, age15_24, age25_34, age35_54, age55_74, age75);
+        var filter3 = filterGeneration(filter2, genGi, genSilent, genBoomers, genX, genMillenials, genZ);
+        
+        return filter3;
 }
 
 function worldMap(visualElement) {
@@ -159,7 +180,7 @@ function worldMap(visualElement) {
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
-        console.log(states.includes("Afghanistan"))
+        //console.log(states.includes("Afghanistan"))
         country.enter().insert("path")
             .attr("class", "country")
             .attr("d", path)
@@ -168,7 +189,7 @@ function worldMap(visualElement) {
             .style("fill", function(d, i) {
                 if (states.includes(d.properties.name) ){
                     return d.properties.color;}
-                else{console.log(d.properties.name)}
+                else{/*console.log(d.properties.name)*/}
                 return "gray";
             })
             .on("mouseover", function(d,i) {
@@ -196,7 +217,7 @@ function worldMap(visualElement) {
                     .style("visibility", "hidden");
             })
             .on("click",function(d,i) {
-                console.log(d.properties.name);
+                //console.log(d.properties.name);
             });
 
     }

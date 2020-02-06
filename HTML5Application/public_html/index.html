@@ -36,7 +36,7 @@ Academic Year: 2019-2020
             <button>Diag3</button>
         </div>
         <div id="secondDiagram">
-            <button id="saveOnProvenance">Save on provenance</button>
+            <button class="provenanceButton" id="saveOnProvenance">Save on provenance</button>
         </div>
     </div>
 
@@ -74,7 +74,7 @@ Academic Year: 2019-2020
     </div>
 
     <div id="provenanceBar" >
-        <button onclick="window.location.href = 'review.html';">Review</button>
+        <button class="provenanceButton" onclick="window.location.href = 'review.html';">Review</button>
     </div>
 </body>
 
@@ -283,7 +283,7 @@ Academic Year: 2019-2020
         return data = await d3.csv("dataset/suicidesCountryCopy.csv");
     }
     loadDataCountry().then(data =>{
-        //drawScatterplot("#secondDiagram", data);
+        drawScatterplot("#secondDiagram", data);
     });
 
 

@@ -14,15 +14,16 @@ body {
 
 #mainDiagram {
     width: 1050px;
-    height: 550px;
+    height: 500px;
     text-align: center;
     border: 1px solid white;
     margin-right: -2px;
 }
 
 #secondDiagram {
+    position: relative;
     width: 1050px;
-    height: 330px;
+    height: 400px;
     text-align: left;
     border: 1px solid white;
 }
@@ -88,6 +89,12 @@ body {
 .tab button:focus {
     background-color: #2E2E2E;
     border-color: #2E2E2E;
+}
+
+.provenanceButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
 }
 
 /*----------------------------------------------------------------------*/

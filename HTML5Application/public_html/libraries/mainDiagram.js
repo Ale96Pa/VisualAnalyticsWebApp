@@ -3,13 +3,13 @@
 function drawMainDiagram(visualElement, data) {
 
     /*2 is hdi axes, 3 is gdp axes*/
-    var margin = {top: 50, right: 25, bottom: 105, left: 150},
-        margin2 = {top: 480, right: 25, bottom: 30, left: 150},
-        margin3 = {top: 50, right: 950, bottom: 105, left: 40},
+    var margin = {top: 30, right: 35, bottom: 110, left: 150},
+        margin2 = {top: 420, right: 35, bottom: 30, left: 150},
+        margin3 = {top: 30, right: 950, bottom: 110, left: 50},
         width = 1050 - margin.left - margin.right,
         width3 = 1050 - margin3.left - margin3.right
-        height = 550 - margin.top - margin.bottom,
-        height2 = 550 - margin2.top - margin2.bottom;
+        height = 500 - margin.top - margin.bottom,
+        height2 = 500 - margin2.top - margin2.bottom;
 
 /*Define values to show on axes*/
     var x = d3.scaleLinear().range([0, width]),
@@ -191,13 +191,8 @@ function drawMainDiagram(visualElement, data) {
             .call(brushX.move, x2.range());
     }
 
-    chiavi = d3.keys(data[0])
 
-    var l = data.length;
-    for (i = 0; i < l; i++) {
-        data[i].id = i
-    }
-    drawScatter(data)
+    chiavi = d3.keys(data[0])
 
     //create brush function redraw scatterplot with selection
     function brushedX() {
@@ -219,7 +214,6 @@ function drawMainDiagram(visualElement, data) {
             .attr("cy", function(d) { return y(d[chiavi[1]]); });
         focus.select(".axis--y").call(yAxis);
     }
-
 
 
     function selected() {
@@ -247,4 +241,12 @@ function drawMainDiagram(visualElement, data) {
                 .style("opacity", ".3")
         }
     }
+
+    /*    var l = data.length;
+    for (i = 0; i < l; i++) {
+        data[i].id = i
+    }*/
+
+    drawScatter(data)
+
 }

@@ -93,8 +93,8 @@ function selectionChoices(visualElement, data){
                 .append("input")
                 .attr("checked", true)
                 .attr("type", "checkbox")
-                .attr("id", k+"Box")
-                .attr("onClick", "change(this)");
+                .attr("id", k +"Box")
+                .attr("onClick", "checked(this)");
         });
     };
 
@@ -159,7 +159,6 @@ function worldMap(visualElement) {
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
-        console.log(states.includes("Afghanistan"))
         country.enter().insert("path")
             .attr("class", "country")
             .attr("d", path)
@@ -168,8 +167,8 @@ function worldMap(visualElement) {
             .style("fill", function(d, i) {
                 if (states.includes(d.properties.name) ){
                     return d.properties.color;}
-                else{console.log(d.properties.name)}
-                return "gray";
+                else{
+                return "gray";}
             })
             .on("mouseover", function(d,i) {
                 d3.select(this)

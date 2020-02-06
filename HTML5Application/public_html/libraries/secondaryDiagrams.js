@@ -1,129 +1,106 @@
 function drawLinearChart(visualElement, data){
-    // set the dimensions and margins of the graph
-    var margin = {top: 5, right: 5, bottom: 5, left: 5},
-        width = 400 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
 
-    // set the ranges
+    // set the dimensions and margins of the graph
+    var margin = {top: 25, right: 15, bottom: 35, left: 85},
+        width = 850 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    filteredDataBoomers = data.filter(function(row) {
+        return row['generation'] === 'Boomers';
+    });
+    filteredDataSilent = data.filter(function(row) {
+        return row['generation'] === 'Silent';
+    });
+    filteredDataGenX = data.filter(function(row) {
+        return row['generation'] === 'Generation X';
+    });
+    filteredDataMillenials = data.filter(function(row) {
+        return row['generation'] === 'Millenials';
+    });
+    filteredDataGenGI = data.filter(function(row) {
+        return row['generation'] === 'G.I. Generation';
+    });
+    filteredDataGenZ = data.filter(function(row) {
+        return row['generation'] === 'Generation Z';
+    });
+
+    var gen = [filteredDataBoomers,filteredDataGenZ,filteredDataSilent,filteredDataGenX,
+        filteredDataMillenials, filteredDataGenGI];
+    var legendKeys = ["Boomers", "Generation X", "Silent","Millenials",
+        "G,I. Generation", "Generation Z"]
+
+    gen.forEach(function(generation, index){
+        var count = {};
+        for (var i = 0; i < generation.length; i++) {
+            var arr = generation[i]
+            if (arr['year'] in count) {
+                count[arr['year']] = parseInt(count[arr['year']]) + parseInt(arr['suicides_no'])
+            } else {
+                count[arr['year']] = parseInt(arr['suicides_no'])
+            }
+        }
+        generation = [];
+        for (var key in count) {
+            generation.push({year: key, suicides_no: count[key]});
+        };
+
+        gen[index] = generation;
+    });
+
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
-    
-    // define the 1st line
-    filteredDataBoomers = data.filter(function(row) {
-            return row['generation'] === 'Boomers';
-    });
-    var valueline1 = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.suicides_no); });
-
-    // define the 2nd line
-    filteredDataSilent = data.filter(function(row) {
-            return row['generation'] === 'Silent';
-    });
-    var valueline2 = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.suicides_no); });
-
-    // define the 3rd line
-    filteredDataGenX = data.filter(function(row) {
-            return row['generation'] === 'Generation X';
-    });
-    var valueline3 = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.suicides_no); });
-    
-    // define the 4th line
-    filteredDataMillenials = data.filter(function(row) {
-                return row['generation'] === 'Millenials';
-        });
-        var valueline4 = d3.line()
-            .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(d.suicides_no); });
-    
-    // define the 5th line
-    filteredDataGenGI = data.filter(function(row) {
-                return row['generation'] === 'G.I. Generation';
-        });
-        var valueline5 = d3.line()
-            .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(d.suicides_no); });
-    
-    // define the 6th line
-    filteredDataGenZ = data.filter(function(row) {
-                return row['generation'] === 'Generation Z';
-        });
-        var valueline6 = d3.line()
-            .x(function(d) { return x(d.year); })
-            .y(function(d) { return y(d.suicides_no); });
-
-
-    // append the svg obgect to the body of the page
-    // appends a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
-    var svg = d3.select(visualElement).append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
-
-    // format the data
-    data.forEach(function(d) {
-        d.year = +d.year;
-        d.suicides_no = +d.suicides_no;
-    });
 
     // Scale the range of the data
-    var years = data.map(function(d) { return d.year });
+    var years = gen[0].map(function(d) { return d.year });
     var int_years = years.map(Number);
     x.domain(d3.extent(int_years));
     
-    var suicNum = data.map(function(d) { return d.suicides_no });
+    var suicNum = gen[0].map(function(d) { return d.suicides_no });
     var int_suic = suicNum.map(Number);
     y.domain([0, d3.max(int_suic)]);
 
-    // Add the valueline path.
-    svg.append("path")
-        .data([filteredDataBoomers])
-        .attr("class", "line")
-        .style("stroke", "blue")
-        .attr("d", valueline1);
+    var valueline = d3.line()
+        .x(function(d) { return x(d.year); })
+        .y(function(d) { return y(d.suicides_no); });
 
-    // Add the valueline2 path.
-    svg.append("path")
-        .data([filteredDataSilent])
-        .attr("class", "line")
-        .style("stroke", "red")
-        .attr("d", valueline2);
+    var color = d3.scaleOrdinal()
+        .range(["red", "green", "blue", "yellow", "white", "darkgreen"]);
 
-    // Add the valueline3 path.
-    svg.append("path")
-        .data([filteredDataGenX])
-        .attr("class", "line")
-        .style("stroke", "yellow")
-        .attr("d", valueline3);
 
-    // Add the valueline4 path.
-    svg.append("path")
-        .data([filteredDataMillenials])
-        .attr("class", "line")
-        .style("stroke", "green")
-        .attr("d", valueline4);
+    var svg = d3.select(visualElement).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-    // Add the valueline5 path.
-    svg.append("path")
-        .data([filteredDataGenGI])
-        .attr("class", "line")
-        .style("stroke", "black")
-        .attr("d", valueline5);
+    var legend = d3.select(visualElement).append("svg")
+        .attr("width", "105px")
+        .attr("top",  margin.top)
+        .attr("left", width + margin.left + 55);
 
-    // Add the valueline6 path.
-    svg.append("path")
-        .data([filteredDataGenZ])
-        .attr("class", "line")
-        .style("stroke", "white")
-        .attr("d", valueline6);
+    gen.forEach(function(generation, index) {
+        // Add the valueline path.
+        svg.append("path")
+            .data([generation])
+            .attr("class", "line")
+            .style("stroke", function(){ return color(index)})
+            .style("fill", "none")
+            .style("stroke-width","2")
+            .attr("d", valueline);
 
+        legend.append('rect')
+            .attr("width", "13px")
+            .attr("height", "13px")
+            .attr('y', function(){ return (index * 20);})
+            .style("fill",function(){ return color(index)});
+
+        legend.append('text')
+            .attr("x", "20")
+            .attr("font-size"," small")
+            .attr('y', function(){ return (index * 20) + 12;})
+            .text(legendKeys[index]);
+    })
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -139,14 +116,16 @@ function drawLinearChart(visualElement, data){
 
 //TODO: clusterization depending on hdi
 function drawScatterplot(visualElement, data){
-    var margin = {top: 5, right: 5, bottom: 5, left: 5},
-        width = 400 - margin.left - margin.right,
+    var margin = {top: 25, right: 15, bottom: 35, left: 85},
+        width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
+
     padding = 50;
 
     //max vs min
     var numSuic = data.map(function(d) { return d.suicides_no });
     var gdp = data.map(function(d) { return d.gdp_per_capita });
+
     var dataset = [];
     for (var i = 0; i < numSuic.length; i++) {
         dataset[i] = [gdp[i], numSuic[i]];
@@ -154,24 +133,29 @@ function drawScatterplot(visualElement, data){
 
     //scale function
     var xScale = d3.scaleLinear()
-            //.domain(["Alabama","Alaska","Arizona","Arkansas","California"])
-            .domain([0, d3.max(dataset, function(d) { return d[0]; })])
-            .range([padding, width-padding * 2]);
+            .domain([0, d3.max(data, function(d) { return +d["gdp_per_capita"]; })])
+            .range([0, width]);
 
     var yScale = d3.scaleLinear()
-            .domain([0, d3.max(dataset, function(d) { return d[1]; })])
-            //.range([padding, width-padding * 2]);
-            .range([height - padding, padding]);
+            .domain([0, d3.max(data, function(d) { return +d["suicides_no"]; })])
+            .range([height , 0]);
 
-    var xAxis = d3.axisBottom().scale(xScale).ticks(5);
+    var xAxis = d3.axisBottom().scale(xScale);
 
-    var yAxis = d3.axisLeft().scale(yScale).ticks(5);
+    var yAxis = d3.axisLeft().scale(yScale);
+
+    console.log( yScale(d3.max(dataset, function(d) { return +d[1]; })))
+    console.log( yScale(d3.min(dataset, function(d) { return +d[1]; })))
+    console.log( xScale(d3.max(dataset, function(d) { return +d[0]; })))
+    console.log( xScale(d3.min(dataset, function(d) { return +d[0]; })))
 
     //create svg element
-    var svg = d3.select(visualElement)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+    var svg = d3.select(visualElement).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
     svg.selectAll("circle")
             .data(dataset)
@@ -181,21 +165,23 @@ function drawScatterplot(visualElement, data){
                     return xScale(d[0]);
             })
             .attr("cy", function(d) {
-                    return height - yScale(d[1]);
+                    return yScale(d[1]);
             })
             .attr("r", 5)
-            .attr("fill", "green");
+            .attr("stroke", "black")
+            .attr("fill", "darkgreen");
+
 
     //x axis
     svg.append("g")
-            .attr("class", "x axis")	
-            .attr("transform", "translate(0," + (height - padding) + ")")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + (height+5) + ")")
             .call(xAxis);
 
     //y axis
     svg.append("g")
-            .attr("class", "y axis")	
-            .attr("transform", "translate(" + padding + ", 0)")
+            .attr("class", "y axis")
+            .attr("transform", "translate(-5,0)")
             .call(yAxis);
 }
 

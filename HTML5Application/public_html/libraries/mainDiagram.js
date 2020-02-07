@@ -1,4 +1,10 @@
-
+/**
+ * This script manages the main diagram: it is a scatterplot containing a point
+ * for each country. It represents a cartesian plane in which the distance 
+ * between points represents how much different the countries are each other.
+ * In order to compute such a cartesian plane we use dimensionality reduction
+ * techniques reported in the main dataset file.
+ */
 
 function drawMainDiagram(visualElement, data) {
 
@@ -11,7 +17,7 @@ function drawMainDiagram(visualElement, data) {
         height = 500 - margin.top - margin.bottom,
         height2 = 500 - margin2.top - margin2.bottom;
 
-/*Define values to show on axes*/
+    /*Define values to show on axes*/
     var x = d3.scaleLinear().range([0, width]),
         x2 = d3.scaleLinear().range([0, width]),
         x3 = d3.scaleLinear().range([0, width3]),
@@ -19,7 +25,7 @@ function drawMainDiagram(visualElement, data) {
         y2 = d3.scaleLinear().range([height2, 0]),
         y3 = d3.scaleLinear().range([height, 0]);
 
-/*define axes*/
+    /*define axes*/
     var xAxis = d3.axisBottom(x),
         xAxis2 = d3.axisBottom(x2),
         yAxis = d3.axisLeft(y),
@@ -29,17 +35,13 @@ function drawMainDiagram(visualElement, data) {
     var brushX = d3.brushX()
         .extent([[0, 0], [width, height2]])
         .on("brush", brushedX);
-
     var brushY = d3.brushY()
         .extent([[0, 0], [width3, height]])
         .on("brush", brushedY);
-
     var brushTot = d3.brush()
         .extent([[0, 0], [width, height]])
         .on("end", selected);
-
     var color = d3.scaleOrdinal(d3.schemeCategory10);
-
     var focus;
 
     function drawScatter(data) {
@@ -67,18 +69,14 @@ function drawMainDiagram(visualElement, data) {
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
 
-        x.domain(d3.extent(data, function (d) {
-            return +d[chiavi[0]];
-        }));
-        y.domain(d3.extent(data, function (d) {
-            return +d[chiavi[1]];
-        }));
+        x.domain(d3.extent(data, function (d) {return +d[chiavi[0]];}));
+        y.domain(d3.extent(data, function (d) {return +d[chiavi[1]];}));
         x2.domain(x.domain());
         y2.domain(y.domain());
         x3.domain(x.domain());
         y3.domain(y.domain());
 
-// append scatter plot to main chart area
+        // append scatter plot to main chart area
         var dots = focus.append("g");
         dots.attr("clip-path", "url(#clip)");
         dots.selectAll("dot")
@@ -88,12 +86,8 @@ function drawMainDiagram(visualElement, data) {
             .attr("r", 5)
             .attr("fill", "grey")
             .attr("opacity", ".3")
-            .attr("cx", function (d) {
-                return x(+d[chiavi[0]]);
-            })
-            .attr("cy", function (d) {
-                return y(+d[chiavi[1]]);
-            });
+            .attr("cx", function (d) {return x(+d[chiavi[0]]);})
+            .attr("cy", function (d) {return y(+d[chiavi[1]]);});
             /*.style("fill", function (d) {
                 return color(d[chiavi[2]]);
             });*/
@@ -139,15 +133,9 @@ function drawMainDiagram(visualElement, data) {
             .attr('class', 'dotContext')
             .attr("r", 3)
             .style("opacity", .5)
-            .attr("cx", function (d) {
-                return x3(d[chiavi[0]]);
-            })
-            .attr("cy", function (d) {
-                return y3(d[chiavi[1]]);
-            })
-            .style("fill", function (d) {
-                return color(d[chiavi[2]]);
-            });
+            .attr("cx", function (d) {return x3(d[chiavi[0]]);})
+            .attr("cy", function (d) {return y3(d[chiavi[1]]);})
+            .style("fill", function (d) {return color(d[chiavi[2]]);});
 
         context3.append("g")
             .attr("class", "axis axis--y")
@@ -170,15 +158,9 @@ function drawMainDiagram(visualElement, data) {
             .attr('class', 'dotContext')
             .attr("r", 3)
             .style("opacity", .5)
-            .attr("cx", function (d) {
-                return x2(d[chiavi[0]]);
-            })
-            .attr("cy", function (d) {
-                return y2(d[chiavi[1]]);
-            })
-            .style("fill", function (d) {
-                return color(d[chiavi[2]]);
-            });
+            .attr("cx", function (d) {return x2(d[chiavi[0]]);})
+            .attr("cy", function (d) {return y2(d[chiavi[1]]);})
+            .style("fill", function (d) {return color(d[chiavi[2]]);});
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -191,8 +173,7 @@ function drawMainDiagram(visualElement, data) {
             .call(brushX.move, x2.range());
     }
 
-
-    chiavi = d3.keys(data[0])
+    chiavi = d3.keys(data[0]);
 
     //create brush function redraw scatterplot with selection
     function brushedX() {
@@ -222,31 +203,26 @@ function drawMainDiagram(visualElement, data) {
 
         if (selection != null) {
             focus.selectAll(".dot")
-
-                .style("opacity", function (d) {
-                    if ((x(d[chiavi[0]]) > selection[0][0]) && (x(d[chiavi[0]]) < selection[1][0]) && (y(d[chiavi[1]]) > selection[0][1]) && (y(d[chiavi[1]]) < selection[1][1])) {
-                        dataSelection.push(d.id)
-                        return "1.0"
+                .style("opacity", function(d){
+                    if ((x(d[chiavi[0]]) > selection[0][0]) && 
+                        (x(d[chiavi[0]]) < selection[1][0]) && 
+                        (y(d[chiavi[1]]) > selection[0][1]) && 
+                        (y(d[chiavi[1]]) < selection[1][1])){
+                        dataSelection.push(d.id);
+                        return "1.0";
                     } else {
-                        return "0.3"
+                        return "0.3";
                     }
-                })
-
-
-        } else {
+                });
+        }else{
             focus.selectAll(".dot")
-                .style("fill", function (d) {
-                    return color(d[chiavi[2]]);
-                })
-                .style("opacity", ".3")
+                .style("fill", function (d) {return color(d[chiavi[2]]);})
+                .style("opacity", ".3");
         }
     }
-
     /*    var l = data.length;
     for (i = 0; i < l; i++) {
         data[i].id = i
     }*/
-
-    drawScatter(data)
-
+    drawScatter(data);
 }

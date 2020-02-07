@@ -1,11 +1,14 @@
 <!--
-Authors: Alessandro Palma, Stefano Santinelli
-Visual Analytics project: world wide suicide rate and analysis
+Project name: SRACs.
+Description:SRACs is a visual analytics tool for studying and analysing suicides
+            rates in order to get useful information for statistic and 
+            analytical purposes (more details in the final report).
+Authors: Alessandro Palma, Stefano Santinelli.
+Visual Analytics project: world wide suicide rate and analysis.
 Academic Year: 2019-2020
 -->
 
 <!DOCTYPE html>
-
 
 <html>
 <head>
@@ -15,25 +18,21 @@ Academic Year: 2019-2020
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript" src="libraries/d3.js"></script>
     <script type="text/javascript" src="libraries/d3-geo.js"></script>
-    <script type="text/javascript" src="libraries/topojson.js"></script>
+    <script type="text/javascript" src="libraries/geoMap.js"></script>
     <script type="text/javascript" src="libraries/mainDiagram.js"></script>
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
-    <script type="text/javascript" src="libraries/filterParameter.js"></script>
-
+    <script type="text/javascript" src="libraries/filtersParameter.js"></script>
 </head>
 
 <body>
-
     <div id="mainWrapper">
-        <div id="mainDiagram">
-
-        </div>
-
+        <div id="mainDiagram"></div>
         <div class="tab">
             <button>Diag1</button>
             <button>Diag2</button>
             <button>Diag3</button>
+            <button>Diag4</button>
         </div>
         <div id="secondDiagram">
             <button class="provenanceButton" id="saveOnProvenance">Save on provenance</button>
@@ -41,9 +40,7 @@ Academic Year: 2019-2020
     </div>
 
     <div id="filterBar">
-        <div id="filters">
-            <p id="pop"></p>
-        </div>
+        <div id="filters"></div>
         <div id="selection">
             <div id="sexContainer" class="container" transform="translate( 30 , 10)">
                 <legend>Sex</legend>
@@ -69,8 +66,7 @@ Academic Year: 2019-2020
                     <label>Generation Z (born post 2000)<input id="genZ" type="checkbox" checked></label>
             </div>
         </div>
-        <div id="map">
-        </div>
+        <div id="map"></div>
     </div>
 
     <div id="provenanceBar" >
@@ -144,7 +140,6 @@ Academic Year: 2019-2020
             ranges = selection.map(x.invert, x);
             var min = ranges[0];
             var max = ranges[1];
-            document.getElementById("pop").innerHTML = min;
         }
 
         //console.log(document.getElementById("pop").innerHTML);
@@ -152,12 +147,6 @@ Academic Year: 2019-2020
         //newFilterBar(data, "population");
         //newFilterBar(data, "gdp_per_capita");
         //newFilterBar(data, "hdi");
-        
-        
-        
-        
-        
-        
         
         
         var male = true;
@@ -235,9 +224,9 @@ Academic Year: 2019-2020
         
         var hdiE = [0, 0.6];
         var popE = [0, 10000];
-        var gdpE = [251, 1000];
+        var gdpE = [251, 600];
         var filterBrush = filterAllDataBrusher(data, hdiE, popE, gdpE);
-        console.log(filterBrush);
+        //console.log(filterBrush);
         
         //TODO: vedere quando e come prendere i valori delle checkbox
         var filtered_data = filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34, 
@@ -282,14 +271,15 @@ Academic Year: 2019-2020
         drawBarChart("#secondDiagram", filteredData75);
  */       //saveSvgFile("provenanceBar", test);
 
-        drawLinearChart("#secondDiagram", filtered_data);
+        //drawLinearChart("#secondDiagram", filtered_data);
+        drawParallelChart("#secondDiagram", data)
     });
 
     async function loadDataCountry(){
         return data = await d3.csv("dataset/suicidesCountryCopy.csv");
     }
     loadDataCountry().then(data =>{
-        drawScatterplot("#secondDiagram", data);
+        //drawScatterplot("#secondDiagram", data);
     });
 
 

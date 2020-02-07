@@ -84,7 +84,7 @@ Academic Year: 2019-2020
 <script>
 
     async function loadData(){
-        return data = await d3.csv("dataset/suicidesCopy.csv");
+        return data = await d3.csv("dataset/fullDataset.csv");
     }
 
     var selectionData = ["dati","disponibili"];
@@ -253,7 +253,7 @@ Academic Year: 2019-2020
     });
 
     async function loadDataCountry(){
-        return data = await d3.csv("dataset/suicidesCountryCopy.csv");
+        return data = await d3.csv("dataset/fullDataset.csv");
     }
     loadDataCountry().then(data =>{
         //drawScatterplot("#secondDiagram", data);
@@ -261,7 +261,7 @@ Academic Year: 2019-2020
 
 
     async function loadDataPca(){
-        return data = await d3.csv("dataset/states_tsne.csv");
+        return data = await d3.csv("dataset/fullDataset.csv");
     }
     loadDataPca().then(data =>{
         filteredData = data.filter(function(row) {

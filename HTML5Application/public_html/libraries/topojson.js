@@ -1,4 +1,10 @@
-// https://github.com/topojson/topojson Version 3.0.2. Copyright 2017 Mike Bostock.
+/**
+ * The script manages the visualization of the map of the world. It has the
+ * facilities to manage the map in the script "filterBar.js". The reference of
+ * the link is: "https://github.com/topojson/topojson" Version 3.0.2. Copyright 
+ * 2017 Mike Bostock.
+ */
+
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :

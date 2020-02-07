@@ -1,16 +1,14 @@
-// https://d3js.org/d3-geo/ v1.11.9 Copyright 2019 Mike Bostock
+/**
+ * The script manages contains the library with facilities to manage the world
+ * map (in the script geoMap.js). The refernces are: "https://d3js.org/d3-geo/" 
+ * Copyright 2019 Mike Bostock and "http://geographiclib.sourceforge.net/".
+ */
+
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array')) :
 typeof define === 'function' && define.amd ? define(['exports', 'd3-array'], factory) :
 (global = global || self, factory(global.d3 = global.d3 || {}, global.d3));
 }(this, function (exports, d3Array) { 'use strict';
-
-// Adds floating point numbers with twice the normal precision.
-// Reference: J. R. Shewchuk, Adaptive Precision Floating-Point Arithmetic and
-// Fast Robust Geometric Predicates, Discrete & Computational Geometry 18(3)
-// 305–363 (1997).
-// Code adapted from GeographicLib by Charles F. F. Karney,
-// http://geographiclib.sourceforge.net/
 
 function adder() {
   return new Adder;

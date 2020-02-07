@@ -1,7 +1,10 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * This script collects the functions to manage all the elements in the filter
+ * bar. In particular it contains the management of:
+ * Brusher bar to select a range of values of HDI, GDP and Population;
+ * World Map to select one or more countries.
+ * Both elements are coordinated-views with the main diagram, but they are
+ * independent each others.
  */
 
 function filters(visualElement, data) {
@@ -296,7 +299,6 @@ function worldMap(visualElement) {
             .on("click",function(d,i) {
                 //console.log(d.properties.name);
             });
-
     }
 
 

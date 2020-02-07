@@ -214,7 +214,7 @@ function drawMainDiagram(visualElement, data) {
     function brushedY() {
         var selection = d3.event.selection;
         selection = [selection[1],selection[0]]
-        console.log(selection)
+        //console.log(selection)
         y.domain(selection.map(y3.invert, y3));
         focus.selectAll(".dot")
             .attr("cx", function(d) { return x(d[header[0]]); })

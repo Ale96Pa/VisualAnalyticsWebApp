@@ -93,83 +93,51 @@ Academic Year: 2019-2020
     loadData().then(data =>{
 
         function changeSecDiagram(button) {
+            var svg;
 
             d3.selectAll(".tablinks").style("background-color", "darkgray");
             d3.select("#"+ button.id).style("background-color", "gray")
 
             if ( button.id == "linearChart"){
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawLinearChart("#secondDiagram", data);
+                svg = drawLinearChart("#secondDiagram", data);
             }
             if (button.id == "scatterPlot"){
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawScatterplot("#secondDiagram", data);
+                svg = drawScatterplot("#secondDiagram", data);
             }
             if(button.id == "parallelCoordinates"){
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawParallelCoordinatesChart("#secondDiagram", data);
+                svg = drawParallelCoordinatesChart("#secondDiagram", data);
             }
             if(button.id == "barChart"){
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawPatternBarchart("#secondDiagram", data);
+                svg = drawPatternBarchart("#secondDiagram", data);
             }
             //TODO: added all diagrams --> CHECK !!
+            return svg;
         }
 
+        var currentSvg;
         document.getElementById("linearChart").onclick = function() {
-            changeSecDiagram(this);
+            currentSvg = changeSecDiagram(this);
         };
         document.getElementById("scatterPlot").onclick = function() {
-            changeSecDiagram(this);
+            currentSvg = changeSecDiagram(this);
         };
         document.getElementById("parallelCoordinates").onclick = function() {
-            changeSecDiagram(this);
+            currentSvg = changeSecDiagram(this);
         };
         document.getElementById("barChart").onclick = function() {
-            changeSecDiagram(this);
+            currentSvg = changeSecDiagram(this);
         };
+        
+        // pick svg and copy in provenance bar
+        var svgs_to_save = []
+        var button = document.getElementById("saveOnProvenance");
+        document.getElementById("saveOnProvenance").onclick=function(){
+            saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
 
-
-        function drawSecondDiagrams(data){
-
-              // pick svg and copy in provenance bar
-            //var button = document.getElementById("saveOnProvenance");
-
-            //document.getElementById("saveOnProvenance").onclick=function(){saveSvgFile("provenanceBar", test, elemToSave);}
-            //console.log(data);
-
-            ////// DRAW PATTERN OF BARCHART
-            /*       filteredData35 = data.filter(function(row) {
-                       return row['age'] == '35-54';
-                   });
-                   filteredData15 = data.filter(function(row) {
-                       return row['age'] == '15-24';
-                   });
-                   filteredData55 = data.filter(function(row) {
-                       return row['age'] == '55-74';
-                   });
-                   filteredData05 = data.filter(function(row) {
-                       return row['age'] == '05-14';
-                   });
-                   filteredData25 = data.filter(function(row) {
-                       return row['age'] == '25-34';
-                   });
-                   filteredData75 = data.filter(function(row) {
-                       return row['age'] == '75+';
-                   });
-
-                   drawBarChart("#secondDiagram", filteredData35);
-                   drawBarChart("#secondDiagram", filteredData15);
-                   drawBarChart("#secondDiagram", filteredData55);
-                   drawBarChart("#secondDiagram", filteredData05);
-                   drawBarChart("#secondDiagram", filteredData25);
-                   drawBarChart("#secondDiagram", filteredData75);
-            */
-            //saveSvgFile("provenanceBar", test);
-
-            drawLinearChart("#secondDiagram", data);
-            //drawScatterplot("#secondDiagram", data);
-        }
 
         var filteredData;
         var male = true,female = true;
@@ -258,16 +226,6 @@ Academic Year: 2019-2020
         }
 
         worldMap("map");
-        //var test = drawParallelCoordinates("#filterBar", data);
-        drawSecondDiagrams(data);
-
-    });
-
-    async function loadDataCountry(){
-        return data = await d3.csv("dataset/fullDataset.csv");
-    }
-    loadDataCountry().then(data =>{
-        //drawScatterplot("#secondDiagram", data);
     });
 
 
@@ -293,10 +251,6 @@ Academic Year: 2019-2020
         //console.log(arr);
     });
 
-    //drawLinearChart("#secondDiagram");
-    //
-    //drawAdditionalDiagram("#secondDiagram", "dataset/suicidesCopy.csv");
-    //
 </script>
 
 </html>

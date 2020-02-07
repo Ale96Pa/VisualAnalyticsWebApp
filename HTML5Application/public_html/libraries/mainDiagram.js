@@ -11,13 +11,16 @@ function drawMainDiagram(visualElement, data) {
         height = 500 - margin.top - margin.bottom,
         height2 = 500 - margin2.top - margin2.bottom;
 
+    //qualitative scale from colorbrewer
+    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",America:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+
 /*Define values to show on axes*/
     var x = d3.scaleLinear().range([0, width]),
         x2 = d3.scaleLinear().range([0, width]),
         x3 = d3.scaleLinear().range([0, width3]),
         y = d3.scaleLinear().range([height, 0]),
         y2 = d3.scaleLinear().range([height2, 0]),
-        y3 = d3.scaleLinear().range([height, 0]);
+        y3 = d3.scaleLinear().range([360, 0]);
 
 /*define axes*/
     var xAxis = d3.axisBottom(x),
@@ -68,34 +71,37 @@ function drawMainDiagram(visualElement, data) {
 
 
         x.domain(d3.extent(data, function (d) {
-            return +d[chiavi[0]];
+            return +d[header[0]];
         }));
         y.domain(d3.extent(data, function (d) {
-            return +d[chiavi[1]];
+            return +d[header[1]];
         }));
         x2.domain(x.domain());
         y2.domain(y.domain());
         x3.domain(x.domain());
         y3.domain(y.domain());
 
+
 // append scatter plot to main chart area
-        var dots = focus.append("g");
+        var dots = focus.append("g").attr("id","dotG");
         dots.attr("clip-path", "url(#clip)");
         dots.selectAll("dot")
             .data(data)
             .enter().append("circle")
             .attr('class', 'dot')
-            .attr("r", 5)
+            .attr("r", function (d){
+                return 6;//(d.num_suicides);
+            })
             .attr("fill", "grey")
             .attr("opacity", ".3")
             .attr("cx", function (d) {
-                return x(+d[chiavi[0]]);
+                return x(+d[header[0]]);
             })
             .attr("cy", function (d) {
-                return y(+d[chiavi[1]]);
+                return y(+d[header[1]]);
             });
             /*.style("fill", function (d) {
-                return color(d[chiavi[2]]);
+                return color(d[header[5]]);
             });*/
 
         focus.append("g")
@@ -125,8 +131,9 @@ function drawMainDiagram(visualElement, data) {
             .style("fill", "white")
             .text("X");
 
-        focus.append("g")
-            .attr("class", "brushT")
+        svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .attr("class","brushT")
             .call(brushTot);
 
 
@@ -140,14 +147,14 @@ function drawMainDiagram(visualElement, data) {
             .attr("r", 3)
             .style("opacity", .5)
             .attr("cx", function (d) {
-                return x3(d[chiavi[0]]);
+                return x3(d[header[0]]);
             })
             .attr("cy", function (d) {
-                return y3(d[chiavi[1]]);
-            })
-            .style("fill", function (d) {
-                return color(d[chiavi[2]]);
+                return y3(d[header[1]]);
             });
+        /*.style("fill", function (d) {
+            return color(d[header[5]]);
+        });*/
 
         context3.append("g")
             .attr("class", "axis axis--y")
@@ -156,7 +163,7 @@ function drawMainDiagram(visualElement, data) {
         context3.append("g")
             .attr("class", "brush")
             .call(brushY)
-            .call(brushY.move, y3.range())
+            .call(brushY.move, (y3.range()).reverse())
             .selectAll("rect")
             .attr("y", 0)
             .attr("height", height);
@@ -171,14 +178,14 @@ function drawMainDiagram(visualElement, data) {
             .attr("r", 3)
             .style("opacity", .5)
             .attr("cx", function (d) {
-                return x2(d[chiavi[0]]);
+                return x2(d[header[0]]);
             })
             .attr("cy", function (d) {
-                return y2(d[chiavi[1]]);
-            })
-            .style("fill", function (d) {
-                return color(d[chiavi[2]]);
+                return y2(d[header[1]]);
             });
+        /*.style("fill", function (d) {
+            return color(d[header[5]]);
+        });*/
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -192,26 +199,26 @@ function drawMainDiagram(visualElement, data) {
     }
 
 
-    chiavi = d3.keys(data[0])
+    header = d3.keys(data[0])
 
     //create brush function redraw scatterplot with selection
     function brushedX() {
         var selection = d3.event.selection;
-        //console.log(selection)
         x.domain(selection.map(x2.invert, x2));
         focus.selectAll(".dot")
-            .attr("cx", function(d) { return x(d[chiavi[0]]); })
-            .attr("cy", function(d) { return y(d[chiavi[1]]); });
+            .attr("cx", function(d) { return x(d[header[0]]); })
+            .attr("cy", function(d) { return y(d[header[1]]); });
         focus.select(".axis--x").call(xAxis);
     }
 
     function brushedY() {
         var selection = d3.event.selection;
-        //console.log(selection)
+        selection = [selection[1],selection[0]]
+        console.log(selection)
         y.domain(selection.map(y3.invert, y3));
         focus.selectAll(".dot")
-            .attr("cx", function(d) { return x(d[chiavi[0]]); })
-            .attr("cy", function(d) { return y(d[chiavi[1]]); });
+            .attr("cx", function(d) { return x(d[header[0]]); })
+            .attr("cy", function(d) { return y(d[header[1]]); });
         focus.select(".axis--y").call(yAxis);
     }
 
@@ -219,13 +226,15 @@ function drawMainDiagram(visualElement, data) {
     function selected() {
         dataSelection = []
         var selection = d3.event.selection;
-
+        //TODO: filter data by selection, then based on checked checkbox (document.getelement()) and with results build secondary diagram
         if (selection != null) {
             focus.selectAll(".dot")
-
                 .style("opacity", function (d) {
-                    if ((x(d[chiavi[0]]) > selection[0][0]) && (x(d[chiavi[0]]) < selection[1][0]) && (y(d[chiavi[1]]) > selection[0][1]) && (y(d[chiavi[1]]) < selection[1][1])) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
                         dataSelection.push(d.id)
+                        console.log(selectionData);
+                        selectionData = selection;
                         return "1.0"
                     } else {
                         return "0.3"
@@ -236,7 +245,7 @@ function drawMainDiagram(visualElement, data) {
         } else {
             focus.selectAll(".dot")
                 .style("fill", function (d) {
-                    return color(d[chiavi[2]]);
+                    return color(d[header[2]]);
                 })
                 .style("opacity", ".3")
         }

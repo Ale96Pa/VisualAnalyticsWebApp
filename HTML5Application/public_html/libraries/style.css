@@ -1,5 +1,5 @@
 body {
-    background-image: linear-gradient(to bottom, black, gray);
+    background-image: linear-gradient(to bottom, darkgray, gray);
     display: table;
     justify-content: left; /*horizontal*/
 }
@@ -49,47 +49,65 @@ body {
 
 #selection {
     display: inline-flex;
+    height: 300px;
     padding-left: 30px;
     padding-right: 20px;
+    bottom: 5px;
     align-content: center;
+
 }
 
 #map {
-    width:500px;
-    margin: 20px 30px 5px 5px;
+    width:550px;
+    margin: 10px 10px 10px 10px;
 }
 
 /*---------------------------------------*/
 
 /* Style the tab */
 .tab {
-    height: 25px;
     overflow: hidden;
-    border: 1px solid white;
-    background-color: dimgray;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
 }
 
-/* Style the buttons that are used to open the tab content */
+/* Style the buttons inside the tab */
 .tab button {
-    display: inline-block;
-    text-align: center;
-    color: #FFFFFF;
-    font-weight: normal;
-    font-family: sans-serif;
-    font-size: 18px;
-    background-color: #878787;
-    border-radius: 8px;
-    padding: 2px 6px;
-    border: 0px solid #FFFFFF;
+    background-color: gray;
+    float: left;
+    border: inherit;
+    outline: none;
     cursor: pointer;
+    padding: 4px 16px;
+    transition: 0.3s;
+    font-size: 17px;
 }
 
-.tab button:hover,
-.tab button:focus,
-.tab button:focus {
-    background-color: #2E2E2E;
-    border-color: #2E2E2E;
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
 }
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+hr {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    bottom: 405px;
+    border-style: inset;
+    border-width: 2px;
+}
+
 
 .provenanceButton {
     position: absolute;

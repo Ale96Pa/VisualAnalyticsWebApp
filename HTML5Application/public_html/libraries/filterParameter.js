@@ -6,41 +6,46 @@
 
 function filters(visualElement, data) {
 
+    var param = [[],[],[]];
+
     function newFilterBar(data, name) {
 
         var header = d3.keys(data[0]);
         var index = header.indexOf(name);
 
         var width = 550,
-            height = 80;
+            height = 95;
 
         var x = d3.scaleLinear()
-            .range([0, 350])
-            .domain(d3.extent(data, function (d) {
+            .range([0, width-150])
+            .domain([0, d3.max(data, function (d) {
                 return +d[name];
-            }));
+            })]);
 
         var xAxis = d3.axisBottom(x);
 
         var brush = d3.brushX()
-            .extent([[0, 0], [350, 20]])
-            .on("brush", brushed);
+            .extent([[0, 0], [width-150, 20]]);
+
+        if (name == 'gdp'){ brush.on("brush", brushedGDP);}
+        else if (name == 'hdi'){ brush.on("brush", brushedHdi);}
+        else if (name == 'population'){ brush.on("brush", brushedPop);}
+
 
         var svg = d3.select(visualElement)
             .append("svg")
             .attr("width", width)
-            .attr("height", height)
-            .attr("transform", "translate( 30 , 10)");
+            .attr("height", height);
 
         svg.append("text")
-            .attr("transform", "translate(50,30)")
+            .attr("transform", "translate(30,30)")
             .style("text-anchor", "middle")
             .style("fill", "white")
             .text(name + ":");
 
         var context = svg.append("g")
             .attr("class", "context")
-            .attr("transform", "translate(100,15)");
+            .attr("transform", "translate(90,15)");
 
         context.append("g")
             .attr("class", "axis axis--x")
@@ -58,18 +63,48 @@ function filters(visualElement, data) {
             .call(brush)
             .call(brush.move, x.range());
 
-        function brushed() {
+        function brushedPop() {
             var selection = d3.event.selection;
-            //console.log(selection.map(x.invert, x));
-            ranges = selection.map(x.invert, x);
-        }
-        
-        //console.log(ranges);
-        //return ranges;
+            param[0] = selection.map(x.invert, x);
+            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            d3.select("#dotG").selectAll(".dot")
+                .attr("fill", function(d){
+                    if (countries.includes(d["country"])){
+                        return "red";}
+                    else{
+                        return "green";}
+                })
+        };
+        function brushedHdi() {
+            var selection = d3.event.selection;
+            param[2] = selection.map(x.invert, x);
+            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            d3.select("#dotG").selectAll(".dot")
+                .attr("fill", function (d) {
+                    if (countries.includes(d["country"])) {
+                        return "red";
+                    } else {
+                        return "green";
+                    }
+                })
+        };
+        function brushedGDP() {
+            var selection = d3.event.selection;
+            param[1] = selection.map(x.invert, x);
+            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            d3.select("#dotG").selectAll(".dot")
+                .attr("fill", function(d){
+                    if (countries.includes(d["country"])){
+                        return "red";}
+                    else{
+                        return "green";}
+                })
+        };
+
     }
 
     newFilterBar(data, "population");
-    newFilterBar(data, "gdp_per_capita");
+    newFilterBar(data, "gdp");
     newFilterBar(data, "hdi");
 }
 
@@ -92,16 +127,24 @@ function filterRangePopulation(data, min, max){
 function filterRangeGdp(data, min, max){
     var filteredData = [];
     for(i=0; i<data.length; i++){
-        hdiValue = parseFloat(data[i].gdp_per_capita);
+        hdiValue = parseFloat(data[i].gdp);
         if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
     }
     return filteredData;
 }
 function filterAllDataBrusher(data, hdiRange, popRange, gdpRange){
-    var filter1 = filterRangeHdi(data, hdiRange[0], hdiRange[1]);
-    var filter2 = filterRangePopulation(filter1, popRange[0], popRange[1]);
-    var filter3 = filterRangeGdp(filter2, gdpRange[0], gdpRange[1]);
-    return filter3;
+
+    var filter = filterRangePopulation(data, popRange[0], popRange[1]);
+    var filteredCountry=[];
+    if (gdpRange.length != 0){
+        filter = filterRangeGdp(filter, gdpRange[0], gdpRange[1]);}
+    if (hdiRange.length != 0){
+        filter = filterRangeHdi(filter, hdiRange[0], hdiRange[1]);}
+
+    for(i=0; i<filter.length; i++){
+        filteredCountry.push(filter[i].country)
+    }
+    return filteredCountry;
 }
 
 function filterSex(data, male, female){
@@ -146,7 +189,7 @@ function filterGeneration(data, genGi, genSilent, genBoomers, genX, genMillenial
     return filteredData;
 }
 
-function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34, 
+function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
         genMillenials, genZ){
                 
@@ -160,10 +203,13 @@ function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
 function worldMap(visualElement) {
 
     var margin = {top: 0, right: 10, bottom: 0, left: 20};
-    var width = 500 ;
+    var width = 550 ;
     var height = width / 2.2;
 
     var projection,path,svg,g;
+    //color from colorbrewer qualitative scale
+    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",America:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+
 
     var zoom = d3.zoom()
         .scaleExtent([1, 9])
@@ -179,7 +225,7 @@ function worldMap(visualElement) {
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr("transform", "translate( 30 , 10)")
+        .attr("transform", "translate( 20 , 10)")
         .style( "border-radius", "10%")
         .call(zoom)
         .append("g")
@@ -218,6 +264,7 @@ function worldMap(visualElement) {
             .attr("title", function(d,i) { return d.properties.name; })
             .style("fill", function(d, i) {
                 if (states.includes(d.properties.name) ){
+                    // TODO: change color based on the continent in array colors
                     return d.properties.color;}
                 else{
                 return "gray";}
@@ -275,6 +322,11 @@ function worldMap(visualElement) {
 
         d3.selectAll(".country").style("stroke-width", 1.5 / s);
 
+    }
+
+
+    function testThings(){
+        console.log(document.data);
     }
 
 }

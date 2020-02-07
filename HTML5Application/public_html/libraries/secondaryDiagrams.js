@@ -1,4 +1,4 @@
-function drawLinearChart(visualElement, data){
+function drawLinearChart(visualElement,data){
 
     // set the dimensions and margins of the graph
     var margin = {top: 25, right: 15, bottom: 35, left: 85},
@@ -65,7 +65,6 @@ function drawLinearChart(visualElement, data){
 
     var color = d3.scaleOrdinal()
         .range(["red", "green", "blue", "yellow", "white", "darkgreen"]);
-
 
     var svg = d3.select(visualElement).append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -239,22 +238,6 @@ function drawBarChart(visualElement, data){
 
 }
 
-
-function drawAdditionalDiagram(visualElement, data) {
-
-    var margin = {top: 5, right: 5, bottom: 5, left: 5},
-        width = 500 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    var svg = d3.select(visualElement)
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
- }
- 
  function drawLinearChart2(visualElement, data){
      
     // 2. Use the margin convention practice 

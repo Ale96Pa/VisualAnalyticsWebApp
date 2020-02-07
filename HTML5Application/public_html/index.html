@@ -20,7 +20,6 @@ Academic Year: 2019-2020
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
     <script type="text/javascript" src="libraries/filterParameter.js"></script>
-
 </head>
 
 <body>
@@ -31,11 +30,11 @@ Academic Year: 2019-2020
         </div>
 
         <div class="tab">
-            <button>Diag1</button>
-            <button>Diag2</button>
-            <button>Diag3</button>
+            <button  id="linearChart" class="tablinks" >LinearChart</button>
+            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
+            <button id="diag3" class="tablinks" >Diag3</button>
         </div>
-        <div id="secondDiagram">
+        <div id="secondDiagram" class=""tabcontent>
             <button class="provenanceButton" id="saveOnProvenance">Save on provenance</button>
         </div>
     </div>
@@ -44,32 +43,34 @@ Academic Year: 2019-2020
         <div id="filters">
             <p id="pop"></p>
         </div>
+
+        <div id="map">
+        </div>
+        <hr>
         <div id="selection">
             <div id="sexContainer" class="container" transform="translate( 30 , 10)">
                 <legend>Sex</legend>
-                    <label>Male<input id="male" type="checkbox" checked></label>
-                    <label>Female<input id="female" type="checkbox" checked></label>
+                <label>Male<input id="male" type="checkbox" checked></label>
+                <label>Female<input id="female" type="checkbox" checked></label>
             </div>
             <div id="ageContainer" class="container" transform="translate( 30 , 10)">
                 <legend>Age</legend>
-                    <label>05-14 years<input id="5-14" type="checkbox" checked></label>
-                    <label>15-24 years<input id="15-24" type="checkbox" checked></label>
-                    <label>25-34 years<input id="25-34" type="checkbox" checked></label>
-                    <label>35-54 years<input id="35-54" type="checkbox" checked></label>
-                    <label>55-74 years<input id="55-74" type="checkbox" checked></label>
-                    <label>over 75 years<input id="75+" type="checkbox" checked></label>
+                <label>05-14 years<input id="5-14" type="checkbox" checked></label>
+                <label>15-24 years<input id="15-24" type="checkbox" checked></label>
+                <label>25-34 years<input id="25-34" type="checkbox" checked></label>
+                <label>35-54 years<input id="35-54" type="checkbox" checked></label>
+                <label>55-74 years<input id="55-74" type="checkbox" checked></label>
+                <label>over 75 years<input id="75+" type="checkbox" checked></label>
             </div>
             <div id="generationContainer" class="container" transform="translate( 30 , 10)">
-                <legend>Generation</legend> 
-                    <label>G.I. generation (born: 1900 to 1924)<input id="genGI" type="checkbox" checked></label>
-                    <label>Silent generation (born: 1925 to 1945)<input id="genSilent" type="checkbox" checked></label>
-                    <label>Baby Boomers (born: 1946 to 1964)<input id="genBoomers" type="checkbox" checked></label>
-                    <label>Generation X (born: 1965 to 1979)<input id="genX" type="checkbox" checked></label>
-                    <label>Millenials (born: 1980 to 2000)<input id="genMillenials" type="checkbox" checked></label>
-                    <label>Generation Z (born post 2000)<input id="genZ" type="checkbox" checked></label>
+                <legend>Generation</legend>
+                <label>G.I. generation (born: 1900 to 1924)<input id="genGI" type="checkbox" checked></label>
+                <label>Silent generation (born: 1925 to 1945)<input id="genSilent" type="checkbox" checked></label>
+                <label>Baby Boomers (born: 1946 to 1964)<input id="genBoomers" type="checkbox" checked></label>
+                <label>Generation X (born: 1965 to 1979)<input id="genX" type="checkbox" checked></label>
+                <label>Millenials (born: 1980 to 2000)<input id="genMillenials" type="checkbox" checked></label>
+                <label>Generation Z (born post 2000)<input id="genZ" type="checkbox" checked></label>
             </div>
-        </div>
-        <div id="map">
         </div>
     </div>
 
@@ -79,217 +80,180 @@ Academic Year: 2019-2020
 </body>
 
 <script>
-    var elemToSave = [];
+
     async function loadData(){
         return data = await d3.csv("dataset/suicidesCopy.csv");
     }
+
+    var selectionData = ["dati","disponibili"];
+
     loadData().then(data =>{
-        
-        //filters("#filters", data);
-        var name = "population";
-        var ranges = [];
-        var header = d3.keys(data[0]);
-        var index = header.indexOf(name);
 
-        var width = 550,
-            height = 80;
+        function changeSecDiagram(button) {
 
-        var x = d3.scaleLinear()
-            .range([0, 350])
-            .domain(d3.extent(data, function (d) {
-                return +d[name];
-            }));
+            d3.selectAll(".tablinks").style("background-color", "darkgray");
+            d3.select("#"+ button.id).style("background-color", "gray")
 
-        var xAxis = d3.axisBottom(x);
-
-        var brush = d3.brushX()
-            .extent([[0, 0], [350, 20]])
-            .on("brush", brushed);
-
-        var svg = d3.select("#filters")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("transform", "translate( 30 , 10)");
-
-        svg.append("text")
-            .attr("transform", "translate(50,30)")
-            .style("text-anchor", "middle")
-            .style("fill", "white")
-            .text(name + ":");
-
-        var context = svg.append("g")
-            .attr("class", "context")
-            .attr("transform", "translate(100,15)");
-
-        context.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0,17)")
-            .attr("fill", "white")
-            .call(xAxis)
-            .selectAll("text")
-            .attr("y", 0)
-            .attr("x", 9)
-            .attr("transform", "rotate(40)")
-            .style("text-anchor", "start");
-
-        context.append("g")
-            .attr("class", "brush")
-            .call(brush)
-            .call(brush.move, x.range());
-
-        function brushed() {
-            var selection = d3.event.selection;
-            //console.log(selection.map(x.invert, x));
-            ranges = selection.map(x.invert, x);
-            var min = ranges[0];
-            var max = ranges[1];
-            document.getElementById("pop").innerHTML = min;
+            if ( button.id == "linearChart"){
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawLinearChart("#secondDiagram", data);
+            }
+            if (button.id == "scatterPlot"){
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawScatterplot("#secondDiagram", data);
+                console.log(selectionData);
+            }
+            //TODO: add others diagrams
         }
 
-        //console.log(document.getElementById("pop").innerHTML);
+        document.getElementById("linearChart").onclick = function() {
+            changeSecDiagram(this);
+        };
+        document.getElementById("scatterPlot").onclick = function() {
+            changeSecDiagram(this);
+        };
+        document.getElementById("diag3").onclick = function() {
+            changeSecDiagram(this);
+        };
 
-        //newFilterBar(data, "population");
-        //newFilterBar(data, "gdp_per_capita");
-        //newFilterBar(data, "hdi");
-        
-        
-        
-        
-        
-        
-        
-        
-        var male = true;
+
+        function drawSecondDiagrams(data){
+
+              // pick svg and copy in provenance bar
+            //var button = document.getElementById("saveOnProvenance");
+
+            //document.getElementById("saveOnProvenance").onclick=function(){saveSvgFile("provenanceBar", test, elemToSave);}
+            //console.log(data);
+
+            ////// DRAW PATTERN OF BARCHART
+            /*       filteredData35 = data.filter(function(row) {
+                       return row['age'] == '35-54';
+                   });
+                   filteredData15 = data.filter(function(row) {
+                       return row['age'] == '15-24';
+                   });
+                   filteredData55 = data.filter(function(row) {
+                       return row['age'] == '55-74';
+                   });
+                   filteredData05 = data.filter(function(row) {
+                       return row['age'] == '05-14';
+                   });
+                   filteredData25 = data.filter(function(row) {
+                       return row['age'] == '25-34';
+                   });
+                   filteredData75 = data.filter(function(row) {
+                       return row['age'] == '75+';
+                   });
+
+                   drawBarChart("#secondDiagram", filteredData35);
+                   drawBarChart("#secondDiagram", filteredData15);
+                   drawBarChart("#secondDiagram", filteredData55);
+                   drawBarChart("#secondDiagram", filteredData05);
+                   drawBarChart("#secondDiagram", filteredData25);
+                   drawBarChart("#secondDiagram", filteredData75);
+            */
+            //saveSvgFile("provenanceBar", test);
+
+            drawLinearChart("#secondDiagram", data);
+            //drawScatterplot("#secondDiagram", data);
+        }
+
+        var filteredData;
+        var male = true,female = true;
+        var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
+        var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
+
         document.getElementById("male").onclick = function() {
             if ( this.checked ) {male=true;}
             else {male=false;}
+            changeSecondOnCheckBox(data)
         };
-        var female = true;
         document.getElementById("female").onclick = function() {
             if ( this.checked ) {female = true;}
             else {female = false;}
+            changeSecondOnCheckBox(data)
         };
-        
-        var age5_14 = true;
         document.getElementById("5-14").onclick = function() {
             if ( this.checked ) {age5_14 = true;}
             else {age5_14 = false;}
+            changeSecondOnCheckBox(data)
         };
-        var age15_24 = true;
         document.getElementById("15-24").onclick = function() {
             if ( this.checked ) {age15_24 = true;}
             else {age15_24 = false;}
+            changeSecondOnCheckBox(data)
         };
-        var age25_34=true;
         document.getElementById("25-34").onclick = function() {
             if ( this.checked ) {age25_34=true;}
             else {age25_34=false;}
+            changeSecondOnCheckBox(data)
         };
-        var age35_54 = true;
         document.getElementById("35-54").onclick = function() {
             if ( this.checked ) {age35_54 = true;}
             else {age35_54 = false;}
+            changeSecondOnCheckBox(data)
         };
-        var age55_74 = true;
         document.getElementById("55-74").onclick = function() {
             if ( this.checked ) {age55_74 = true;}
             else {age55_74 = false;}
+            changeSecondOnCheckBox(data)
         };
-        var age75 = true;
         document.getElementById("75+").onclick = function() {
             if ( this.checked ) {age75 = true;}
             else {age75 = false;}
+            changeSecondOnCheckBox(data)
         };
-        
-        var genGi = true;
         document.getElementById("genGI").onclick = function() {
             if ( this.checked ) {genGi = true;}
             else {genGi = false;}
+            changeSecondOnCheckBox(data)
         };
-        var genSilent = true;
         document.getElementById("genSilent").onclick = function() {
             if ( this.checked ) {genSilent = true;}
             else {genSilent = false;}
+            changeSecondOnCheckBox(data)
         };
-        var genBoomers = true;
         document.getElementById("genBoomers").onclick = function() {
             if ( this.checked ) {genBoomers = true;}
             else {genBoomers = false;}
+            changeSecondOnCheckBox(data)
         };
-        var genX = true;
         document.getElementById("genX").onclick = function() {
             if ( this.checked ) {genX = true;}
             else {genX = false;}
+            changeSecondOnCheckBox(data)
         };
-        var genMillenials = true;
         document.getElementById("genMillenials").onclick = function() {
             if ( this.checked ) {genMillenials = true;}
             else {genMillenials = false;}
+            changeSecondOnCheckBox(data)
         };
-        var genZ = true;
+
         document.getElementById("genZ").onclick = function() {
             if ( this.checked ) {genZ = true;}
             else {genZ = false;}
+            d3.select("#secondDiagram").selectAll("svg").remove();
+            changeSecondOnCheckBox(data)
         };
-        
-        var hdiE = [0, 0.6];
-        var popE = [0, 10000];
-        var gdpE = [251, 1000];
-        var filterBrush = filterAllDataBrusher(data, hdiE, popE, gdpE);
-        console.log(filterBrush);
-        
-        //TODO: vedere quando e come prendere i valori delle checkbox
-        var filtered_data = filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34, 
-        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
-        genMillenials, genZ);
-        //console.log(filtered_data);
-                
+
+        function changeSecondOnCheckBox(data){
+            filteredData = filterAllDataCheckbox(selectionData, male, female, age5_14, age15_24, age25_34,
+                age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                genMillenials, genZ);
+            console.log(selectionData);
+        }
+
         worldMap("map");
         //var test = drawParallelCoordinates("#filterBar", data);
+        drawSecondDiagrams(data);
 
-        // pick svg and copy in provenance bar
-        //var button = document.getElementById("saveOnProvenance");
-
-        //document.getElementById("saveOnProvenance").onclick=function(){saveSvgFile("provenanceBar", test, elemToSave);}
-        //console.log(data);
-
-        ////// DRAW PATTERN OF BARCHART
- /*       filteredData35 = data.filter(function(row) {
-            return row['age'] == '35-54';
-        });
-        filteredData15 = data.filter(function(row) {
-            return row['age'] == '15-24';
-        });
-        filteredData55 = data.filter(function(row) {
-            return row['age'] == '55-74';
-        });
-        filteredData05 = data.filter(function(row) {
-            return row['age'] == '05-14';
-        });
-        filteredData25 = data.filter(function(row) {
-            return row['age'] == '25-34';
-        });
-        filteredData75 = data.filter(function(row) {
-            return row['age'] == '75+';
-        });
-
-        drawBarChart("#secondDiagram", filteredData35);
-        drawBarChart("#secondDiagram", filteredData15);
-        drawBarChart("#secondDiagram", filteredData55);
-        drawBarChart("#secondDiagram", filteredData05);
-        drawBarChart("#secondDiagram", filteredData25);
-        drawBarChart("#secondDiagram", filteredData75);
- */       //saveSvgFile("provenanceBar", test);
-
-        drawLinearChart("#secondDiagram", filtered_data);
     });
 
     async function loadDataCountry(){
         return data = await d3.csv("dataset/suicidesCountryCopy.csv");
     }
     loadDataCountry().then(data =>{
-        drawScatterplot("#secondDiagram", data);
+        //drawScatterplot("#secondDiagram", data);
     });
 
 
@@ -301,7 +265,7 @@ Academic Year: 2019-2020
             return row['year'] == '1990';
         });
         drawMainDiagram("#mainDiagram", filteredData);
-
+        filters("#filters", filteredData);
         /*
         var colX = data.map(function(d) { return d.X })
         var colY = data.map(function(d) { return d.Y })

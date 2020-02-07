@@ -35,7 +35,8 @@ Academic Year: 2019-2020
         <div class="tab">
             <button  id="linearChart" class="tablinks" >LinearChart</button>
             <button id="scatterPlot" class="tablinks" >Scatterplot</button>
-            <button id="diag3" class="tablinks" >Diag3</button>
+            <button id="parallelCoordinates" class="tablinks" >ParallelCoordinatesChart</button>
+            <button id="barChart" class="tablinks" >barChart</button>
         </div>
         <div id="secondDiagram" class="tabcontents">
             <button class="provenanceButton" id="saveOnProvenance">Save on provenance</button>
@@ -103,9 +104,16 @@ Academic Year: 2019-2020
             if (button.id == "scatterPlot"){
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 drawScatterplot("#secondDiagram", data);
-                console.log(selectionData);
             }
-            //TODO: add others diagrams
+            if(button.id == "parallelCoordinates"){
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawParallelCoordinatesChart("#secondDiagram", data);
+            }
+            if(button.id == "barChart"){
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawPatternBarchart("#secondDiagram", data);
+            }
+            //TODO: added all diagrams --> CHECK !!
         }
 
         document.getElementById("linearChart").onclick = function() {
@@ -114,7 +122,10 @@ Academic Year: 2019-2020
         document.getElementById("scatterPlot").onclick = function() {
             changeSecDiagram(this);
         };
-        document.getElementById("diag3").onclick = function() {
+        document.getElementById("parallelCoordinates").onclick = function() {
+            changeSecDiagram(this);
+        };
+        document.getElementById("barChart").onclick = function() {
             changeSecDiagram(this);
         };
 

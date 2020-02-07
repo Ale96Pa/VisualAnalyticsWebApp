@@ -168,7 +168,7 @@ function drawScatterplot(visualElement, data){
             })
             .attr("r", 5)
             .attr("stroke", "black")
-            .attr("fill", "darkgreen");
+            .style("fill", "darkgreen");
 
 
     //x axis
@@ -214,7 +214,7 @@ function drawBarChart(visualElement, data){
     g.append("g")
     .call(d3.axisLeft(y))
     .append("text")
-    .attr("fill", "white")
+    .style("fill", "white")
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
     .attr("dy", "0.71em")

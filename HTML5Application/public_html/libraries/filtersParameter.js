@@ -10,6 +10,7 @@
 function filters(visualElement, data) {
 
     var param = [[],[],[]];
+    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
     function newFilterBar(data, name) {
 
@@ -22,7 +23,7 @@ function filters(visualElement, data) {
         var x = d3.scaleLinear()
             .range([0, width-150])
             .domain([0, d3.max(data, function (d) {
-                return +d[name];
+                return d[name];
             })]);
 
         var xAxis = d3.axisBottom(x);
@@ -30,9 +31,13 @@ function filters(visualElement, data) {
         var brush = d3.brushX()
             .extent([[0, 0], [width-150, 20]]);
 
-        if (name == 'gdp'){ brush.on("brush", brushedGDP);}
-        else if (name == 'hdi'){ brush.on("brush", brushedHdi);}
-        else if (name == 'population'){ brush.on("brush", brushedPop);}
+        if (name == 'gdp_per_year'){
+            name="gdp";
+            brush.on("brush", brushedGDP);}
+        else if (name == 'hdi'){
+            brush.on("brush", brushedHdi);}
+        else if (name == 'population'){
+            brush.on("brush", brushedPop);}
 
 
         var svg = d3.select(visualElement)
@@ -53,7 +58,7 @@ function filters(visualElement, data) {
         context.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", "translate(0,17)")
-            .attr("fill", "white")
+            .style("fill", "white")
             .call(xAxis)
             .selectAll("text")
             .attr("y", 0)
@@ -70,44 +75,46 @@ function filters(visualElement, data) {
             var selection = d3.event.selection;
             param[0] = selection.map(x.invert, x);
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            console.log(selection)
             d3.select("#dotG").selectAll(".dot")
-                .attr("fill", function(d){
+                .style("fill", function(d){
                     if (countries.includes(d["country"])){
-                        return "red";}
+                        return colors[d["continent"]];}
                     else{
-                        return "green";}
+                        return "gray";}
                 })
         };
         function brushedHdi() {
             var selection = d3.event.selection;
             param[2] = selection.map(x.invert, x);
+            console.log(selection)
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
             d3.select("#dotG").selectAll(".dot")
-                .attr("fill", function (d) {
-                    if (countries.includes(d["country"])) {
-                        return "red";
-                    } else {
-                        return "green";
-                    }
+                .style("fill", function (d) {
+                    if (countries.includes(d["country"])){
+                        return colors[d["continent"]];}
+                    else{
+                        return "gray";}
                 })
         };
         function brushedGDP() {
             var selection = d3.event.selection;
             param[1] = selection.map(x.invert, x);
+            console.log(selection)
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
             d3.select("#dotG").selectAll(".dot")
-                .attr("fill", function(d){
+                .style("fill", function(d){
                     if (countries.includes(d["country"])){
-                        return "red";}
+                        return colors[d["continent"]];}
                     else{
-                        return "green";}
+                        return "gray";}
                 })
         };
 
     }
 
     newFilterBar(data, "population");
-    newFilterBar(data, "gdp");
+    newFilterBar(data, "gdp_per_year");
     newFilterBar(data, "hdi");
 }
 
@@ -130,7 +137,7 @@ function filterRangePopulation(data, min, max){
 function filterRangeGdp(data, min, max){
     var filteredData = [];
     for(i=0; i<data.length; i++){
-        hdiValue = parseFloat(data[i].gdp);
+        hdiValue = parseFloat(data[i].gdp_per_capita);
         if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
     }
     return filteredData;
@@ -211,7 +218,7 @@ function worldMap(visualElement) {
 
     var projection,path,svg,g;
     //color from colorbrewer qualitative scale
-    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",America:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
 
     var zoom = d3.zoom()
@@ -243,7 +250,7 @@ function worldMap(visualElement) {
 
     var div = d3.select("#"+visualElement)
         .append("div").attr("class", "tooltip")
-        .attr("visibility","hidden");
+        .style("visibility","hidden");
 
     g = svg.append("g");
 
@@ -263,15 +270,18 @@ function worldMap(visualElement) {
         country.enter().insert("path")
             .attr("class", "country")
             .attr("d", path)
-            .attr("id", function(d,i) { return d.id; })
             .attr("title", function(d,i) { return d.properties.name; })
             .style("fill", function(d, i) {
-                if (states.includes(d.properties.name) ){
-                    // TODO: change color based on the continent in array colors
-                    return d.properties.color;}
+                if (states.includes(d.properties.name)){
+                        for(i=0; i<data.length; i++){
+                            if(male){if(data[i].country == d.properties.name){
+                                return colors[data[i].continent];}}
+                        }
+                   }//TODO: add check over null values
                 else{
-                return "gray";}
+                    return "gray";}
             })
+            .style("stroke-width","1.5")
             .on("mouseover", function(d,i) {
                 d3.select(this)
                     .transition()
@@ -296,8 +306,15 @@ function worldMap(visualElement) {
                     .duration('50')
                     .style("visibility", "hidden");
             })
-            .on("click",function(d,i) {
-                //console.log(d.properties.name);
+            .on("click",function(m) {
+                d3.select("#dotG").selectAll(".dot")
+                    .style("fill", function(d){
+                        console.log(d)
+                        if (d.country == m.properties.name){
+                            return colors[d.continent];}
+                        else{
+                            return "#000";}
+                    })
             });
     }
 

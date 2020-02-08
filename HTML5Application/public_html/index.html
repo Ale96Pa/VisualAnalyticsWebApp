@@ -118,26 +118,27 @@ Academic Year: 2019-2020
             return svg;
         }
 
-        var currentSvg;
+        var currentSvg = null;
+        var svgs_to_save = []
+        var buttonSaveProvenance = document.getElementById("saveOnProvenance");
+        
         document.getElementById("linearChart").onclick = function() {
             currentSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("scatterPlot").onclick = function() {
             currentSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("parallelCoordinates").onclick = function() {
             currentSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("barChart").onclick = function() {
             currentSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+            console.log(currentSvg);
         };
-        
-        // pick svg and copy in provenance bar
-        var svgs_to_save = []
-        var button = document.getElementById("saveOnProvenance");
-        document.getElementById("saveOnProvenance").onclick=function(){
-            saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
-
 
         var filteredData;
         var male = true,female = true;

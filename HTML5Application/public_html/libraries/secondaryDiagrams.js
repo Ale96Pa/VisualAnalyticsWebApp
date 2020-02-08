@@ -34,7 +34,7 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     // append the svg object to the body of the page
     var svg = d3.select(visualElement)
         .append("svg")
-        .attr("id", "svgGraph")
+        .attr("id", "svgParallel")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -120,7 +120,8 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     svg.selectAll("text")
         .style("fill", "white");
 
-    //return svg;
+    var svgData = document.getElementById("svgParallel");
+    return svgData;
 }
 
 function drawLinearChart(visualElement,data){
@@ -203,6 +204,7 @@ function drawLinearChart(visualElement,data){
         .range(["red", "green", "blue", "yellow", "white", "darkgreen"]);
 
     var svg = d3.select(visualElement).append("svg")
+        .attr("id", "svgLinear")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -235,7 +237,7 @@ function drawLinearChart(visualElement,data){
             .attr("font-size"," small")
             .attr('y', function(){ return (index * 20) + 12;})
             .text(legendKeys[index]);
-    })
+    });
     // Add the X Axis
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -247,7 +249,8 @@ function drawLinearChart(visualElement,data){
         .call(d3.axisLeft(y))
         .attr("cy", years);
 
-    //return svg;
+    var svgData = document.getElementById("svgLinear");
+    return svgData;
 }
 
 
@@ -288,6 +291,7 @@ function drawScatterplot(visualElement, data){
 */
     //create svg element
     var svg = d3.select(visualElement).append("svg")
+        .attr("id", "scatterSecondary")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -321,7 +325,8 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(-5,0)")
             .call(yAxis);
     
-    //return svg;
+    var svgData = document.getElementById("scatterSecondary");
+    return svgData;
 }
 
 function drawBarChart(visualElement, dataFull){
@@ -332,7 +337,7 @@ function drawBarChart(visualElement, dataFull){
         width = 150 - margin.left - margin.right,
         height = 150 - margin.top - margin.bottom;
     
-    var svg = d3.select(visualElement).append("svg");
+    var svg = d3.select(visualElement).append("svg").attr("id", "svgBarchart");
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
     var x = d3.scaleBand()
@@ -379,7 +384,8 @@ function drawBarChart(visualElement, dataFull){
     .attr("width", x.bandwidth())
     .attr("height", function (d) {return height - y(Number(d.tot_suicides));});
     
-    //return svg;
+    var svgData = document.getElementById("svgBarchart");
+    return svgData;
 }
 
 function drawPatternBarchart(visualElement, dataFull){
@@ -408,6 +414,12 @@ function drawPatternBarchart(visualElement, dataFull){
     var svg5 = drawBarChart(visualElement, filteredData55);
     var svg6 = drawBarChart(visualElement, filteredData75);
     
-    //var tot = svg1.append(svg2).append(svg3).append(svg4).append(svg5).append(svg6);
-    //return tot;
+    var patternBars = [];
+    patternBars.push(svg1);
+    patternBars.push(svg2);
+    patternBars.push(svg3);
+    patternBars.push(svg4);
+    patternBars.push(svg5);
+    patternBars.push(svg6);
+    return patternBars;
 }

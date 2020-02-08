@@ -15,30 +15,30 @@ function calculateRangeArray(numDiffValue, height){
     rangeArray.push(height);
     return rangeArray;
 }
+
 function drawParallelCoordinatesChart(visualElement,dataFull){
     
     // dataFull is all data with null values, so i filter them obtaining data
     data = filterOutNullRecords(dataFull);
-    
-    //TODO: center better
-    var margin = {top: 50, right: 10, bottom: 50, left: 20},
-    width = 1200 - margin.left - margin.right,
-    height = 420 - margin.top - margin.bottom;
+
+    var margin = {top: 30, right: 15, bottom: 35, left: 45},
+        width = 1150 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    var svg = d3.select(visualElement).append("svg")
+        .attr("id", "svgParallel")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
 
     var rangeSex = calculateRangeArray(2, height);
     var rangeAge = calculateRangeArray(6, height);
     var rangeGeneration = calculateRangeArray(6, height);
     var rangeSuic = calculateRangeArray(9, height);;
     var rangeHdi = calculateRangeArray(9, height);;
-    
-    // append the svg object to the body of the page
-    var svg = d3.select(visualElement)
-        .append("svg")
-        .attr("id", "svgGraph")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
@@ -52,22 +52,40 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     var y = {};
     for (i in dimensions) {
         name = dimensions[i];
-        if (name === "age"){range = rangeAge;}
-        if (name === "sex"){range = rangeSex;}
-        if (name === "generation"){range = rangeGeneration;}
-        if (name === "suicide_100kpop"){range = rangeSuic;}
-        if (name === "hdi"){range = rangeHdi;}
 
-        y[name] = d3.scaleOrdinal()
-            .range(range)
-            .domain(data.map(function(d) {return d[name];}).sort());
+        if (name === "hdi"){
+            y[name] = d3.scaleLinear()
+            .domain(d3.extent(data, function (d) {
+                return +d[name];
+            }))
+            .range([height, 0]);}
+        if (name === "suicide_100kpop") {
+            y[name] = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) {
+                    return +d[name];
+                }))
+                .range([height, 0]);}
+
+        if (name === "generation"){
+            range = rangeGeneration
+            y[name] = d3.scaleOrdinal()
+                .range(range)
+                .domain(data.map(function(d) {return d[name];}).sort());}
+        if (name === "sex"){
+            range = rangeSex
+            y[name] = d3.scaleOrdinal()
+                .range(range)
+                .domain(data.map(function(d) {return d[name];}).sort());}
+        if (name === "age"){
+            range = rangeAge
+            y[name] = d3.scaleOrdinal()
+                .range(range)
+                .domain(data.map(function(d) {return d[name];}).sort());}
+
     }
 
-    // Build the X scale -> it find the best position for each Y axis
-    x = d3.scalePoint()
-        .range([0, width])
-        .padding(1)
-        .domain(dimensions);
+    // Build the X scale -> it find the best position for each - 0.21',Y axis
+     x = d3.scaleBand().rangeRound([0, width-125]).padding(.1).domain(dimensions);
 
     // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
     function path(d) {
@@ -78,38 +96,31 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     svg.selectAll("myPath")
         .data(data)
         .enter().append("path")
+        .attr("class","innerPath")
         .attr("d",  path)
         .style("fill", "none")
-        .style("stroke", "#69b3a2")
+        .style("stroke", "#2ca25f")
         .style("opacity", 0.5);
 
-    //TODO: capire come settare bene questi due array in base ai valori di hdi e suic/100k in input
-    var tickHdi = ['0 - 0.11','0.12 - 0.21','0.22 - 0.31','0.32 - 0.41', '0.42 - 0.51',
-        '0.52 - 0.61','0.62 - 0.71','0.72 - 0.81','0.82 - 0.91', '0.92 - 1', '1'];
-    var tickSuic = ['0 - 20','20.1 - 40','40.1 - 60','60.1 - 80', '80.1 - 100',
-        '100.1 - 120','120.1 - 140','140.1 - 160','160.1 - 180', '180.1 - 200', '200+'];
-    // Draw the axis:
+
     svg.selectAll("myAxis")
         // For each dimension of the dataset I add a 'g' element:
         .data(dimensions).enter()
         .append("g")
         // I translate this element to its right position on the x axis
-        .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+        .attr("transform", function(d) {
+            return "translate(" + x(d) + ")"; })
         // And I build the axis with the call function
         .each(function(d) {
             if (d === "age"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
             if (d === "sex"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
             if (d === "generation"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
             if (d === "suicide_100kpop"){d3.select(this).call(d3.axisLeft()
-                                            .scale(y[d])
-                                            //.ticks(10)
-                                            .tickFormat(function(d,i){
-                                                return tickSuic[i]}));}
+                                            .scale(y[d]))}
+
             if (d === "hdi"){d3.select(this).call(d3.axisLeft()
-                                            .scale(y[d])
-                                            //.ticks(10)
-                                            .tickFormat(function(d,i){
-                                                return tickHdi[i]}));}
+                                            .scale(y[d]))}
+
         })
         // Add axis title
         .append("text")
@@ -120,6 +131,8 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     svg.selectAll("text")
         .style("fill", "white");
 }
+
+
 
 function drawLinearChart(visualElement,data){
 

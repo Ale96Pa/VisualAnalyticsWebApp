@@ -75,7 +75,6 @@ function filters(visualElement, data) {
             var selection = d3.event.selection;
             param[0] = selection.map(x.invert, x);
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
-            console.log(selection)
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
                     if (countries.includes(d["country"])){
@@ -87,7 +86,6 @@ function filters(visualElement, data) {
         function brushedHdi() {
             var selection = d3.event.selection;
             param[2] = selection.map(x.invert, x);
-            console.log(selection)
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function (d) {
@@ -100,8 +98,8 @@ function filters(visualElement, data) {
         function brushedGDP() {
             var selection = d3.event.selection;
             param[1] = selection.map(x.invert, x);
-            console.log(selection)
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            console.log(countries)
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
                     if (countries.includes(d["country"])){
@@ -267,20 +265,11 @@ function worldMap(visualElement) {
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
-        country.enter().insert("path")
+        var blankMap = country.enter().insert("path")
             .attr("class", "country")
             .attr("d", path)
             .attr("title", function(d,i) { return d.properties.name; })
-            .style("fill", function(d, i) {
-                if (states.includes(d.properties.name)){
-                        for(i=0; i<data.length; i++){
-                            if(male){if(data[i].country == d.properties.name){
-                                return colors[data[i].continent];}}
-                        }
-                   }//TODO: add check over null values
-                else{
-                    return "gray";}
-            })
+            .style("fill","gray")
             .style("stroke-width","1.5")
             .on("mouseover", function(d,i) {
                 d3.select(this)
@@ -316,6 +305,18 @@ function worldMap(visualElement) {
                             return "#000";}
                     })
             });
+
+
+        blankMap.style("fill", function(d, i) {
+            if (states.includes(d.properties.name)){
+                for(i=0; i<data.length; i++){
+                    if(male){if(data[i].country == d.properties.name){
+                        return colors[data[i].continent];}}
+                }
+            }//TODO: add check over null values
+            else{
+                return "gray";}
+        });
     }
 
 

@@ -71,13 +71,11 @@ function drawMainDiagram(visualElement, data) {
             .attr("class", "context")
             .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
+        var dom = d3.extent(data, function (d) {return +d[header[0]];})
+        x.domain([dom[0]-2,dom[1]+2]);
+        dom = d3.extent(data, function (d) {return +d[header[1]];})
+        y.domain([dom[0]-2,dom[1]+2]);
 
-        x.domain(d3.extent(data, function (d) {
-            return +d[header[0]];
-        }));
-        y.domain(d3.extent(data, function (d) {
-            return +d[header[1]];
-        }));
         x2.domain(x.domain());
         y2.domain(y.domain());
         x3.domain(x.domain());
@@ -98,8 +96,7 @@ function drawMainDiagram(visualElement, data) {
             .enter().append("circle")
             .attr('class', 'dot')
             .attr("r", function (d){
-                console.log(((d.tot_suicides)*100000)/(d.population))
-                return (((d.tot_suicides)*100000)/(d.population))*(0.4);
+                return (((d.tot_suicides)*100000)/(d.population));
             })
             .attr("opacity", ".3")
             .attr("cx", function (d) {
@@ -254,7 +251,6 @@ function drawMainDiagram(visualElement, data) {
 
 
     function selected() {
-        dataSelection = []
         var selection = d3.event.selection;
         //TODO: filter data by selection, then based on checked checkbox (document.getelement()) and with results build secondary diagram
         if (selection != null) {
@@ -262,7 +258,6 @@ function drawMainDiagram(visualElement, data) {
                 .style("opacity", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                         (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        dataSelection.push(d.id)
                         console.log(selectionData);
                         selectionData = selection;
                         return "1.0"
@@ -279,12 +274,23 @@ function drawMainDiagram(visualElement, data) {
                 })
                 .style("opacity", ".3")
         }
+
+        d3.select("#svgParallel").selectAll(".innerPath")
+            .style("stroke", "2ca25f");
+
+        d3.select("#svgParallel").selectAll(".innerPath")
+            .style("stroke",function(d){
+                if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                    (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                    return "#1f78b4"
+                }
+                else
+                {
+                    return "#2ca25f"
+                }
+            })
     }
 
-    /*    var l = data.length;
-    for (i = 0; i < l; i++) {
-        data[i].id = i
-    }*/
 
     drawScatter(data)
 

@@ -121,17 +121,6 @@ svg {
     font: 10px sans-serif;
 }
 
-.background path {
-    fill: none;
-    stroke: #ddd;
-    shape-rendering: crispEdges;
-}
-
-.foreground path {
-    fill: none;
-    stroke: steelblue;
-}
-
 .brush .extent {
     fill-opacity: .3;
     stroke: #fff;
@@ -159,13 +148,13 @@ svg {
 div.tooltip {
     position: absolute;
     text-align: center;
+    font: 10px sans-serif;
     padding: .3rem;
     background: #FFFFFF;
     color: #313639;
     border: 1px solid black;
     border-radius: 2px;
     pointer-events: none;
-    font-size: 0.9rem;
 }
 
 /*---------------------------------------*/

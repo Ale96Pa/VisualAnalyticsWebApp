@@ -37,9 +37,9 @@ Academic Year: 2019-2020
         </div>
 
         <div class="tab">
-            <button  id="linearChart" class="tablinks" >LinearChart</button>
-            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
             <button id="parallelCoordinates" class="tablinks" >ParallelCoordinatesChart</button>
+            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
+            <button  id="linearChart" class="tablinks" >LinearChart</button>
             <button id="barChart" class="tablinks" >barChart</button>
         </div>
         <div id="secondDiagram" class="tabcontents">
@@ -87,18 +87,32 @@ Academic Year: 2019-2020
 </body>
 
 <script>
-    
-    
+
 
     async function loadData(){
         return data = await d3.csv("dataset/fullDataset.csv");
     }
 
-    var selectionData = ["dati","disponibili"];
+    var selectionData = [];
+    var rangeBrushes =[[],[],[]];
+    var selectedCountries=[];
+    var checkedData;
+    var male = true,female = true;
+    var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
+    var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
+
 
     loadData().then(data =>{
         
         slideYear("#slider-step", data);
+
+        filteredData = data.filter(function(row) {
+            return row['year'] == '1990';
+        });
+
+        filters("#filters", filteredData);
+        drawMainDiagram("#mainDiagram", filteredData);
+
 
         function changeSecDiagram(button) {
             var svg;
@@ -149,11 +163,7 @@ Academic Year: 2019-2020
         };
 
         var filteredData;
-        var male = true,female = true;
-        var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
-        var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
-        
-        var male = true;
+
         document.getElementById("male").onclick = function() {
             if ( this.checked ) {male=true;}
             else {male=false;}
@@ -223,42 +233,24 @@ Academic Year: 2019-2020
         document.getElementById("genZ").onclick = function() {
             if ( this.checked ) {genZ = true;}
             else {genZ = false;}
-            d3.select("#secondDiagram").selectAll("svg").remove();
             changeSecondOnCheckBox(data)
         };
 
-        function changeSecondOnCheckBox(data){
-            filteredData = filterAllDataCheckbox(selectionData, male, female, age5_14, age15_24, age25_34,
+        function changeSecondOnCheckBox(){
+
+            d3.select("#secondDiagram").selectAll("svg").remove();
+
+            filteredData = filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
                 age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                 genMillenials, genZ);
-            console.log(selectionData);
+
         }
 
-        worldMap("map");
+       // worldMap("map");
+
     });
 
 
-    async function loadDataPca(){
-        return data = await d3.csv("dataset/fullDataset.csv");
-    }
-    loadDataPca().then(data =>{
-        filteredData = data.filter(function(row) {
-            return row['year'] == '1990';
-        });
-        drawMainDiagram("#mainDiagram", filteredData);
-        filters("#filters", filteredData);
-        /*
-        var colX = data.map(function(d) { return d.X })
-        var colY = data.map(function(d) { return d.Y })
-        var XY_array = []
-        for (var i = 0; i < colX.length; i++) {
-            XY_array[i] = [colX[i], colY[i]];
-        }*/
-        //console.log(XY_array);
-
-        //drawLinearChart("#secondDiagram", XY_array);
-        //console.log(arr);
-    });
 
 </script>
 

@@ -106,7 +106,7 @@ function drawMainDiagram(visualElement, data) {
                 return y(+d[header[1]]);
             })
             .style("fill", function (d) {
-                return colors[d.continent];
+                return colors[d["continent"]];
             })
             .on("mouseover", function(d,i) {
                 d3.select(this)
@@ -117,9 +117,9 @@ function drawMainDiagram(visualElement, data) {
                 div.transition()
                     .duration(50)
                     .style("visibility", "visible");
-
-                div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+ d.suicide_100kpop+
-                    "/100k<br>GDP:"+ d.gdp_per_capita +"<br>HDI:"+ d.hdi)
+//TODO:round suicides values
+                div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+
+                    ((d.tot_suicides)*100000)/(d.population)+"/100k<br>GDP:"+ d.gdp_per_year +"<br>HDI:"+ d.hdi)
                     .style("left", (d3.event.pageX + 5) + "px")
                     .style("top", (d3.event.pageY - 25) + "px");
 
@@ -258,7 +258,6 @@ function drawMainDiagram(visualElement, data) {
                 .style("opacity", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                         (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        console.log(selectionData);
                         selectionData = selection;
                         return "1.0"
                     } else {
@@ -270,25 +269,69 @@ function drawMainDiagram(visualElement, data) {
         } else {
             focus.selectAll(".dot")
                 .style("fill", function (d) {
-                    return color(d[header[2]]);
+                    return colors(d[header[2]]);
                 })
                 .style("opacity", ".3")
         }
 
-        d3.select("#svgParallel").selectAll(".innerPath")
-            .style("stroke", "2ca25f");
+        if(document.getElementById("svgParallel") != null) {
 
-        d3.select("#svgParallel").selectAll(".innerPath")
-            .style("stroke",function(d){
-                if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                    (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                    return "#1f78b4"
-                }
-                else
-                {
-                    return "#2ca25f"
-                }
-            })
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("stroke", "2ca25f");
+
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.3"
+                    }
+                })
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "#1f78b4"
+                    } else {
+                        return "#2ca25f"
+                    }
+                })
+        }
+        if(document.getElementById("svgScatter") != null) {
+            d3.select("#svgScatter").selectAll("circle")
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "black"
+                    } else {
+                        return "gray"
+                    }
+                })
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.4"
+                    }
+                })
+                .style("fill", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "darkgreen"
+                    } else {
+                        return "gray"
+                    }
+                })
+
+        }
+        if(document.getElementById("svgLinear") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+        }
+        if(document.getElementById("patternDiv") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+
+        }
     }
 
 

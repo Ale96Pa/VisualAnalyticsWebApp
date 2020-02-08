@@ -37,8 +37,6 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     var rangeSex = calculateRangeArray(2, height);
     var rangeAge = calculateRangeArray(6, height);
     var rangeGeneration = calculateRangeArray(6, height);
-    var rangeSuic = calculateRangeArray(9, height);;
-    var rangeHdi = calculateRangeArray(9, height);;
 
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
@@ -51,7 +49,7 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
     // For each dimension, I build a ordinal scale. I store all in a y object
     var y = {};
     for (i in dimensions) {
-        name = dimensions[i];
+        var name = dimensions[i];
 
         if (name === "hdi"){
             y[name] = d3.scaleLinear()
@@ -269,7 +267,7 @@ function drawLinearChart(visualElement,data){
 
 //TODO: clusterization depending on hdi
 function drawScatterplot(visualElement, data){
-    var margin = {top: 25, right: 15, bottom: 35, left: 85},
+    var margin = {top: 95, right: 15, bottom: 35, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -304,7 +302,7 @@ function drawScatterplot(visualElement, data){
 */
     //create svg element
     var svg = d3.select(visualElement).append("svg")
-        .attr("id", "scatterSecondary")
+        .attr("id", "svgScatter")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -367,6 +365,8 @@ function drawBarChart(visualElement, dataFull){
         data[i].tot_suicides = totSuicidesPerRecord;
     }
 
+    console.log(data)
+
     x.domain(data.map(function (d) {
                     return d.sex;
             }));
@@ -405,7 +405,20 @@ function drawPatternBarchart(visualElement, dataFull){
     
     // dataFull is all data with null values, so i filter them obtaining data
     data = filterOutNullRecords(dataFull);
-    
+
+    var margin = {top: 25, right: 25, bottom: 25, left: 25},
+        width = 950 - margin.left - margin.right,
+        height = 250 - margin.top - margin.bottom;
+
+    var div = d3.select(visualElement)
+        .append("div").attr("id", "patternDiv")
+        .attr("width",width)
+        .attr("height",height)
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .style("display","inline-flex")
+        .style("padding-top","130px")
+        .style("position","relative");
+
     var filteredData35 = [];
     var filteredData15 = [];
     var filteredData55 = [];
@@ -420,12 +433,12 @@ function drawPatternBarchart(visualElement, dataFull){
         if(data[i].age == "55-74 years"){filteredData55.push(data[i]);}
         if(data[i].age == "75+ years"){filteredData75.push(data[i]);}
     }
-    var svg1 = drawBarChart(visualElement, filteredData05);
-    var svg2 = drawBarChart(visualElement, filteredData15);
-    var svg3 = drawBarChart(visualElement, filteredData25);
-    var svg4 = drawBarChart(visualElement, filteredData35);
-    var svg5 = drawBarChart(visualElement, filteredData55);
-    var svg6 = drawBarChart(visualElement, filteredData75);
+    var svg1 = drawBarChart("#patternDiv", filteredData05);
+    var svg2 = drawBarChart("#patternDiv", filteredData15);
+    var svg3 = drawBarChart("#patternDiv", filteredData25);
+    var svg4 = drawBarChart("#patternDiv", filteredData35);
+    var svg5 = drawBarChart("#patternDiv", filteredData55);
+    var svg6 = drawBarChart("#patternDiv", filteredData75);
 
     var patternBars = [];
     patternBars.push(svg1);

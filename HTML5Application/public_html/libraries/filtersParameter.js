@@ -9,7 +9,6 @@
 
 function filters(visualElement, data) {
 
-    var param = [[],[],[]];
     var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
     function newFilterBar(data, name) {
@@ -23,7 +22,7 @@ function filters(visualElement, data) {
         var x = d3.scaleLinear()
             .range([0, width-150])
             .domain([0, d3.max(data, function (d) {
-                return d[name];
+                return +d[name];
             })]);
 
         var xAxis = d3.axisBottom(x);
@@ -42,6 +41,7 @@ function filters(visualElement, data) {
 
         var svg = d3.select(visualElement)
             .append("svg")
+            .attr("class","filterBrush")
             .attr("width", width)
             .attr("height", height);
 
@@ -73,40 +73,42 @@ function filters(visualElement, data) {
 
         function brushedPop() {
             var selection = d3.event.selection;
-            param[0] = selection.map(x.invert, x);
-            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            rangeBrushes[0] = selection.map(x.invert, x);
+            var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
-                    if (countries.includes(d["country"])){
+                    if (filteredData[0].includes(d["country"])){
                         return colors[d["continent"]];}
                     else{
                         return "gray";}
                 })
+            changeOnSecondary(filteredData[1]);
         };
         function brushedHdi() {
             var selection = d3.event.selection;
-            param[2] = selection.map(x.invert, x);
-            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
+            rangeBrushes[2] = selection.map(x.invert, x);
+            var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function (d) {
-                    if (countries.includes(d["country"])){
+                    if (filteredData[0].includes(d["country"])){
                         return colors[d["continent"]];}
                     else{
                         return "gray";}
                 })
+            changeOnSecondary(filteredData[1]);
         };
         function brushedGDP() {
             var selection = d3.event.selection;
-            param[1] = selection.map(x.invert, x);
-            var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
-            //console.log(countries)
+            rangeBrushes[1] = selection.map(x.invert, x);
+            var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
-                    if (countries.includes(d["country"])){
+                    if (filteredData[0].includes(d["country"])){
                         return colors[d["continent"]];}
                     else{
                         return "gray";}
                 })
+            changeOnSecondary(filteredData[1]);
         };
 
     }
@@ -115,6 +117,31 @@ function filters(visualElement, data) {
     newFilterBar(data, "gdp_per_year");
     newFilterBar(data, "hdi");
 }
+
+function changeOnSecondary(tmpData){
+    console.log(tmpData)
+    filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
+        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+        genMillenials, genZ);
+
+    console.log( male, female, age5_14, age15_24, age25_34,
+        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+        genMillenials, genZ)
+
+    if(document.getElementById("svgParallel") != null) {
+        d3.select("#secondDiagram").selectAll("svg").remove();
+        drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+    if(document.getElementById("svgScatter") != null) {
+        d3.select("#secondDiagram").selectAll("svg").remove();
+        drawScatterplot("#secondDiagram",filteredData)    }
+    if(document.getElementById("svgLinear") != null) {
+        d3.select("#secondDiagram").selectAll("svg").remove();
+        drawLinearChart("#secondDiagram",filteredData)    }
+    if(document.getElementById("patternDiv") != null) {
+        d3.select("#secondDiagram").selectAll("svg").remove();
+        drawPatternBarchart("#secondDiagram",filteredData)
+    }
+};
 
 function filterRangeHdi(data, min, max){
     var filteredData = [];
@@ -135,13 +162,12 @@ function filterRangePopulation(data, min, max){
 function filterRangeGdp(data, min, max){
     var filteredData = [];
     for(i=0; i<data.length; i++){
-        hdiValue = parseFloat(data[i].gdp_per_capita);
+        hdiValue = parseFloat(data[i].gdp_per_year);
         if(hdiValue >= min && hdiValue <= max){filteredData.push(data[i]);}
     }
     return filteredData;
 }
 function filterAllDataBrusher(data, hdiRange, popRange, gdpRange){
-
     var filter = filterRangePopulation(data, popRange[0], popRange[1]);
     var filteredCountry=[];
     if (gdpRange.length != 0){
@@ -152,7 +178,7 @@ function filterAllDataBrusher(data, hdiRange, popRange, gdpRange){
     for(i=0; i<filter.length; i++){
         filteredCountry.push(filter[i].country)
     }
-    return filteredCountry;
+    return [filteredCountry, filter];
 }
 
 function filterSex(data, male, female){
@@ -171,12 +197,12 @@ function filterAge(data, age5_14, age15_24, age25_34, age35_54, age55_74, age75)
     var filteredData = [];
     for(i=0; i<data.length; i++){
         //for(j=0; j<data[i].length; j++){
-            if(age5_14){if(data[i].age == '05-14'){filteredData.push(data[i]);}}
-            if(age15_24){if(data[i].age == '15-24'){filteredData.push(data[i]);}}
-            if(age25_34){if(data[i].age == '25-34'){filteredData.push(data[i]);}}
-            if(age35_54){if(data[i].age == '35-54'){filteredData.push(data[i]);}}
-            if(age55_74){if(data[i].age == '55-74'){filteredData.push(data[i]);}}
-            if(age75){if(data[i].age == '75+'){filteredData.push(data[i]);}}
+            if(age5_14){if(data[i].age == '5-14 years'){filteredData.push(data[i]);}}
+            if(age15_24){if(data[i].age == '15-24  years'){filteredData.push(data[i]);}}
+            if(age25_34){if(data[i].age == '25-34  years'){filteredData.push(data[i]);}}
+            if(age35_54){if(data[i].age == '35-54  years'){filteredData.push(data[i]);}}
+            if(age55_74){if(data[i].age == '55-74  years'){filteredData.push(data[i]);}}
+            if(age75){if(data[i].age == '75+  years'){filteredData.push(data[i]);}}
         //}
     }
     return filteredData;
@@ -202,9 +228,11 @@ function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
         genMillenials, genZ){
                 
         var filter1 = filterSex(data, male, female);
+        console.log(filter1)
         var filter2 = filterAge(filter1, age5_14, age15_24, age25_34, age35_54, age55_74, age75);
+    console.log(filter2)
         var filter3 = filterGeneration(filter2, genGi, genSilent, genBoomers, genX, genMillenials, genZ);
-        
+    console.log(filter3)
         return filter3;
 }
 

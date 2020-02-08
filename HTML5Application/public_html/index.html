@@ -23,13 +23,17 @@ Academic Year: 2019-2020
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
     <script type="text/javascript" src="libraries/filtersParameter.js"></script>
+    <script type="text/javascript" src="libraries/yearSlider.js"></script>
+    <script type="text/javascript" src="libraries/d3-slider.js"></script>
 </head>
 
 <body>
 
     <div id="mainWrapper">
+        <div class="slidecontainer">
+            <div id="slider-step"></div>
+        </div>
         <div id="mainDiagram">
-
         </div>
 
         <div class="tab">
@@ -83,6 +87,8 @@ Academic Year: 2019-2020
 </body>
 
 <script>
+    
+    
 
     async function loadData(){
         return data = await d3.csv("dataset/fullDataset.csv");
@@ -91,6 +97,8 @@ Academic Year: 2019-2020
     var selectionData = ["dati","disponibili"];
 
     loadData().then(data =>{
+        
+        slideYear("#slider-step", data);
 
         function changeSecDiagram(button) {
             var svg;

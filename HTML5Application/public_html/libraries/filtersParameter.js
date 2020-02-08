@@ -99,7 +99,7 @@ function filters(visualElement, data) {
             var selection = d3.event.selection;
             param[1] = selection.map(x.invert, x);
             var countries = filterAllDataBrusher(data, param[2], param[0], param[1])
-            console.log(countries)
+            //console.log(countries)
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
                     if (countries.includes(d["country"])){

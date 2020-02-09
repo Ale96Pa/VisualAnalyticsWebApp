@@ -304,7 +304,7 @@ function drawScatterplot(visualElement, data){
 */
     //create svg element
     var svg = d3.select(visualElement).append("svg")
-        .attr("id", "scatterSecondary")
+        .attr("id", "svgScatter")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -338,13 +338,15 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(-5,0)")
             .call(yAxis);
 
-    var svgData = document.getElementById("scatterSecondary");
+    var svgData = document.getElementById("svgScatter");
     return svgData;
 }
 
 function drawBarChart(visualElement, dataFull){
 
     var data = dataFull;
+    
+    var objDataContainer = [];
 
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
         width = 150 - margin.left - margin.right,
@@ -360,17 +362,37 @@ function drawBarChart(visualElement, dataFull){
     var y = d3.scaleLinear()
             .rangeRound([height, 0]);
 
+    var gender;
+    var totMale = 0;
+    var totFemale = 0;
     for(i=0; i<data.length; i++){
         fractionalSuicides = parseFloat(data[i].suicide_100kpop);
         population = parseInt(data[i].population);
         totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-        data[i].tot_suicides = totSuicidesPerRecord;
+        if(data[i].sex == "male"){
+            gender = "male";
+            totMale = totMale + totSuicidesPerRecord;
+        }
+        if(data[i].sex == "female"){
+            gender = "female";
+            totFemale = totFemale + totSuicidesPerRecord;
+        }
     }
+    var objDataM = {};
+    objDataM.sex = "male";
+    objDataM.tot_suicides = totMale;
+    var objDataF = {};
+    objDataF.sex = "female";
+    objDataF.tot_suicides = totFemale;
+    objDataContainer.push(objDataM);
+    objDataContainer.push(objDataF);
 
-    x.domain(data.map(function (d) {
+    console.log(objDataContainer);
+
+    x.domain(objDataContainer.map(function (d) {
                     return d.sex;
             }));
-    y.domain([0, d3.max(data, function (d) {
+    y.domain([0, d3.max(objDataContainer, function (d) {
                             return Number(d.tot_suicides);
                     })]);
 
@@ -389,7 +411,7 @@ function drawBarChart(visualElement, dataFull){
     .text("tot_suicides");
 
     g.selectAll(".bar")
-    .data(data)
+    .data(objDataContainer)
     .enter().append("rect")
     .attr("class", "bar")
     .attr("x", function (d) {return x(d.sex);})
@@ -401,6 +423,9 @@ function drawBarChart(visualElement, dataFull){
     return svgData;
 }
 
+//TODO: mettere coordinate comuni a tutti i barchart (l'asse y coincide con la
+// barra di male e arriva fino alla fine, invece devono arrivare tutte ad una
+// stessa altezza !!!
 function drawPatternBarchart(visualElement, dataFull){
     
     // dataFull is all data with null values, so i filter them obtaining data

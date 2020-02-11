@@ -2,15 +2,18 @@
  * 
  */
 
+var i = 0;
+
 // Pick an svg and clone it to visualize it in the provenance bar
 function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
-    
+
     if(Array.isArray(svgElement)){
+        //barchart case
         for(i=0; i<svgElement.length; i++){
             var newSvg = svgElement[i].cloneNode(true);
             //newSvg.setAttribute("id", "cloned");
             newSvg.setAttribute("height", 200);
-            newSvg.setAttribute("width", 200);
+            newSvg.setAttribute("width", 40);
             document.getElementById(visualElement).appendChild(newSvg);
 
             // To save the input that will be showed in page review
@@ -29,11 +32,15 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
 
     } else {
         var newSvg = svgElement.cloneNode(true);
-        //newSvg.setAttribute("id", "cloned");
-        newSvg.setAttribute("height", 200);
-        newSvg.setAttribute("width", 200);
-        //newSvg.setAttribute("viewBox", "0 0 32 32");
-        document.getElementById(visualElement).appendChild(newSvg);
+
+        newSvg.style.transform="scale(0.2,0.32)"
+        d3.select("#provenanceBar").append("svg")
+            .attr("class","provenanceElem")
+            .attr("width","200px").attr("height","auto")
+            .style("transform","translate(0,"+ (i*200 +15)+ ")")
+            .attr("id","svgContainer"+i);
+        document.getElementById("svgContainer"+i).appendChild(newSvg);
+        i += 1;
 
         // To save the input that will be showed in page review
         var strSvg = (new XMLSerializer).serializeToString(newSvg);

@@ -41,9 +41,17 @@ body {
 #provenanceBar {
     width:250px;
     min-width: 200px;
+    padding-left: 0px;
+    padding-right: 0px;
     display:table-cell;
-    text-align: center;
     border: 1px solid white;
+
+}
+
+.provenanceElem {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 20px;
 }
 
 

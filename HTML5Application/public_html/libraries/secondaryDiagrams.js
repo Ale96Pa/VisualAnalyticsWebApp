@@ -1,14 +1,5 @@
-function filterOutNullRecords(data){
-    var filteredData = [];
-    for(i=0; i<data.length; i++){
-        if(data[i].sex != "null" && data[i].age != "null" && 
-                data[i].generation != "null" && data[i].suicide_100kpop != "null"
-                && data[i].gdp_per_capita != "null"){
-        filteredData.push(data[i]);
-        }
-    }
-    return filteredData;
-}
+
+
 function calculateRangeArray(numDiffValue, height){
     var rangeArray = [];
     for(i=0; i<=numDiffValue; i++){rangeArray.push(height*(i/(numDiffValue)));}
@@ -16,10 +7,7 @@ function calculateRangeArray(numDiffValue, height){
     return rangeArray;
 }
 
-function drawParallelCoordinatesChart(visualElement,dataFull){
-    
-    // dataFull is all data with null values, so i filter them obtaining data
-    data = filterOutNullRecords(dataFull);
+function drawParallelCoordinatesChart(visualElement,data){
 
     var margin = {top: 30, right: 15, bottom: 35, left: 45},
         width = 1150 - margin.left - margin.right,
@@ -135,8 +123,7 @@ function drawParallelCoordinatesChart(visualElement,dataFull){
 
 
 
-function drawLinearChart(visualElement,data){
-
+function drawLinearChart(visualElement, data){
     // set the dimensions and margins of the graph
     var margin = {top: 25, right: 15, bottom: 35, left: 85},
         width = 850 - margin.left - margin.right,
@@ -188,11 +175,12 @@ function drawLinearChart(visualElement,data){
 
         gen[index] = generation;
     });
+
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
 
     // Scale the range of the data
-    var years = gen[0].map(function(d) { return d.year });
+    var years = data.map(function(d) { return d.year });
     var int_years = years.map(Number);
     x.domain(d3.extent(int_years));
     
@@ -294,12 +282,7 @@ function drawScatterplot(visualElement, data){
     var xAxis = d3.axisBottom().scale(xScale);
 
     var yAxis = d3.axisLeft().scale(yScale);
-/*
-    console.log( yScale(d3.max(dataset, function(d) { return +d[1]; })))
-    console.log( yScale(d3.min(dataset, function(d) { return +d[1]; })))
-    console.log( xScale(d3.max(dataset, function(d) { return +d[0]; })))
-    console.log( xScale(d3.min(dataset, function(d) { return +d[0]; })))
-*/
+
     //create svg element
     var svg = d3.select(visualElement).append("svg")
         .attr("id", "svgScatter")
@@ -340,19 +323,24 @@ function drawScatterplot(visualElement, data){
     return svgData;
 }
 
-function drawBarChart(visualElement, dataFull){
+function drawBarChart(visualElement, label, dataFull){
 
     var data = dataFull;
 
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
         width = 150 - margin.left - margin.right,
-        height = 150 - margin.top - margin.bottom;
+        height = 230 - margin.top - margin.bottom;
     
-    var svg = d3.select(visualElement).append("svg").attr("id", "svgBarchart");
-    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select(visualElement).append("svg")
+        .attr("id", "svgBarchart")
+        .attr("height","330px");
+    svg.append("text").text(label)
+        .attr("transform", "translate("+width/2+",10)");
+    g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + ",30)");
 
     var x = d3.scaleBand()
-            .rangeRound([0, width])
+            .rangeRound([0, 120])
             .padding(0.1);
 
     var y = d3.scaleLinear()
@@ -365,22 +353,21 @@ function drawBarChart(visualElement, dataFull){
         data[i].tot_suicides = totSuicidesPerRecord;
     }
 
-    console.log(data)
 
-    x.domain(data.map(function (d) {
+    x.domain((data.map(function (d) {
                     return d.sex;
-            }));
-    y.domain([0, d3.max(data, function (d) {
-                            return Number(d.tot_suicides);
-                    })]);
+            })).sort());
+
+    y.domain([0, 150000]);
 
     g.append("g")
-    .attr("transform", "translate(0," + height + ")")
+    .attr("transform", "translate(50," + height + ")")
     .call(d3.axisBottom(x));
     
-    g.append("g")
+    var yAx = g.append("g").attr("transform", "translate(50,0)")
     .call(d3.axisLeft(y))
-    .append("text")
+
+        yAx.append("text")
     .style("fill", "white")
     .attr("transform", "rotate(-90)")
     .attr("y", 6)
@@ -392,23 +379,26 @@ function drawBarChart(visualElement, dataFull){
     .data(data)
     .enter().append("rect")
     .attr("class", "bar")
-    .attr("x", function (d) {return x(d.sex);})
+    .attr("x", function (d) {return x(d.sex)+50;})
     .attr("y", function (d) {return y(Number(d.tot_suicides));})
     .attr("width", x.bandwidth())
-    .attr("height", function (d) {return height - y(Number(d.tot_suicides));});
+    .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
+        .style("fill", function (d){
+            if (d.sex == "male"){
+                return "#246fb1";}
+            else{
+                return "#b1249e";}
+        });
 
     var svgData = document.getElementById("svgBarchart");
     return svgData;
 }
 
-function drawPatternBarchart(visualElement, dataFull){
-    
-    // dataFull is all data with null values, so i filter them obtaining data
-    data = filterOutNullRecords(dataFull);
+function drawPatternBarchart(visualElement, data){
 
-    var margin = {top: 25, right: 25, bottom: 25, left: 25},
-        width = 950 - margin.left - margin.right,
-        height = 250 - margin.top - margin.bottom;
+    var margin = {top: 25, right: 25, bottom: 25, left: 5},
+        width = 1050 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
     var div = d3.select(visualElement)
         .append("div").attr("id", "patternDiv")
@@ -416,7 +406,7 @@ function drawPatternBarchart(visualElement, dataFull){
         .attr("height",height)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .style("display","inline-flex")
-        .style("padding-top","130px")
+        .style("padding-top","80px")
         .style("position","relative");
 
     var filteredData35 = [];
@@ -433,12 +423,12 @@ function drawPatternBarchart(visualElement, dataFull){
         if(data[i].age == "55-74 years"){filteredData55.push(data[i]);}
         if(data[i].age == "75+ years"){filteredData75.push(data[i]);}
     }
-    var svg1 = drawBarChart("#patternDiv", filteredData05);
-    var svg2 = drawBarChart("#patternDiv", filteredData15);
-    var svg3 = drawBarChart("#patternDiv", filteredData25);
-    var svg4 = drawBarChart("#patternDiv", filteredData35);
-    var svg5 = drawBarChart("#patternDiv", filteredData55);
-    var svg6 = drawBarChart("#patternDiv", filteredData75);
+    var svg1 = drawBarChart("#patternDiv", "5-14 years", filteredData05);
+    var svg2 = drawBarChart("#patternDiv", "15-24 years", filteredData15);
+    var svg3 = drawBarChart("#patternDiv", "25-34 years", filteredData25);
+    var svg4 = drawBarChart("#patternDiv", "35-54 years",filteredData35);
+    var svg5 = drawBarChart("#patternDiv", "55-74 years", filteredData55);
+    var svg6 = drawBarChart("#patternDiv", "75+ years", filteredData75);
 
     var patternBars = [];
     patternBars.push(svg1);

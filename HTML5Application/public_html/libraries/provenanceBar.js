@@ -11,13 +11,13 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             //newSvg.setAttribute("id", "cloned");
             newSvg.setAttribute("height", 200);
             newSvg.setAttribute("width", 200);
-            //newSvg.setAttribute("viewBox", "0 0 32 32");
             document.getElementById(visualElement).appendChild(newSvg);
 
             // To save the input that will be showed in page review
             var strSvg = (new XMLSerializer).serializeToString(newSvg);
 
             arraySvgToSave.push(strSvg);
+
         }
         try {
             sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
@@ -25,9 +25,8 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             //document.getElementById("demo").innerHTML = err.message;
             console.log("Stop adding: memory full");
         }
-        
 
-        console.log(arraySvgToSave);
+
     } else {
         var newSvg = svgElement.cloneNode(true);
         //newSvg.setAttribute("id", "cloned");
@@ -46,6 +45,8 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             console.log("Stop adding: memory full");
             //document.getElementById("demo").innerHTML = err.message;
         }
+
+        console.log(arraySvgToSave);
     }
     
 }

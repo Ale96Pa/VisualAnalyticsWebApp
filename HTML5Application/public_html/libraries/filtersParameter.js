@@ -119,24 +119,19 @@ function filters(visualElement, data) {
 }
 
 function changeOnSecondary(tmpData){
-    console.log(tmpData)
-    filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
+    var filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
         genMillenials, genZ);
 
-    console.log( male, female, age5_14, age15_24, age25_34,
-        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
-        genMillenials, genZ)
 
     if(document.getElementById("svgParallel") != null) {
         d3.select("#secondDiagram").selectAll("svg").remove();
         drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+
     if(document.getElementById("svgScatter") != null) {
         d3.select("#secondDiagram").selectAll("svg").remove();
         drawScatterplot("#secondDiagram",filteredData)    }
-    if(document.getElementById("svgLinear") != null) {
-        d3.select("#secondDiagram").selectAll("svg").remove();
-        drawLinearChart("#secondDiagram",filteredData)    }
+
     if(document.getElementById("patternDiv") != null) {
         d3.select("#secondDiagram").selectAll("svg").remove();
         drawPatternBarchart("#secondDiagram",filteredData)
@@ -198,11 +193,11 @@ function filterAge(data, age5_14, age15_24, age25_34, age35_54, age55_74, age75)
     for(i=0; i<data.length; i++){
         //for(j=0; j<data[i].length; j++){
             if(age5_14){if(data[i].age == '5-14 years'){filteredData.push(data[i]);}}
-            if(age15_24){if(data[i].age == '15-24  years'){filteredData.push(data[i]);}}
-            if(age25_34){if(data[i].age == '25-34  years'){filteredData.push(data[i]);}}
-            if(age35_54){if(data[i].age == '35-54  years'){filteredData.push(data[i]);}}
-            if(age55_74){if(data[i].age == '55-74  years'){filteredData.push(data[i]);}}
-            if(age75){if(data[i].age == '75+  years'){filteredData.push(data[i]);}}
+            if(age15_24){if(data[i].age == '15-24 years'){filteredData.push(data[i]);}}
+            if(age25_34){if(data[i].age == '25-34 years'){filteredData.push(data[i]);}}
+            if(age35_54){if(data[i].age == '35-54 years'){filteredData.push(data[i]);}}
+            if(age55_74){if(data[i].age == '55-74 years'){filteredData.push(data[i]);}}
+            if(age75){if(data[i].age == '75+ years'){filteredData.push(data[i]);}}
         //}
     }
     return filteredData;
@@ -226,13 +221,9 @@ function filterGeneration(data, genGi, genSilent, genBoomers, genX, genMillenial
 function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX, 
         genMillenials, genZ){
-                
         var filter1 = filterSex(data, male, female);
-        console.log(filter1)
         var filter2 = filterAge(filter1, age5_14, age15_24, age25_34, age35_54, age55_74, age75);
-    console.log(filter2)
         var filter3 = filterGeneration(filter2, genGi, genSilent, genBoomers, genX, genMillenials, genZ);
-    console.log(filter3)
         return filter3;
 }
 
@@ -326,7 +317,6 @@ function worldMap(visualElement) {
             .on("click",function(m) {
                 d3.select("#dotG").selectAll(".dot")
                     .style("fill", function(d){
-                        console.log(d)
                         if (d.country == m.properties.name){
                             return colors[d.continent];}
                         else{
@@ -372,10 +362,6 @@ function worldMap(visualElement) {
 
     }
 
-
-    function testThings(){
-        console.log(document.data);
-    }
 
 }
 

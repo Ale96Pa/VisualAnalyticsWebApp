@@ -3,13 +3,13 @@
 function drawMainDiagram(visualElement, data) {
 
     /*2 is hdi axes, 3 is gdp axes*/
-    var margin = {top: 30, right: 35, bottom: 110, left: 150},
-        margin2 = {top: 420, right: 35, bottom: 30, left: 150},
-        margin3 = {top: 30, right: 950, bottom: 110, left: 50},
+    var margin = {top: 5, right: 45, bottom: 110, left: 150},
+        margin2 = {top: 340, right: 45, bottom: 35, left: 150},
+        margin3 = {top: 5, right: 935, bottom: 110, left: 55},
         width = 1050 - margin.left - margin.right,
         width3 = 1050 - margin3.left - margin3.right
-        height = 500 - margin.top - margin.bottom,
-        height2 = 500 - margin2.top - margin2.bottom;
+        height = 430 - margin.top - margin.bottom,
+        height2 = 430 - margin2.top - margin2.bottom;
 
     //qualitative scale from colorbrewer
     var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
@@ -44,7 +44,8 @@ function drawMainDiagram(visualElement, data) {
     var focus;
 
     function drawScatter(data) {
-        var svg = d3.select(visualElement).append("svg")
+        var svg = d3.select(visualElement).append("div").attr("id","mainChange")
+            .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
 
@@ -145,20 +146,18 @@ function drawMainDiagram(visualElement, data) {
             .call(yAxis);
 
         focus.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left )
-            .attr("x", 0 - (height / 2) + 20)
+            .attr("y", 0 + margin.left )
+            .attr("x", 0 - (height / 2) +35)
             .attr("dy", "1em")
+            .style("transform", "rotate(90)")
             .style("text-anchor", "middle")
             .style("font-size", "14px")
             .style("fill", "white")
             .text("Y");
 
-
-
         svg.append("text")
-            .attr("y", (height + margin.top + margin.bottom) )
-            .attr("x", ((width + margin.right + margin.left) / 2) + 20)
+            .attr("y", (height + margin.top + margin.bottom) -10)
+            .attr("x", ((width + margin.right + margin.left) / 2) + 10)
             .style("text-anchor", "middle")
             .style("font-size", "14px")
             .style("fill", "white")
@@ -269,7 +268,7 @@ function drawMainDiagram(visualElement, data) {
         } else {
             focus.selectAll(".dot")
                 .style("fill", function (d) {
-                    return colors(d[header[2]]);
+                    return colors[d[header[2]]];
                 })
                 .style("opacity", ".3")
         }

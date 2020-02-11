@@ -19,25 +19,25 @@ function slideYear(visualElement, data){
       .select(visualElement)
       .append('svg')
       .attr('width', 1000)
-      .attr('height', 100)
+      .attr('height', 70)
       .append('g')
-      .attr('transform', 'translate(30,30)')
+      .attr('transform', 'translate(60,15)')
       .call(sliderStep);
 
     function parseYear(year) {
         var filteredData = data.filter(function(row) {
             return row['year'] == year;
         });
-
+//TODO:remove remove secondary and set them coordinated
         d3.select("#secondDiagram").selectAll("svg").remove();
-        d3.select("#mainDiagram").selectAll("svg").remove();
+        d3.select("#secondDiagram").selectAll("div").remove();
+
+        d3.select("#mainDiagram").selectAll(".tooltip").remove();
+        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
         d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);
         drawMainDiagram("#mainDiagram", filteredData);
-        dataYear
+        dataYear = filteredData;
         selectionData = [];
-
-
-
     }
 }

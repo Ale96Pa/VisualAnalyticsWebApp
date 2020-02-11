@@ -35,9 +35,9 @@ function slideYear(visualElement, data){
 
         d3.select("#mainDiagram").selectAll(".tooltip").remove();
 
-        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
-        
-        d3.selectAll(".filterBrush").remove();
+       d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
+       d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);
         drawMainDiagram("#mainDiagram", filteredData);
         //changeMainDiagram("#mainDiagram", filteredData);

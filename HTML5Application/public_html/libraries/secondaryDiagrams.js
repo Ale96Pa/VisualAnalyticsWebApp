@@ -158,8 +158,8 @@ function drawLinearChart(visualElement, data){
 
     var gen = [filteredDataBoomers,filteredDataGenZ,filteredDataSilent,filteredDataGenX,
         filteredDataMillenials, filteredDataGenGI];
-    var legendKeys = ["Boomers", "Generation X", "Silent","Millenials",
-        "G,I. Generation", "Generation Z"];
+    var legendKeys = ["Boomers", "Generation Z", "Silent", "Generation X", ,"Millenials",
+        "G.I. Generation"];
 
     gen.forEach(function(generation, index){
         var count = {};
@@ -208,7 +208,7 @@ function drawLinearChart(visualElement, data){
         .y(function(d) { return y(d.tot_suicides); });
 
     var color = d3.scaleOrdinal()
-        .range(["red", "green", "blue", "yellow", "white", "darkgreen"]);
+        .range(["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"]);
 
     var svg = d3.select(visualElement).append("svg")
         .attr("id", "svgLinear")
@@ -230,7 +230,7 @@ function drawLinearChart(visualElement, data){
             .attr("class", "line")
             .style("stroke", function(){ return color(index)})
             .style("fill", "none")
-            .style("stroke-width","2")
+            .style("stroke-width","2.5")
             .attr("d", valueline);
 
         legend.append('rect')
@@ -261,9 +261,8 @@ function drawLinearChart(visualElement, data){
 }
 
 
-//TODO: clusterization depending on hdi
 function drawScatterplot(visualElement, data){
-    var margin = {top: 95, right: 15, bottom: 35, left: 85},
+    var margin = {top: 65, right: 15, bottom: 35, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -272,15 +271,17 @@ function drawScatterplot(visualElement, data){
     //max vs min
     var numSuic = data.map(function(d) { return d.tot_suicides });
     var gdp = data.map(function(d) { return d.gdp_per_capita });
+    var hdi = data.map(function(d) { return d.hdi });
+
 
     var dataset = [];
     for (var i = 0; i < numSuic.length; i++) {
-        dataset[i] = [gdp[i], numSuic[i]];
+        dataset[i] = [parseInt(gdp[i]), numSuic[i], hdi[i]];
     }
 
     //scale function
     var xScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +d["gdp_per_capita"]; })])
+            .domain([0, d3.max(data, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
             .range([0, width]);
 
     var yScale = d3.scaleLinear()
@@ -312,7 +313,11 @@ function drawScatterplot(visualElement, data){
             })
             .attr("r", 5)
             .attr("stroke", "black")
-            .style("fill", "darkgreen");
+            .style("fill", function(d) {
+                if(parseFloat(d[2]) <= 0.60) {return 'red';}
+                if(parseFloat(d[2]) >= 0.75){return 'green'}
+                else {return 'yellow';}
+              });
 
 
     //x axis
@@ -327,7 +332,7 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(-5,0)")
             .call(yAxis);
 
-    var svgData = document.getElementById("scatterSecondary");
+    var svgData = document.getElementById("svgScatter");
     return svgData;
 }
 
@@ -335,12 +340,14 @@ function drawBarChart(visualElement, label, dataFull){
 
     var data = dataFull;
 
+    var objDataContainer = [];
+
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
         width = 150 - margin.left - margin.right,
         height = 230 - margin.top - margin.bottom;
     
     var svg = d3.select(visualElement).append("svg")
-        .attr("id", "svgBarchart")
+        .attr("id", label)
         .attr("height","330px");
     svg.append("text").text(label)
         .attr("transform", "translate("+width/2+",10)");
@@ -354,12 +361,30 @@ function drawBarChart(visualElement, label, dataFull){
     var y = d3.scaleLinear()
             .rangeRound([height, 0]);
 
+    var gender;
+    var totMale = 0;
+    var totFemale = 0;
     for(i=0; i<data.length; i++){
         fractionalSuicides = parseFloat(data[i].suicide_100kpop);
         population = parseInt(data[i].population);
         totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-        data[i].tot_suicides = totSuicidesPerRecord;
+        if(data[i].sex == "male"){
+            gender = "male";
+            totMale = totMale + totSuicidesPerRecord;
+        }
+        if(data[i].sex == "female"){
+            gender = "female";
+            totFemale = totFemale + totSuicidesPerRecord;
+        }
     }
+    var objDataM = {};
+    objDataM.sex = "male";
+    objDataM.tot_suicides = totMale;
+    var objDataF = {};
+    objDataF.sex = "female";
+    objDataF.tot_suicides = totFemale;
+    objDataContainer.push(objDataM);
+    objDataContainer.push(objDataF);
 
 
     x.domain((data.map(function (d) {
@@ -384,7 +409,7 @@ function drawBarChart(visualElement, label, dataFull){
     .text("tot_suicides");
 
     g.selectAll(".bar")
-    .data(data)
+    .data(objDataContainer)
     .enter().append("rect")
     .attr("class", "bar")
     .attr("x", function (d) {return x(d.sex)+50;})
@@ -398,9 +423,11 @@ function drawBarChart(visualElement, label, dataFull){
                 return "#b1249e";}
         });
 
-    var svgData = document.getElementById("svgBarchart");
+    var svgData = document.getElementById(label);
     return svgData;
 }
+
+
 
 function drawPatternBarchart(visualElement, data){
 
@@ -415,13 +442,13 @@ function drawPatternBarchart(visualElement, data){
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .style("display","inline-flex")
         .style("padding-top","80px")
-        .style("position","relative");
+        //.style("position","relative");
 
-    var filteredData35 = [];
-    var filteredData15 = [];
-    var filteredData55 = [];
     var filteredData05 = [];
+    var filteredData15 = [];
     var filteredData25 = [];
+    var filteredData35 = [];
+    var filteredData55 = [];
     var filteredData75 = [];
     for(i=0; i<data.length; i++){
         if(data[i].age == "5-14 years"){filteredData05.push(data[i]);}
@@ -447,3 +474,4 @@ function drawPatternBarchart(visualElement, data){
     patternBars.push(svg6);
     return patternBars;
 }
+

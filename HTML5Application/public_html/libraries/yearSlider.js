@@ -35,11 +35,12 @@ function slideYear(visualElement, data){
 
         d3.select("#mainDiagram").selectAll(".tooltip").remove();
 
-       // d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
-
+        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+        
         d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);
-        changeMainDiagram("#mainDiagram", filteredData);
+        drawMainDiagram("#mainDiagram", filteredData);
+        //changeMainDiagram("#mainDiagram", filteredData);
         if(selectedCountries.length != 0){
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){

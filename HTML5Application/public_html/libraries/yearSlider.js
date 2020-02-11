@@ -1,9 +1,7 @@
 
 // Step
 function slideYear(visualElement, data){
-    /*data = [1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 
-        2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,
-        2015,2016];*/
+
     var value = 0;
     var years = data.map(function(d) { return d.year });
 
@@ -15,18 +13,31 @@ function slideYear(visualElement, data){
       .ticks(26)
       .step(1)
       .default(1990)
-      .on('onchange', function(val){
-        console.log(val);
-      });
+      .on('onchange', function (val){parseYear(val)});
 
     var gStep = d3
       .select(visualElement)
       .append('svg')
       .attr('width', 1000)
-      .attr('height', 100)
+      .attr('height', 70)
       .append('g')
-      .attr('transform', 'translate(30,30)');
-      
-    gStep.call(sliderStep);
-    return value;
+      .attr('transform', 'translate(60,15)')
+      .call(sliderStep);
+
+    function parseYear(year) {
+        var filteredData = data.filter(function(row) {
+            return row['year'] == year;
+        });
+//TODO:remove remove secondary and set them coordinated
+        d3.select("#secondDiagram").selectAll("svg").remove();
+        d3.select("#secondDiagram").selectAll("div").remove();
+
+        d3.select("#mainDiagram").selectAll(".tooltip").remove();
+        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+        d3.selectAll(".filterBrush").remove();
+        filters("#filters", filteredData);
+        drawMainDiagram("#mainDiagram", filteredData);
+        dataYear = filteredData;
+        selectionData = [];
+    }
 }

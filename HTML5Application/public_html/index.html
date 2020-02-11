@@ -30,16 +30,17 @@ Academic Year: 2019-2020
 <body>
 
     <div id="mainWrapper">
-        <div class="slidecontainer">
-            <div id="slider-step"></div>
-        </div>
+
         <div id="mainDiagram">
+            <div class="slidecontainer">
+                <div id="slider-step"></div>
+            </div>
         </div>
 
         <div class="tab">
-            <button  id="linearChart" class="tablinks" >LinearChart</button>
-            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
             <button id="parallelCoordinates" class="tablinks" >ParallelCoordinatesChart</button>
+            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
+            <button  id="linearChart" class="tablinks" >LinearChart</button>
             <button id="barChart" class="tablinks" >barChart</button>
         </div>
         <div id="secondDiagram" class="tabcontents">
@@ -87,18 +88,43 @@ Academic Year: 2019-2020
 </body>
 
 <script>
-    
-    
+
 
     async function loadData(){
-        return data = await d3.csv("dataset/fullDataset.csv");
+        return dataFull = await d3.csv("dataset/fullDataset.csv");
     }
 
-    var selectionData = ["dati","disponibili"];
+    var selectionData = [];
+    var rangeBrushes =[[],[],[]];
+    var selectedCountries=[];
+    var dataYear;
 
-    loadData().then(data =>{
+    var male = true,female = true;
+    var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
+    var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
+
+    loadData().then(dataFull =>{
         
-        slideYear("#slider-step", data);
+        slideYear("#slider-step", dataFull);
+
+        dataYear = dataFull.filter(function(row) {
+            return row['year'] == '1990';
+        });
+
+        filters("#filters", dataYear);
+        drawMainDiagram("#mainDiagram", dataYear);
+
+        function filterOutNullRecords(data){
+            var filteredData = [];
+            for(i=0; i<data.length; i++){
+                if(data[i].sex != "null" && data[i].age != "null" &&
+                    data[i].generation != "null" && data[i].suicide_100kpop != "null"
+                    && data[i].gdp_per_capita != "null"){
+                    filteredData.push(data[i]);
+                }
+            }
+            return filteredData;
+        }
 
         function changeSecDiagram(button) {
             var svg;
@@ -107,24 +133,33 @@ Academic Year: 2019-2020
             d3.select("#"+ button.id).style("background-color", "gray")
 
             if ( button.id == "linearChart"){
+                var dataNoNull = filterOutNullRecords(dataFull)
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawLinearChart("#secondDiagram", data);
+                d3.select("#secondDiagram").selectAll("div").remove();
+                svg = drawLinearChart("#secondDiagram", dataNoNull);
             }
             if (button.id == "scatterPlot"){
+                var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawScatterplot("#secondDiagram", data);
+                d3.select("#secondDiagram").selectAll("div").remove();
+                svg = drawScatterplot("#secondDiagram", dataYearNoNull);
             }
             if(button.id == "parallelCoordinates"){
+                var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawParallelCoordinatesChart("#secondDiagram", data);
+                d3.select("#secondDiagram").selectAll("div").remove();
+                svg = drawParallelCoordinatesChart("#secondDiagram", dataYearNoNull);
             }
             if(button.id == "barChart"){
+                var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawPatternBarchart("#secondDiagram", data);
+                d3.select("#secondDiagram").selectAll("div").remove();
+                svg = drawPatternBarchart("#secondDiagram", dataYearNoNull);
             }
-            //TODO: added all diagrams --> CHECK !!
+            //TODO: add all diagrams --> CHECK !!
             return svg;
         }
+
 
         var currentSvg = null;
         var svgs_to_save = []
@@ -148,116 +183,130 @@ Academic Year: 2019-2020
         };
 
         var filteredData;
-        var male = true,female = true;
-        var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
-        var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
-        
-        var male = true;
+
         document.getElementById("male").onclick = function() {
             if ( this.checked ) {male=true;}
             else {male=false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("female").onclick = function() {
             if ( this.checked ) {female = true;}
             else {female = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("5-14").onclick = function() {
             if ( this.checked ) {age5_14 = true;}
             else {age5_14 = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("15-24").onclick = function() {
             if ( this.checked ) {age15_24 = true;}
             else {age15_24 = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("25-34").onclick = function() {
             if ( this.checked ) {age25_34=true;}
             else {age25_34=false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("35-54").onclick = function() {
             if ( this.checked ) {age35_54 = true;}
             else {age35_54 = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("55-74").onclick = function() {
             if ( this.checked ) {age55_74 = true;}
             else {age55_74 = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("75+").onclick = function() {
             if ( this.checked ) {age75 = true;}
             else {age75 = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("genGI").onclick = function() {
             if ( this.checked ) {genGi = true;}
             else {genGi = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("genSilent").onclick = function() {
             if ( this.checked ) {genSilent = true;}
             else {genSilent = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("genBoomers").onclick = function() {
             if ( this.checked ) {genBoomers = true;}
             else {genBoomers = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("genX").onclick = function() {
             if ( this.checked ) {genX = true;}
             else {genX = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
         document.getElementById("genMillenials").onclick = function() {
             if ( this.checked ) {genMillenials = true;}
             else {genMillenials = false;}
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
 
         document.getElementById("genZ").onclick = function() {
             if ( this.checked ) {genZ = true;}
             else {genZ = false;}
-            d3.select("#secondDiagram").selectAll("svg").remove();
-            changeSecondOnCheckBox(data)
+            changeSecondOnCheckBox()
         };
 
-        function changeSecondOnCheckBox(data){
-            filteredData = filterAllDataCheckbox(selectionData, male, female, age5_14, age15_24, age25_34,
-                age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
-                genMillenials, genZ);
-            console.log(selectionData);
+        function changeSecondOnCheckBox(){
+            if(document.getElementById("svgLinear") != null) {
+
+                var dataNoNull = filterOutNullRecords(dataFull)
+                filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawLinearChart("#secondDiagram",filteredData)    }
+
+            if(document.getElementById("svgParallel") != null) {
+
+                var dataYearNoNull = filterOutNullRecords(dataYear)
+                tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+
+                filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+
+            if(document.getElementById("svgScatter") != null) {
+
+                var dataYearNoNull = filterOutNullRecords(dataYear)
+                tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+
+                filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawScatterplot("#secondDiagram",filteredData)    }
+
+            if(document.getElementById("patternDiv") != null) {
+
+                var dataYearNoNull = filterOutNullRecords(dataYear)
+                tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+
+                filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                drawPatternBarchart("#secondDiagram",filteredData)
+            }
         }
 
         worldMap("map");
+
     });
 
 
-    async function loadDataPca(){
-        return data = await d3.csv("dataset/fullDataset.csv");
-    }
-    loadDataPca().then(data =>{
-        filteredData = data.filter(function(row) {
-            return row['year'] == '1990';
-        });
-        drawMainDiagram("#mainDiagram", filteredData);
-        filters("#filters", filteredData);
-        /*
-        var colX = data.map(function(d) { return d.X })
-        var colY = data.map(function(d) { return d.Y })
-        var XY_array = []
-        for (var i = 0; i < colX.length; i++) {
-            XY_array[i] = [colX[i], colY[i]];
-        }*/
-        //console.log(XY_array);
-
-        //drawLinearChart("#secondDiagram", XY_array);
-        //console.log(arr);
-    });
 
 </script>
 

@@ -3,13 +3,13 @@
 function drawMainDiagram(visualElement, data) {
 
     /*2 is hdi axes, 3 is gdp axes*/
-    var margin = {top: 30, right: 35, bottom: 110, left: 150},
-        margin2 = {top: 420, right: 35, bottom: 30, left: 150},
-        margin3 = {top: 30, right: 950, bottom: 110, left: 50},
+    var margin = {top: 5, right: 45, bottom: 110, left: 150},
+        margin2 = {top: 340, right: 45, bottom: 35, left: 150},
+        margin3 = {top: 5, right: 935, bottom: 110, left: 55},
         width = 1050 - margin.left - margin.right,
         width3 = 1050 - margin3.left - margin3.right
-        height = 500 - margin.top - margin.bottom,
-        height2 = 500 - margin2.top - margin2.bottom;
+        height = 430 - margin.top - margin.bottom,
+        height2 = 430 - margin2.top - margin2.bottom;
 
     //qualitative scale from colorbrewer
     var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
@@ -44,7 +44,8 @@ function drawMainDiagram(visualElement, data) {
     var focus;
 
     function drawScatter(data) {
-        var svg = d3.select(visualElement).append("svg")
+        var svg = d3.select(visualElement).append("div").attr("id","mainChange")
+            .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
 
@@ -106,7 +107,7 @@ function drawMainDiagram(visualElement, data) {
                 return y(+d[header[1]]);
             })
             .style("fill", function (d) {
-                return colors[d.continent];
+                return colors[d["continent"]];
             })
             .on("mouseover", function(d,i) {
                 d3.select(this)
@@ -117,9 +118,9 @@ function drawMainDiagram(visualElement, data) {
                 div.transition()
                     .duration(50)
                     .style("visibility", "visible");
-
-                div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+ d.suicide_100kpop+
-                    "/100k<br>GDP:"+ d.gdp_per_capita +"<br>HDI:"+ d.hdi)
+//TODO:round suicides values
+                div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+
+                    ((d.tot_suicides)*100000)/(d.population)+"/100k<br>GDP:"+ d.gdp_per_year +"<br>HDI:"+ d.hdi)
                     .style("left", (d3.event.pageX + 5) + "px")
                     .style("top", (d3.event.pageY - 25) + "px");
 
@@ -145,20 +146,18 @@ function drawMainDiagram(visualElement, data) {
             .call(yAxis);
 
         focus.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left )
-            .attr("x", 0 - (height / 2) + 20)
+            .attr("y", 0 + margin.left )
+            .attr("x", 0 - (height / 2) +35)
             .attr("dy", "1em")
+            .style("transform", "rotate(90)")
             .style("text-anchor", "middle")
             .style("font-size", "14px")
             .style("fill", "white")
             .text("Y");
 
-
-
         svg.append("text")
-            .attr("y", (height + margin.top + margin.bottom) )
-            .attr("x", ((width + margin.right + margin.left) / 2) + 20)
+            .attr("y", (height + margin.top + margin.bottom) -10)
+            .attr("x", ((width + margin.right + margin.left) / 2) + 10)
             .style("text-anchor", "middle")
             .style("font-size", "14px")
             .style("fill", "white")
@@ -258,7 +257,6 @@ function drawMainDiagram(visualElement, data) {
                 .style("opacity", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                         (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        console.log(selectionData);
                         selectionData = selection;
                         return "1.0"
                     } else {
@@ -270,25 +268,69 @@ function drawMainDiagram(visualElement, data) {
         } else {
             focus.selectAll(".dot")
                 .style("fill", function (d) {
-                    return color(d[header[2]]);
+                    return colors[d[header[2]]];
                 })
                 .style("opacity", ".3")
         }
 
-        d3.select("#svgParallel").selectAll(".innerPath")
-            .style("stroke", "2ca25f");
+        if(document.getElementById("svgParallel") != null) {
 
-        d3.select("#svgParallel").selectAll(".innerPath")
-            .style("stroke",function(d){
-                if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                    (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                    return "#1f78b4"
-                }
-                else
-                {
-                    return "#2ca25f"
-                }
-            })
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("stroke", "2ca25f");
+
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.3"
+                    }
+                })
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "#1f78b4"
+                    } else {
+                        return "#2ca25f"
+                    }
+                })
+        }
+        if(document.getElementById("svgScatter") != null) {
+            d3.select("#svgScatter").selectAll("circle")
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "black"
+                    } else {
+                        return "gray"
+                    }
+                })
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.4"
+                    }
+                })
+                .style("fill", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "darkgreen"
+                    } else {
+                        return "gray"
+                    }
+                })
+
+        }
+        if(document.getElementById("svgLinear") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+        }
+        if(document.getElementById("patternDiv") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+
+        }
     }
 
 

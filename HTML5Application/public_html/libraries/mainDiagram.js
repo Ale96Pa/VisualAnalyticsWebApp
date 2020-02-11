@@ -1,4 +1,18 @@
 
+d3.selection.prototype.moveToBack = function() {
+    return this.each(function() {
+        var firstChild = this.parentNode.firstChild;
+        if (firstChild) {
+            this.parentNode.insertBefore(this, firstChild);
+        }
+    });
+};
+
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+        this.parentNode.appendChild(this);
+    });
+};
 
 function drawMainDiagram(visualElement, data) {
 
@@ -99,7 +113,9 @@ function drawMainDiagram(visualElement, data) {
             .attr("r", function (d){
                 return (((d.tot_suicides)*100000)/(d.population));
             })
-            .attr("opacity", ".3")
+            .attr("opacity", "0.4")
+            .style("stroke","#000")
+            .style("stroke-width","0.1px")
             .attr("cx", function (d) {
                 return x(+d[header[0]]);
             })
@@ -110,15 +126,18 @@ function drawMainDiagram(visualElement, data) {
                 return colors[d["continent"]];
             })
             .on("mouseover", function(d,i) {
-                d3.select(this)
-                    .transition()
+                var elem = d3.select(this)
+
+                    elem.transition()
                     .duration('50')
                     .attr('opacity', '1')
+
+                elem.moveToFront();
 
                 div.transition()
                     .duration(50)
                     .style("visibility", "visible");
-//TODO:round suicides values
+
                 div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+
                     ((d.tot_suicides)*100000)/(d.population)+"/100k<br>GDP:"+ d.gdp_per_year +"<br>HDI:"+ d.hdi)
                     .style("left", (d3.event.pageX + 5) + "px")
@@ -126,9 +145,13 @@ function drawMainDiagram(visualElement, data) {
 
             })
             .on('mouseout', function (d, i) {
-                d3.select(this).transition()
+                var elem = d3.select(this)
+
+                    elem.transition()
                     .duration('50')
                     .attr('opacity', '1');
+
+                elem.moveToBack();
 
                 div.transition()
                     .duration('50')
@@ -263,8 +286,6 @@ function drawMainDiagram(visualElement, data) {
                         return "0.3"
                     }
                 })
-
-
         } else {
             focus.selectAll(".dot")
                 .style("fill", function (d) {
@@ -337,3 +358,293 @@ function drawMainDiagram(visualElement, data) {
     drawScatter(data)
 
 }
+
+
+function changeMainDiagram(visualElement, data) {
+
+    /*2 is hdi axes, 3 is gdp axes*/
+    var margin = {top: 5, right: 45, bottom: 110, left: 150},
+        margin2 = {top: 340, right: 45, bottom: 35, left: 150},
+        margin3 = {top: 5, right: 935, bottom: 110, left: 55},
+        width = 1050 - margin.left - margin.right,
+        width3 = 1050 - margin3.left - margin3.right
+    height = 430 - margin.top - margin.bottom,
+        height2 = 430 - margin2.top - margin2.bottom;
+
+    //qualitative scale from colorbrewer
+    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+
+    /*Define values to show on axes*/
+    var x = d3.scaleLinear().range([0, width]),
+        x2 = d3.scaleLinear().range([0, width]),
+        x3 = d3.scaleLinear().range([0, width3]),
+        y = d3.scaleLinear().range([height, 0]),
+        y2 = d3.scaleLinear().range([height2, 0]),
+        y3 = d3.scaleLinear().range([height, 0]);
+
+    /*define axes*/
+    var xAxis = d3.axisBottom(x),
+        xAxis2 = d3.axisBottom(x2),
+        yAxis = d3.axisLeft(y),
+        yAxis3 = d3.axisLeft(y3);
+
+        var dom = d3.extent(data, function (d) {return +d[header[0]];})
+        x.domain([dom[0]-2,dom[1]+2]);
+        dom = d3.extent(data, function (d) {return +d[header[1]];})
+        y.domain([dom[0]-2,dom[1]+2]);
+
+        x2.domain(x.domain());
+        y2.domain(y.domain());
+        x3.domain(x.domain());
+        y3.domain(y.domain());
+
+
+
+// append scatter plot to main chart area
+        var dots = d3.select("#dotG").selectAll(".dot");
+
+
+        dots.data(data)
+            .attr("r", function (d){
+                return (((d.tot_suicides)*100000)/(d.population));
+            })
+            .attr("opacity", "0.4")
+            .style("stroke","#000")
+            .style("stroke-width","0.1px")
+            .transition()
+            .attr("cx", function (d) {
+                return x(+d[header[0]]);
+            })
+            .attr("cy", function (d) {
+                return y(+d[header[1]]);
+            })
+            .on("mouseover", function(d,i) {
+                var elem = d3.select(this)
+
+                elem.transition()
+                    .duration('50')
+                    .attr('opacity', '1')
+
+                elem.moveToFront();
+
+                div.transition()
+                    .duration(50)
+                    .style("visibility", "visible");
+
+                div.html("STATE:"+ d.country +"<br>POP:"+d.population +"<br>SUICIDES:"+
+                    ((d.tot_suicides)*100000)/(d.population)+"/100k<br>GDP:"+ d.gdp_per_year +"<br>HDI:"+ d.hdi)
+                    .style("left", (d3.event.pageX + 5) + "px")
+                    .style("top", (d3.event.pageY - 25) + "px");
+
+            })
+            .on('mouseout', function (d, i) {
+                var elem = d3.select(this)
+
+                elem.transition()
+                    .duration('50')
+                    .attr('opacity', '1');
+
+                elem.moveToBack();
+
+                div.transition()
+                    .duration('50')
+                    .style("visibility", "hidden");
+            });
+
+
+        focus.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        focus.append("g")
+            .attr("class", "axis axis--y")
+            .call(yAxis);
+
+        focus.append("text")
+            .attr("y", 0 + margin.left )
+            .attr("x", 0 - (height / 2) +35)
+            .attr("dy", "1em")
+            .style("transform", "rotate(90)")
+            .style("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "white")
+            .text("Y");
+
+        svg.append("text")
+            .attr("y", (height + margin.top + margin.bottom) -10)
+            .attr("x", ((width + margin.right + margin.left) / 2) + 10)
+            .style("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "white")
+            .text("X");
+
+//TODO: set properly transition on the brushes
+        // append scatter plot to brush chart areaY
+        var dots = context3.append("g");
+        dots.attr("clip-path", "url(#clip)");
+        dots.selectAll("dot")
+            .data(data)
+            .enter().append("circle")
+            .attr('class', 'dotContext')
+            .attr("r", 2)
+            .style("opacity", .5)
+            .transition()
+            .attr("cx", function (d) {
+                return x3(d[header[0]]);
+            })
+            .attr("cy", function (d) {
+                return y3(d[header[1]]);
+            })
+            .style("fill", function (d) {
+                return colors[d.continent];
+            });
+
+        context3.append("g")
+            .attr("class", "axis axis--y")
+            .call(yAxis3);
+
+        context3.append("g")
+            .attr("class", "brush")
+            .call(brushY)
+            .call(brushY.move, (y3.range()).reverse())
+            .selectAll("rect")
+            .attr("y", 0)
+            .attr("height", height);
+
+        // append scatter plot to brush chart areaX
+        var dots = context.append("g");
+        dots.attr("clip-path", "url(#clip)");
+        dots.selectAll("dot")
+            .data(data)
+            .enter().append("circle")
+            .attr('class', 'dotContext')
+            .attr("r", 2)
+            .style("opacity", .5)
+            .transition()
+            .attr("cx", function (d) {
+                return x2(d[header[0]]);
+            })
+            .attr("cy", function (d) {
+                return y2(d[header[1]]);
+            })
+            .style("fill", function (d) {
+                return colors[d.continent];
+            });
+
+        context.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height2 + ")")
+            .call(xAxis2);
+
+        context.append("g")
+            .attr("class", "brush")
+            .call(brushX)
+            .call(brushX.move, x2.range());
+    }
+
+
+    header = d3.keys(data[0])
+
+    //create brush function redraw scatterplot with selection
+    function brushedX() {
+        var selection = d3.event.selection;
+        x.domain(selection.map(x2.invert, x2));
+        focus.selectAll(".dot")
+            .attr("cx", function(d) { return x(d[header[0]]); })
+            .attr("cy", function(d) { return y(d[header[1]]); });
+        focus.select(".axis--x").call(xAxis);
+    }
+
+    function brushedY() {
+        var selection = d3.event.selection;
+        selection = [selection[1],selection[0]]
+        y.domain(selection.map(y3.invert, y3));
+        focus.selectAll(".dot")
+            .attr("cx", function(d) { return x(d[header[0]]); })
+            .attr("cy", function(d) { return y(d[header[1]]); });
+        focus.select(".axis--y").call(yAxis);
+    }
+
+
+    function selected() {
+        var selection = d3.event.selection;
+        //TODO: filter data by selection, then based on checked checkbox (document.getelement()) and with results build secondary diagram
+        if (selection != null) {
+            focus.selectAll(".dot")
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        selectionData = selection;
+                        return "1.0"
+                    } else {
+                        return "0.3"
+                    }
+                })
+        } else {
+            focus.selectAll(".dot")
+                .style("fill", function (d) {
+                    return colors[d[header[2]]];
+                })
+                .style("opacity", ".3")
+        }
+
+        if(document.getElementById("svgParallel") != null) {
+
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("stroke", "2ca25f");
+
+            d3.select("#svgParallel").selectAll(".innerPath")
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.3"
+                    }
+                })
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "#1f78b4"
+                    } else {
+                        return "#2ca25f"
+                    }
+                })
+        }
+        if(document.getElementById("svgScatter") != null) {
+            d3.select("#svgScatter").selectAll("circle")
+                .style("stroke", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "black"
+                    } else {
+                        return "gray"
+                    }
+                })
+                .style("opacity", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "1"
+                    } else {
+                        return "0.4"
+                    }
+                })
+                .style("fill", function (d) {
+                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                        return "darkgreen"
+                    } else {
+                        return "gray"
+                    }
+                })
+
+        }
+        if(document.getElementById("svgLinear") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+        }
+        if(document.getElementById("patternDiv") != null) {
+            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+
+        }
+    }

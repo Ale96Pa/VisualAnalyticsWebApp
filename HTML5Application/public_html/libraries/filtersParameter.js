@@ -129,6 +129,7 @@ function filters(visualElement, data) {
     newFilterBar(data, "hdi");
 }
 
+
 function changeOnSecondary(tmpData){
     var filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
@@ -238,6 +239,8 @@ function filterAllDataCheckbox(data, male, female, age5_14, age15_24, age25_34,
         return filter3;
 }
 
+
+
 function worldMap(visualElement) {
 
     var margin = {top: 0, right: 10, bottom: 0, left: 20};
@@ -292,8 +295,8 @@ function worldMap(visualElement) {
 
 
     function draw(topo) {
-        
-        var data = filterOutNullRecords(dataFull);
+
+        var data = filterOutNullRecords(dataFull)
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
@@ -328,13 +331,32 @@ function worldMap(visualElement) {
                     .style("visibility", "hidden");
             })
             .on("click",function(m) {
+                if(selectedCountries.includes(m.properties.name)){
+                    d3.select(this).style("stroke","none").style("stroke-width", "none");
+                    //if condition needed because this statement remove last element when index not found
+                    selectedCountries.splice( selectedCountries.indexOf(m.properties.name), 1 );
+                }else{
+                    d3.select(this).style("stroke","#fff").style("stroke-width", ".9px");
+                    selectedCountries.push(m.properties.name);}
                 d3.select("#dotG").selectAll(".dot")
                     .style("fill", function(d){
-                        if (d.country == m.properties.name){
+                        if (selectedCountries.includes(d.country)){
                             return colors[d.continent];}
                         else{
-                            return "#000";}
+                            return "gray";}
                     })
+                    .style("fill-opacity", function(d){
+                        if (selectedCountries.includes(d.country)){
+                            return "1";}
+                        else{
+                            return "0.2";}
+                    })
+                    .each(function(d) {
+                        if (selectedCountries.includes(d.country)) {
+                            d3.select(this).moveToFront();
+                        }
+                    });
+
             });
 
 
@@ -344,7 +366,7 @@ function worldMap(visualElement) {
                     if(male){if(data[i].country == d.properties.name){
                         return colors[data[i].continent];}}
                 }
-            }//TODO: add check over null values
+            }
             else{
                 return "gray";}
         });

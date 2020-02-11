@@ -9,8 +9,8 @@ function calculateRangeArray(numDiffValue, height){
 
 function drawParallelCoordinatesChart(visualElement,data){
 
-    var margin = {top: 30, right: 15, bottom: 35, left: 45},
-        width = 1150 - margin.left - margin.right,
+    var margin = {top: 50, right: 15, bottom: 35, left: 90},
+        width = 1100 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var svg = d3.select(visualElement).append("svg")
@@ -28,17 +28,25 @@ function drawParallelCoordinatesChart(visualElement,data){
 
 
     // Extract the list of dimensions we want to keep in the plot. Here I keep all except the column called Species
-    dimensions = d3.keys(data[0]).filter(function(d) { 
+    dimensions = [ "generation","suicide_100kpop", "age","hdi","gdp_per_capita","gni" ];
+
+    /*d3.keys(data[0]).filter(function(d) {
         return d !== "year" && d !== "country" && d !== "gdp_per_capita" && d !== "country-year" 
                 && d !== "gdp_per_year" && d !== "tot_suicides" && d !== "population"
                 && d !== "X" && d !== "Y" && d !== "continent" && d !== "gni" 
-                && d !== "gdp_per_capita" && d !== "life_expectancy"});
+                && d !== "gdp_per_capita" && d !== "life_expectancy"});*/
 
     // For each dimension, I build a ordinal scale. I store all in a y object
     var y = {};
     for (i in dimensions) {
         var name = dimensions[i];
 
+        if (name === "gdp_per_capita"){
+            y[name] = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) {
+                    return +d[name];
+                }))
+                .range([height, 0]);}
         if (name === "hdi"){
             y[name] = d3.scaleLinear()
             .domain(d3.extent(data, function (d) {
@@ -51,19 +59,21 @@ function drawParallelCoordinatesChart(visualElement,data){
                     return +d[name];
                 }))
                 .range([height, 0]);}
+        if (name === "gni") {
+            y[name] = d3.scaleLinear()
+                .domain(d3.extent(data, function (d) {
+                    return +d[name];
+                }))
+                .range([height, 0]);}
 
         if (name === "generation"){
-            range = rangeGeneration
+            range = rangeGeneration;
             y[name] = d3.scaleOrdinal()
                 .range(range)
                 .domain(data.map(function(d) {return d[name];}).sort());}
-        if (name === "sex"){
-            range = rangeSex
-            y[name] = d3.scaleOrdinal()
-                .range(range)
-                .domain(data.map(function(d) {return d[name];}).sort());}
+
         if (name === "age"){
-            range = rangeAge
+            range = rangeAge;
             y[name] = d3.scaleOrdinal()
                 .range(range)
                 .domain(data.map(function(d) {return d[name];}).sort());}
@@ -95,18 +105,16 @@ function drawParallelCoordinatesChart(visualElement,data){
         .append("g")
         // I translate this element to its right position on the x axis
         .attr("transform", function(d) {
-            return "translate(" + x(d) + ")"; })
+            if(d=="gni"){return "translate(" + x(d) + ")";}
+            else{return "translate(" + x(d) + ")";} })
         // And I build the axis with the call function
         .each(function(d) {
             if (d === "age"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
-            if (d === "sex"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
+            if (d === "gni"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
             if (d === "generation"){d3.select(this).call(d3.axisLeft().scale(y[d]));}
-            if (d === "suicide_100kpop"){d3.select(this).call(d3.axisLeft()
-                                            .scale(y[d]))}
-
-            if (d === "hdi"){d3.select(this).call(d3.axisLeft()
-                                            .scale(y[d]))}
-
+            if (d === "suicide_100kpop"){d3.select(this).call(d3.axisLeft().scale(y[d]))}
+            if (d === "hdi"){d3.select(this).call(d3.axisLeft().scale(y[d]))}
+            if (d === "gdp_per_capita"){d3.select(this).call(d3.axisLeft().scale(y[d]))}
         })
         // Add axis title
         .append("text")
@@ -150,8 +158,8 @@ function drawLinearChart(visualElement, data){
 
     var gen = [filteredDataBoomers,filteredDataGenZ,filteredDataSilent,filteredDataGenX,
         filteredDataMillenials, filteredDataGenGI];
-    var legendKeys = ["Boomers", "Generation Z", "Silent", "Generation X", ,"Millenials",
-        "G.I. Generation"];
+    var legendKeys = ["Boomers", "Generation X", "Silent","Millenials",
+        "G,I. Generation", "Generation Z"];
 
     gen.forEach(function(generation, index){
         var count = {};
@@ -200,7 +208,7 @@ function drawLinearChart(visualElement, data){
         .y(function(d) { return y(d.tot_suicides); });
 
     var color = d3.scaleOrdinal()
-        .range(["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"]);
+        .range(["red", "green", "blue", "yellow", "white", "darkgreen"]);
 
     var svg = d3.select(visualElement).append("svg")
         .attr("id", "svgLinear")
@@ -222,7 +230,7 @@ function drawLinearChart(visualElement, data){
             .attr("class", "line")
             .style("stroke", function(){ return color(index)})
             .style("fill", "none")
-            .style("stroke-width","2.5")
+            .style("stroke-width","2")
             .attr("d", valueline);
 
         legend.append('rect')
@@ -253,26 +261,26 @@ function drawLinearChart(visualElement, data){
 }
 
 
+//TODO: clusterization depending on hdi
 function drawScatterplot(visualElement, data){
-    var margin = {top: 65, right: 15, bottom: 35, left: 85},
+    var margin = {top: 95, right: 15, bottom: 35, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     padding = 50;
 
+    //max vs min
     var numSuic = data.map(function(d) { return d.tot_suicides });
     var gdp = data.map(function(d) { return d.gdp_per_capita });
-    var hdi = data.map(function(d) { return d.hdi });
-    
 
     var dataset = [];
     for (var i = 0; i < numSuic.length; i++) {
-        dataset[i] = [parseInt(gdp[i]), numSuic[i], hdi[i]];
+        dataset[i] = [gdp[i], numSuic[i]];
     }
 
     //scale function
     var xScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
+            .domain([0, d3.max(data, function(d) { return +d["gdp_per_capita"]; })])
             .range([0, width]);
 
     var yScale = d3.scaleLinear()
@@ -304,11 +312,7 @@ function drawScatterplot(visualElement, data){
             })
             .attr("r", 5)
             .attr("stroke", "black")
-            .style("fill", function(d) {
-                if(parseFloat(d[2]) <= 0.60) {return 'red';}
-                if(parseFloat(d[2]) >= 0.75){return 'green'}
-                else {return 'yellow';}
-              });
+            .style("fill", "darkgreen");
 
 
     //x axis
@@ -323,22 +327,20 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(-5,0)")
             .call(yAxis);
 
-    var svgData = document.getElementById("svgScatter");
+    var svgData = document.getElementById("scatterSecondary");
     return svgData;
 }
 
 function drawBarChart(visualElement, label, dataFull){
 
     var data = dataFull;
-    
-    var objDataContainer = [];
 
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
         width = 150 - margin.left - margin.right,
         height = 230 - margin.top - margin.bottom;
     
     var svg = d3.select(visualElement).append("svg")
-        .attr("id", label)
+        .attr("id", "svgBarchart")
         .attr("height","330px");
     svg.append("text").text(label)
         .attr("transform", "translate("+width/2+",10)");
@@ -352,30 +354,12 @@ function drawBarChart(visualElement, label, dataFull){
     var y = d3.scaleLinear()
             .rangeRound([height, 0]);
 
-    var gender;
-    var totMale = 0;
-    var totFemale = 0;
     for(i=0; i<data.length; i++){
         fractionalSuicides = parseFloat(data[i].suicide_100kpop);
         population = parseInt(data[i].population);
         totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-        if(data[i].sex == "male"){
-            gender = "male";
-            totMale = totMale + totSuicidesPerRecord;
-        }
-        if(data[i].sex == "female"){
-            gender = "female";
-            totFemale = totFemale + totSuicidesPerRecord;
-        }
+        data[i].tot_suicides = totSuicidesPerRecord;
     }
-    var objDataM = {};
-    objDataM.sex = "male";
-    objDataM.tot_suicides = totMale;
-    var objDataF = {};
-    objDataF.sex = "female";
-    objDataF.tot_suicides = totFemale;
-    objDataContainer.push(objDataM);
-    objDataContainer.push(objDataF);
 
 
     x.domain((data.map(function (d) {
@@ -400,7 +384,7 @@ function drawBarChart(visualElement, label, dataFull){
     .text("tot_suicides");
 
     g.selectAll(".bar")
-    .data(objDataContainer)
+    .data(data)
     .enter().append("rect")
     .attr("class", "bar")
     .attr("x", function (d) {return x(d.sex)+50;})
@@ -414,12 +398,10 @@ function drawBarChart(visualElement, label, dataFull){
                 return "#b1249e";}
         });
 
-    var svgData = document.getElementById(label);
+    var svgData = document.getElementById("svgBarchart");
     return svgData;
 }
 
-
-    
 function drawPatternBarchart(visualElement, data){
 
     var margin = {top: 25, right: 25, bottom: 25, left: 5},
@@ -433,13 +415,13 @@ function drawPatternBarchart(visualElement, data){
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .style("display","inline-flex")
         .style("padding-top","80px")
-        //.style("position","relative");
+        .style("position","relative");
 
-    var filteredData05 = [];
-    var filteredData15 = [];
-    var filteredData25 = [];
     var filteredData35 = [];
+    var filteredData15 = [];
     var filteredData55 = [];
+    var filteredData05 = [];
+    var filteredData25 = [];
     var filteredData75 = [];
     for(i=0; i<data.length; i++){
         if(data[i].age == "5-14 years"){filteredData05.push(data[i]);}
@@ -465,4 +447,3 @@ function drawPatternBarchart(visualElement, data){
     patternBars.push(svg6);
     return patternBars;
 }
-

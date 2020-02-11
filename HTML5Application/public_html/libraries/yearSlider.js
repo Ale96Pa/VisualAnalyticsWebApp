@@ -1,5 +1,6 @@
 
-// Step
+var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+
 function slideYear(visualElement, data){
 
     var value = 0;
@@ -33,11 +34,23 @@ function slideYear(visualElement, data){
         d3.select("#secondDiagram").selectAll("div").remove();
 
         d3.select("#mainDiagram").selectAll(".tooltip").remove();
-        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
+       // d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
         d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);
-        drawMainDiagram("#mainDiagram", filteredData);
+        changeMainDiagram("#mainDiagram", filteredData);
+        if(selectedCountries.length != 0){
+            d3.select("#dotG").selectAll(".dot")
+                .style("fill", function(d){
+                    if (selectedCountries.includes(d.country)){
+                        return colors[d.continent];}
+                    else{
+                        return "gray";}
+                })
+        }
         dataYear = filteredData;
         selectionData = [];
     }
 }
+

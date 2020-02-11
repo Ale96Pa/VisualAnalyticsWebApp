@@ -41,7 +41,6 @@ function slideYear(visualElement, data){
         filters("#filters", filteredData);
         drawMainDiagram("#mainDiagram", filteredData);
         //changeMainDiagram("#mainDiagram", filteredData);
-
         if(selectedCountries.length != 0){
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){

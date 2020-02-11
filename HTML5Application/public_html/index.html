@@ -88,7 +88,8 @@ Academic Year: 2019-2020
 </body>
 
 <script>
-
+    
+    var provenanceContainer = 0;
 
     async function loadData(){
         return dataFull = await d3.csv("dataset/fullDataset.csv");
@@ -188,76 +189,90 @@ Academic Year: 2019-2020
         document.getElementById("male").onclick = function() {
             if ( this.checked ) {male=true;}
             else {male=false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("female").onclick = function() {
             if ( this.checked ) {female = true;}
             else {female = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("5-14").onclick = function() {
             if ( this.checked ) {age5_14 = true;}
             else {age5_14 = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("15-24").onclick = function() {
             if ( this.checked ) {age15_24 = true;}
             else {age15_24 = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("25-34").onclick = function() {
             if ( this.checked ) {age25_34=true;}
             else {age25_34=false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("35-54").onclick = function() {
             if ( this.checked ) {age35_54 = true;}
             else {age35_54 = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("55-74").onclick = function() {
             if ( this.checked ) {age55_74 = true;}
             else {age55_74 = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("75+").onclick = function() {
             if ( this.checked ) {age75 = true;}
             else {age75 = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("genGI").onclick = function() {
             if ( this.checked ) {genGi = true;}
             else {genGi = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("genSilent").onclick = function() {
             if ( this.checked ) {genSilent = true;}
             else {genSilent = false;}
-            changeSecondOnCheckBox()
-        };
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}        };
         document.getElementById("genBoomers").onclick = function() {
             if ( this.checked ) {genBoomers = true;}
             else {genBoomers = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("genX").onclick = function() {
             if ( this.checked ) {genX = true;}
             else {genX = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
         document.getElementById("genMillenials").onclick = function() {
             if ( this.checked ) {genMillenials = true;}
             else {genMillenials = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
 
         document.getElementById("genZ").onclick = function() {
             if ( this.checked ) {genZ = true;}
             else {genZ = false;}
-            changeSecondOnCheckBox()
+            currentSvg = changeSecondOnCheckBox()
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
 
         function changeSecondOnCheckBox(){
+            var svg;
             if(document.getElementById("svgLinear") != null) {
 
                 var dataNoNull = filterOutNullRecords(dataFull)
@@ -266,7 +281,7 @@ Academic Year: 2019-2020
                     genMillenials, genZ);
 
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawLinearChart("#secondDiagram",filteredData)    }
+                svg = drawLinearChart("#secondDiagram",filteredData)    }
 
             if(document.getElementById("svgParallel") != null) {
 
@@ -277,7 +292,7 @@ Academic Year: 2019-2020
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+                svg = drawParallelCoordinatesChart("#secondDiagram",filteredData)}
 
             if(document.getElementById("svgScatter") != null) {
 
@@ -288,7 +303,7 @@ Academic Year: 2019-2020
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawScatterplot("#secondDiagram",filteredData)    }
+                svg = drawScatterplot("#secondDiagram",filteredData)    }
 
             if(document.getElementById("patternDiv") != null) {
 
@@ -299,10 +314,10 @@ Academic Year: 2019-2020
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                drawPatternBarchart("#secondDiagram",filteredData)
+                svg = drawPatternBarchart("#secondDiagram",filteredData)
             }
+            return svg;
         }
-
 
     });
 

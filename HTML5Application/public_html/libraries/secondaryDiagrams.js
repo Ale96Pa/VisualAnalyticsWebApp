@@ -156,10 +156,9 @@ function drawLinearChart(visualElement, data){
         return row['generation'] === 'Generation Z';
     });
 
-    var gen = [filteredDataBoomers,filteredDataGenZ,filteredDataSilent,filteredDataGenX,
-        filteredDataMillenials, filteredDataGenGI];
-    var legendKeys = ["Boomers", "Generation Z", "Silent", "Generation X", ,"Millenials",
-        "G.I. Generation"];
+    var gen = [filteredDataGenGI, filteredDataSilent, filteredDataBoomers,filteredDataGenX,
+        filteredDataMillenials, filteredDataGenZ];
+    var legendKeys = ["G.I. Generation","Silent","Boomers", "Generation X", "Millenials", "Generation Z"];
 
     gen.forEach(function(generation, index){
         var count = {};
@@ -207,8 +206,7 @@ function drawLinearChart(visualElement, data){
         .x(function(d) { return x(d.year); })
         .y(function(d) { return y(d.tot_suicides); });
 
-    var color = d3.scaleOrdinal()
-        .range(["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"]);
+    var color = ["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"];
 
     var svg = d3.select(visualElement).append("svg")
         .attr("id", "svgLinear")
@@ -219,16 +217,17 @@ function drawLinearChart(visualElement, data){
             "translate(" + margin.left + "," + margin.top + ")");
 
     var legend = d3.select(visualElement).append("svg")
-        .attr("width", "105px")
+        .attr("width", "125px")
         .attr("top",  margin.top)
         .attr("left", width + margin.left + 55);
 
     gen.forEach(function(generation, index) {
+        console.log(index)
         // Add the valueline path.
         svg.append("path")
             .data([generation])
             .attr("class", "line")
-            .style("stroke", function(){ return color(index)})
+            .style("stroke", function(){ return color[index]})
             .style("fill", "none")
             .style("stroke-width","2.5")
             .attr("d", valueline);
@@ -237,7 +236,7 @@ function drawLinearChart(visualElement, data){
             .attr("width", "13px")
             .attr("height", "13px")
             .attr('y', function(){ return (index * 20);})
-            .style("fill",function(){ return color(index)});
+            .style("fill",function(){ return color[index]});
 
         legend.append('text')
             .attr("x", "20")
@@ -262,22 +261,11 @@ function drawLinearChart(visualElement, data){
 
 
 function drawScatterplot(visualElement, data){
-    var margin = {top: 65, right: 15, bottom: 35, left: 85},
+    var margin = {top: 35, right: 15, bottom: 35, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     padding = 50;
-
-    //max vs min
-    var numSuic = data.map(function(d) { return d.tot_suicides });
-    var gdp = data.map(function(d) { return d.gdp_per_capita });
-    var hdi = data.map(function(d) { return d.hdi });
-
-
-    var dataset = [];
-    for (var i = 0; i < numSuic.length; i++) {
-        dataset[i] = [parseInt(gdp[i]), numSuic[i], hdi[i]];
-    }
 
     //scale function
     var xScale = d3.scaleLinear()
@@ -301,26 +289,58 @@ function drawScatterplot(visualElement, data){
         .attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+    var div = d3.select("#mainDiagram")
+        .append("div").attr("class", "tooltip")
+        .style("visibility","hidden");
+
     svg.selectAll("circle")
-            .data(dataset)
-            .enter()
-            .append("circle")
-            .attr("cx", function(d) {
-                    return xScale(d[0]);
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d) {
+            return xScale(d["gdp_per_capita"]);
+        })
+        .attr("cy", function(d) {
+            return yScale(d["tot_suicides"]);
+        })
+        .attr("r", 5)
+        .attr("stroke", "black")
+        .style("fill", function(d) {
+            if(parseFloat(d["hdi"]) <= 0.60) {return 'red';}
+            if(parseFloat(d["hdi"]) >= 0.75){return 'green'}
+            else {return 'yellow';}
+        })
+        .on("mouseover", function(d,i) {
+            var elem = d3.select(this)
+            elem.transition()
+                .duration('50')
+                .attr('opacity', '1')
+
+            elem.moveToFront();
+
+            div.transition()
+                .duration(50)
+                .style("visibility", "visible");
+
+            div.html(d.country)
+                .style("left", (d3.event.pageX + 5) + "px")
+                .style("top", (d3.event.pageY - 15) + "px");
+
             })
-            .attr("cy", function(d) {
-                    return yScale(d[1]);
-            })
-            .attr("r", 5)
-            .attr("stroke", "black")
-            .style("fill", function(d) {
-                if(parseFloat(d[2]) <= 0.60) {return 'red';}
-                if(parseFloat(d[2]) >= 0.75){return 'green'}
-                else {return 'yellow';}
-              });
+            .on('mouseout', function (d, i) {
+                var elem = d3.select(this)
+                elem.transition()
+                    .duration('50')
+                    .attr('opacity', '1');
+
+                elem.moveToBack();
+
+                div.transition()
+                    .duration('50')
+                    .style("visibility", "hidden");
+            });
 
 
-    //x axis
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + (height+5) + ")")
@@ -331,6 +351,36 @@ function drawScatterplot(visualElement, data){
             .attr("class", "y axis")
             .attr("transform", "translate(-5,0)")
             .call(yAxis);
+
+    var legend = ["High hdi(0.75-1)","Medium hdi(0.61-074)","Low hdi(0-0.60)"];
+    var legendColor =  ["red","yellow","green"];
+
+
+    var legendSvg = d3.select(visualElement).append("svg")
+        .attr("width", "165px")
+        .attr("top", margin.top)
+        .attr("left", width + margin.left + 55);
+
+    legend.forEach(function(elem, index) {
+
+        legendSvg.append('rect')
+            .attr("width", "13px")
+            .attr("height", "13px")
+            .attr('y', function () {
+                return (index * 30);
+            })
+            .style("fill", function () {
+                return legendColor[index]
+            });
+
+        legendSvg.append('text')
+            .attr("x", "20")
+            .attr("font-size", " small")
+            .attr('y', function () {
+                return (index * 30) + 12;
+            })
+            .text(elem);
+    })
 
     var svgData = document.getElementById("svgScatter");
     return svgData;

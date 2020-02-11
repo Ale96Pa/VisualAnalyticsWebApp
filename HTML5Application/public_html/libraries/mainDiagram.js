@@ -113,7 +113,7 @@ function drawMainDiagram(visualElement, data) {
             .attr("r", function (d){
                 return (((d.tot_suicides)*100000)/(d.population));
             })
-            .attr("opacity", "0.4")
+            .attr("opacity", "0.3")
             .style("stroke","#000")
             .style("stroke-width","0.1px")
             .attr("cx", function (d) {
@@ -276,7 +276,7 @@ function drawMainDiagram(visualElement, data) {
         var selection = d3.event.selection;
         //TODO: filter data by selection, then based on checked checkbox (document.getelement()) and with results build secondary diagram
         if (selection != null) {
-            focus.selectAll(".dot")
+            focus.selectAll(".dot").transition()
                 .style("opacity", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                         (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
@@ -287,70 +287,71 @@ function drawMainDiagram(visualElement, data) {
                     }
                 })
         } else {
-            focus.selectAll(".dot")
-                .style("fill", function (d) {
-                    return colors[d[header[2]]];
-                })
-                .style("opacity", ".3")
+            focus.selectAll(".dot").transition()
+                .style("opacity", "0.3")
         }
 
-        if(document.getElementById("svgParallel") != null) {
+        if (selection != null) {
+            if (document.getElementById("svgParallel") != null) {
 
-            d3.select("#svgParallel").selectAll(".innerPath")
-                .style("stroke", "2ca25f");
+                d3.select("#svgParallel").selectAll(".innerPath").transition()
+                    .style("opacity", function (d) {
+                        console.log(d)
+                        if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                            (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                            return "1"
+                        } else {
+                            return "0.3"
+                        }
+                    })
+                    .style("stroke", function (d) {
+                        if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                            (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                            return "#1f78b4"
+                        } else {
+                            return "#2ca25f"
+                        }
+                    })
+            }
+            if (document.getElementById("svgScatter") != null) {
 
-            d3.select("#svgParallel").selectAll(".innerPath")
-                .style("opacity", function (d) {
-                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        return "1"
-                    } else {
-                        return "0.3"
-                    }
-                })
-                .style("stroke", function (d) {
-                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        return "#1f78b4"
-                    } else {
-                        return "#2ca25f"
-                    }
-                })
-        }
-        if(document.getElementById("svgScatter") != null) {
-            d3.select("#svgScatter").selectAll("circle")
-                .style("stroke", function (d) {
-                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        return "black"
-                    } else {
-                        return "gray"
-                    }
-                })
-                .style("opacity", function (d) {
-                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        return "1"
-                    } else {
-                        return "0.4"
-                    }
-                })
-                .style("fill", function (d) {
-                    if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
-                        (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                        return "darkgreen"
-                    } else {
-                        return "gray"
-                    }
-                })
+                d3.select("#svgScatter").selectAll("circle")
+                    .style("opacity", function (d) {
+                        console.log(d)
+                        if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
+                            (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
+                            return "1"
+                        } else {
+                            return "0.01"
+                        }
+                    })
 
-        }
-        if(document.getElementById("svgLinear") != null) {
-            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
-        }
-        if(document.getElementById("patternDiv") != null) {
-            //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+            }
+            if (document.getElementById("svgLinear") != null) {
+                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+            }
+            if (document.getElementById("patternDiv") != null) {
+                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+            }
+        } else {
+            //selection null
+            if (document.getElementById("svgParallel") != null) {
+                d3.select("#svgParallel").selectAll(".innerPath")
+                    .style("stroke", "#2ca25f");
 
+                d3.select("#svgParallel").selectAll(".innerPath").transition()
+                    .style("opacity", "1");
+            }
+            if (document.getElementById("svgScatter") != null) {
+                d3.select("#svgScatter").selectAll("circle")
+                    .style("opacity", "1");
+            }
+            if (document.getElementById("svgLinear") != null) {
+                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+            }
+            if (document.getElementById("patternDiv") != null) {
+                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+            }
         }
     }
 

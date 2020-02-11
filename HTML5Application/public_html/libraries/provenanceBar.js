@@ -29,7 +29,6 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             console.log("Stop adding: memory full");
         }
 
-
     } else {
         var newSvg = svgElement.cloneNode(true);
 

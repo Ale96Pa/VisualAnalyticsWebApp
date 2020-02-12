@@ -132,7 +132,7 @@ function drawParallelCoordinatesChart(visualElement,data){
 
 function drawLinearChart(visualElement, data){
     // set the dimensions and margins of the graph
-    var margin = {top: 25, right: 15, bottom: 35, left: 85},
+    var margin = {top: 25, right: 15, bottom: 45, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -246,13 +246,19 @@ function drawLinearChart(visualElement, data){
     svg.append("g")
         .attr("class", "grid")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(-height))
-        .attr("cx", suicNum);
+        .call(d3.axisBottom(x).tickSize(-height).tickFormat(d3.format("d")))
+        .attr("cx", years)
+        .append("text").text("years").attr("x",width/2)
+        .attr("y","30").style("font-size", "12px")
+        .style("fill", "#000");;
 
     // Add the Y Axis
     svg.append("g")
         .call(d3.axisLeft(y))
-        .attr("cy", years);
+        .attr("cy", suicNum)
+        .append("text").text("Tot suicides").attr("y","-10")
+        .style("font-size", "12px")
+        .style("fill", "#000");
 
 
     return document.getElementById("svgLinear");
@@ -260,7 +266,7 @@ function drawLinearChart(visualElement, data){
 
 
 function drawScatterplot(visualElement, data){
-    var margin = {top: 25, right: 15, bottom: 25, left: 85},
+    var margin = {top: 25, right: 15, bottom: 40, left: 85},
         width = 850 - margin.left - margin.right,
         height = 390 - margin.top - margin.bottom;
 
@@ -345,7 +351,7 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(0," + (height+5) + ")")
             .call(xAxis)
         .append("text").text("Gdp per capita").attr("x",width/2)
-        .attr("y","30").style("font-size", "10px")
+        .attr("y","30").style("font-size", "12px")
         .style("fill", "#000");
 
     //y axis
@@ -354,7 +360,7 @@ function drawScatterplot(visualElement, data){
             .attr("transform", "translate(-5,0)")
             .call(yAxis)
         .append("text").text("Tot suicides").attr("y","-10")
-        .style("font-size", "10px")
+        .style("font-size", "12px")
         .style("fill", "#000");
 
     var legend = ["High hdi(0.75-1)","Medium hdi(0.61-074)","Low hdi(0-0.60)"];

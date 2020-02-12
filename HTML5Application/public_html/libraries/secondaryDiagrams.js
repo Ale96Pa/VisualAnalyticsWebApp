@@ -386,9 +386,8 @@ function drawScatterplot(visualElement, data){
     return svgData;
 }
 
-function drawBarChart(visualElement, label, dataFull){
+function drawBarChart(visualElement, label, data){
 
-    var data = dataFull;
 
     var objDataContainer = [];
 
@@ -441,37 +440,36 @@ function drawBarChart(visualElement, label, dataFull){
                     return d.sex;
             })).sort());
 
-    y.domain([0, 150000]);
+    y.domain([0, 250000]);
 
     g.append("g")
-    .attr("transform", "translate(50," + height + ")")
-    .call(d3.axisBottom(x));
-    
-    var yAx = g.append("g").attr("transform", "translate(50,0)")
-    .call(d3.axisLeft(y))
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
 
-        yAx.append("text")
-    .style("fill", "white")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6)
-    .attr("dy", "-.71em")
-    .attr("text-anchor", "end")
-    .text("tot_suicides");
+    g.append("g")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .style("fill", "white")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "-.71em")
+        .attr("text-anchor", "end")
+        .text("tot_suicides");
 
     g.selectAll(".bar")
-    .data(objDataContainer)
-    .enter().append("rect")
-    .attr("class", "bar")
-    .attr("x", function (d) {return x(d.sex)+50;})
-    .attr("y", function (d) {return y(Number(d.tot_suicides));})
-    .attr("width", x.bandwidth())
-    .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
-        .style("fill", function (d){
-            if (d.sex == "male"){
-                return "#246fb1";}
-            else{
-                return "#b1249e";}
-        });
+        .data(objDataContainer)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function (d) {return x(d.sex)+50;})
+        .attr("y", function (d) {return y(Number(d.tot_suicides));})
+        .attr("width", x.bandwidth())
+        .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
+            .style("fill", function (d){
+                if (d.sex == "male"){
+                    return "#246fb1";}
+                else{
+                    return "#b1249e";}
+            });
 
     var svgData = document.getElementById(label);
     return svgData;

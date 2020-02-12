@@ -338,6 +338,7 @@ function worldMap(visualElement) {
                 }else{
                     d3.select(this).style("stroke","#fff").style("stroke-width", ".9px");
                     selectedCountries.push(m.properties.name);}
+
                 d3.select("#dotG").selectAll(".dot")
                     .style("fill", function(d){
                         if (selectedCountries.includes(d.country) || selectedCountries.length == 0){

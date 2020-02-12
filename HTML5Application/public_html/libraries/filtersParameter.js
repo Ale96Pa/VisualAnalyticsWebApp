@@ -296,7 +296,7 @@ function worldMap(visualElement) {
 
     function draw(topo) {
 
-        var data = filterOutNullRecords(dataFull)
+        var data = dataFull
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
@@ -340,7 +340,7 @@ function worldMap(visualElement) {
                     selectedCountries.push(m.properties.name);}
                 d3.select("#dotG").selectAll(".dot")
                     .style("fill", function(d){
-                        if (selectedCountries.includes(d.country)){
+                        if (selectedCountries.includes(d.country) || selectedCountries.length == 0){
                             return colors[d.continent];}
                         else{
                             return "gray";}
@@ -349,7 +349,7 @@ function worldMap(visualElement) {
                         if (selectedCountries.includes(d.country)){
                             return "1";}
                         else{
-                            return "0.2";}
+                            return "0.1";}
                     })
                     .each(function(d) {
                         if (selectedCountries.includes(d.country)) {
@@ -363,10 +363,9 @@ function worldMap(visualElement) {
         blankMap.style("fill", function(d, i) {
             if (states.includes(d.properties.name)){
                 for(i=0; i<data.length; i++){
-                    if(male){if(data[i].country == d.properties.name){
+                   if(data[i].country == d.properties.name){
                         return colors[data[i].continent];}}
                 }
-            }
             else{
                 return "gray";}
         });

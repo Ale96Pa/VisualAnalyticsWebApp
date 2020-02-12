@@ -130,8 +130,9 @@ Academic Year: 2019-2020
             return filteredData;
         }
 
+
         function changeSecDiagram(button) {
-            var svg;
+            var reviewSvg = null;
 
             d3.selectAll(".tablinks").style("background-color", "darkgray");
             d3.select("#"+ button.id).style("background-color", "gray")
@@ -140,54 +141,53 @@ Academic Year: 2019-2020
                 var dataNoNull = filterOutNullRecords(dataFull)
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 d3.select("#secondDiagram").selectAll("div").remove();
-                svg = drawLinearChart("#secondDiagram", dataNoNull);
+                reviewSvg = drawLinearChart("#secondDiagram", dataNoNull);
             }
             if (button.id == "scatterPlot"){
                 var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 d3.select("#secondDiagram").selectAll("div").remove();
-                svg = drawScatterplot("#secondDiagram", dataYearNoNull);
+                reviewSvg = drawScatterplot("#secondDiagram", dataYearNoNull);
             }
             if(button.id == "parallelCoordinates"){
                 var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 d3.select("#secondDiagram").selectAll("div").remove();
-                svg = drawParallelCoordinatesChart("#secondDiagram", dataYearNoNull);
+                reviewSvg = drawParallelCoordinatesChart("#secondDiagram", dataYearNoNull);
             }
             if(button.id == "barChart"){
                 var dataYearNoNull = filterOutNullRecords(dataYear)
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 d3.select("#secondDiagram").selectAll("div").remove();
-                svg = drawPatternBarchart("#secondDiagram", dataYearNoNull);
+                reviewSvg = drawPatternBarchart("#secondDiagram", dataYearNoNull);
             }
-            //TODO: add all diagrams --> CHECK !!
-            return svg;
+            return reviewSvg;
         }
 
 
-        var currentSvg = null;
-        var svgs_to_save = []
+        var currentTabSvg = null;
+        var svgs_to_save = [];
         var buttonSaveProvenance = document.getElementById("saveOnProvenance");
         
         document.getElementById("linearChart").onclick = function() {
-            currentSvg = changeSecDiagram(this);
-            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+            currentTabSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentTabSvg, svgs_to_save);}
         };
         document.getElementById("scatterPlot").onclick = function() {
-            currentSvg = changeSecDiagram(this);
-            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+            currentTabSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentTabSvg, svgs_to_save);}
         };
         document.getElementById("parallelCoordinates").onclick = function() {
-            currentSvg = changeSecDiagram(this);
-            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+            currentTabSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentTabSvg, svgs_to_save);}
         };
         document.getElementById("barChart").onclick = function() {
-            currentSvg = changeSecDiagram(this);
-            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+            currentTabSvg = changeSecDiagram(this);
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentTabSvg, svgs_to_save);}
         };
 
-        var filteredData;
 
+        var currentSvg = null;
         document.getElementById("male").onclick = function() {
             if ( this.checked ) {male=true;}
             else {male=false;}
@@ -246,7 +246,8 @@ Academic Year: 2019-2020
             if ( this.checked ) {genSilent = true;}
             else {genSilent = false;}
             currentSvg = changeSecondOnCheckBox()
-            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}        };
+            buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
+        };
         document.getElementById("genBoomers").onclick = function() {
             if ( this.checked ) {genBoomers = true;}
             else {genBoomers = false;}
@@ -273,17 +274,22 @@ Academic Year: 2019-2020
             buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
 
+
+
         function changeSecondOnCheckBox(){
-            var svg;
+            var svgChecked = null;
+            var filteredData = null;
+
             if(document.getElementById("svgLinear") != null) {
 
-                var dataNoNull = filterOutNullRecords(dataFull)
+                var dataNoNull = filterOutNullRecords(dataFull);
                 filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
 
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawLinearChart("#secondDiagram",filteredData)    }
+                svgChecked = drawLinearChart("#secondDiagram",filteredData)
+            }
 
             if(document.getElementById("svgParallel") != null) {
 
@@ -294,7 +300,7 @@ Academic Year: 2019-2020
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+                svgChecked = drawParallelCoordinatesChart("#secondDiagram",filteredData)}
 
             if(document.getElementById("svgScatter") != null) {
 
@@ -304,8 +310,10 @@ Academic Year: 2019-2020
                 filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
+
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawScatterplot("#secondDiagram",filteredData)    }
+                svgChecked = drawScatterplot("#secondDiagram",filteredData)
+            }
 
             if(document.getElementById("patternDiv") != null) {
 
@@ -316,9 +324,10 @@ Academic Year: 2019-2020
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
-                svg = drawPatternBarchart("#secondDiagram",filteredData)
+                d3.select("#secondDiagram").selectAll("div").remove();
+                svgChecked = drawPatternBarchart("#secondDiagram",filteredData)
             }
-            return svg;
+            return svgChecked;
         }
 
     });

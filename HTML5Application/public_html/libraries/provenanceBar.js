@@ -27,6 +27,7 @@ function saveLogicSvg(svgElement){
 // Pick an svg and clone it to visualize it in the provenance bar
 function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
 
+    var newSvg;
 // TODO: per array di barchart mettere tutto in una riga nella provenance
     if(Array.isArray(svgElement)){
         //barchart case
@@ -38,7 +39,7 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             .attr("id","divContainer"+provenanceContainer);
         for(i=0; i<svgElement.length; i++) {
 
-            var newSvg = svgElement[i].cloneNode(true);
+             newSvg = svgElement[i].cloneNode(true);
             newSvg.setAttribute("height", 200);
             newSvg.style.transform = "scaleY(0.06)"
 
@@ -58,9 +59,10 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
         }
 
     } else {
-        var newSvg = svgElement.cloneNode(true);
-
+        newSvg = svgElement.cloneNode(true);
+        newSvg.setAttribute("id","cloned"+provenanceContainer)
         newSvg.style.transform="scale(0.2,0.32)"
+
         d3.select("#provenanceBar").append("svg")
             .attr("class","provenanceElem")
             .attr("width","200px").attr("height","auto")
@@ -73,6 +75,7 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
         var strSvg = (new XMLSerializer).serializeToString(newSvg);
         
         arraySvgToSave.push(strSvg);
+
         try {
             sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
         } catch(err) {
@@ -80,7 +83,6 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             //document.getElementById("demo").innerHTML = err.message;
         }
 
-        console.log(arraySvgToSave);
     }
     
 }

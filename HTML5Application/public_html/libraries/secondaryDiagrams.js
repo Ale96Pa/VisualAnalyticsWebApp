@@ -22,7 +22,7 @@ function drawParallelCoordinatesChart(visualElement,data){
             "translate(" + margin.left + "," + margin.top + ")");
 
 
-    var rangeSex = calculateRangeArray(2, height);
+    //var rangeSex = calculateRangeArray(2, height);
     var rangeAge = calculateRangeArray(6, height);
     var rangeGeneration = calculateRangeArray(6, height);
 
@@ -125,8 +125,7 @@ function drawParallelCoordinatesChart(visualElement,data){
     svg.selectAll("text")
         .style("fill", "white");
 
-    var svgData = document.getElementById("svgParallel");
-    return svgData;
+    return document.getElementById("svgParallel");
 }
 
 
@@ -255,15 +254,15 @@ function drawLinearChart(visualElement, data){
         .call(d3.axisLeft(y))
         .attr("cy", years);
 
-    var svgData = document.getElementById("svgLinear");
-    return svgData;
+
+    return document.getElementById("svgLinear");
 }
 
 
 function drawScatterplot(visualElement, data){
-    var margin = {top: 35, right: 15, bottom: 35, left: 85},
+    var margin = {top: 25, right: 15, bottom: 25, left: 85},
         width = 850 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 390 - margin.top - margin.bottom;
 
     padding = 50;
 
@@ -344,13 +343,19 @@ function drawScatterplot(visualElement, data){
     svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + (height+5) + ")")
-            .call(xAxis);
+            .call(xAxis)
+        .append("text").text("Gdp per capita").attr("x",width/2)
+        .attr("y","30").style("font-size", "10px")
+        .style("fill", "#000");
 
     //y axis
     svg.append("g")
             .attr("class", "y axis")
             .attr("transform", "translate(-5,0)")
-            .call(yAxis);
+            .call(yAxis)
+        .append("text").text("Tot suicides").attr("y","-10")
+        .style("font-size", "10px")
+        .style("fill", "#000");
 
     var legend = ["High hdi(0.75-1)","Medium hdi(0.61-074)","Low hdi(0-0.60)"];
     var legendColor =  ["red","yellow","green"];
@@ -382,8 +387,7 @@ function drawScatterplot(visualElement, data){
             .text(elem);
     })
 
-    var svgData = document.getElementById("svgScatter");
-    return svgData;
+    return document.getElementById("svgScatter");
 }
 
 
@@ -496,8 +500,8 @@ function drawBarChart(visualElement, label, dataFull){
             return d.tot_suicides;
         });
 
-    var svgData = document.getElementById(label);
-    return svgData;
+
+    return document.getElementById(label);
 }
 
 
@@ -514,8 +518,7 @@ function drawPatternBarchart(visualElement, data){
         .attr("height",height)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
         .style("display","inline-flex")
-        .style("padding-top","80px")
-        //.style("position","relative");
+        .style("padding-top","80px");
 
     var filteredData05 = [];
     var filteredData15 = [];

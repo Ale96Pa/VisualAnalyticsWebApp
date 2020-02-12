@@ -226,7 +226,7 @@ function drawMainDiagram(visualElement, data) {
             .enter().append("circle")
             .attr('class', 'dotContext')
             .attr("r", 2)
-            .style("opacity", .5)
+            .style("opacity", "0.2")
             .attr("cx", function (d) {
                 return x2(d[header[0]]);
             })
@@ -285,12 +285,12 @@ function drawMainDiagram(visualElement, data) {
                         selectionData = selection;
                         return "1.0"
                     } else {
-                        return "0.3"
+                        return "0.2"
                     }
                 })
         } else {
             focus.selectAll(".dot").transition()
-                .style("opacity", "0.3")
+                .style("opacity", "0.2")
         }
 
         if (selection != null) {

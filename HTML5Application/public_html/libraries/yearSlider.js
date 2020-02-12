@@ -29,9 +29,6 @@ function slideYear(visualElement, data){
         var filteredData = data.filter(function(row) {
             return row['year'] == year;
         });
-//TODO:remove remove secondary and set them coordinated
-        d3.select("#secondDiagram").selectAll("svg").remove();
-        d3.select("#secondDiagram").selectAll("div").remove();
 
         d3.select("#mainDiagram").selectAll(".tooltip").remove();
 
@@ -47,11 +44,13 @@ function slideYear(visualElement, data){
                     if (selectedCountries.includes(d.country)){
                         return colors[d.continent];}
                     else{
-                        return "gray";}
+                        return "grey";}
                 })
         }
         dataYear = filteredData;
         selectionData = [];
+
+        changeOnSecondary(dataYear);
     }
 }
 

@@ -174,6 +174,21 @@ function filterRangeGdp(data, min, max){
     }
     return filteredData;
 }
+
+
+function filterSelection(data, selection){
+    var filteredData = [];
+    for(i=0; i<data.length; i++){
+
+        if (((data[i]["X"]) > selection[0][0]) && ((data[i]["X"]) < selection[1][0]) &&
+            ((data[i]["Y"]) < selection[0][1]) && ((data[i]["Y"]) > selection[1][1])) {
+                filteredData.push(data[i]);
+        }
+    }
+    return filteredData;
+}
+
+
 function filterAllDataBrusher(data, hdiRange, popRange, gdpRange){
     var filter = filterRangePopulation(data, popRange[0], popRange[1]);
     var filteredCountry=[];

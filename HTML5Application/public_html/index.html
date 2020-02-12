@@ -91,18 +91,20 @@ Academic Year: 2019-2020
     
     var provenanceContainer = 0;
 
-    async function loadData(){
-        return dataFull = await d3.csv("dataset/fullDataset.csv");
-    }
-
     var selectionData = [];
     var rangeBrushes =[[],[],[]];
     var selectedCountries=[];
     var dataYear;
+    var dataFull;
 
     var male = true,female = true;
     var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
     var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
+
+
+    async function loadData(){
+        return dataFull = await d3.csv("dataset/fullDataset.csv");
+    }
 
     loadData().then(dataFull =>{
         

@@ -222,7 +222,6 @@ function drawLinearChart(visualElement, data){
         .attr("left", width + margin.left + 55);
 
     gen.forEach(function(generation, index) {
-        console.log(index)
         // Add the valueline path.
         svg.append("path")
             .data([generation])
@@ -246,8 +245,9 @@ function drawLinearChart(visualElement, data){
     });
     // Add the X Axis
     svg.append("g")
+        .attr("class", "grid")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(x).tickSize(-height))
         .attr("cx", suicNum);
 
     // Add the Y Axis
@@ -386,15 +386,17 @@ function drawScatterplot(visualElement, data){
     return svgData;
 }
 
-function drawBarChart(visualElement, label, data){
 
+function drawBarChart(visualElement, label, dataFull){
+
+    var data = dataFull;
 
     var objDataContainer = [];
 
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
         width = 150 - margin.left - margin.right,
-        height = 230 - margin.top - margin.bottom;
-    
+        height = 250 - margin.top - margin.bottom;
+
     var svg = d3.select(visualElement).append("svg")
         .attr("id", label)
         .attr("height","330px");
@@ -404,11 +406,11 @@ function drawBarChart(visualElement, label, data){
         .attr("transform", "translate(" + margin.left + ",30)");
 
     var x = d3.scaleBand()
-            .rangeRound([0, 120])
-            .padding(0.1);
+        .rangeRound([0, 120])
+        .padding(0.1);
 
     var y = d3.scaleLinear()
-            .rangeRound([height, 0]);
+        .rangeRound([height, 0]);
 
     var gender;
     var totMale = 0;
@@ -434,42 +436,65 @@ function drawBarChart(visualElement, label, data){
     objDataF.tot_suicides = totFemale;
     objDataContainer.push(objDataM);
     objDataContainer.push(objDataF);
+    console.log(objDataContainer)
 
 
-    x.domain((data.map(function (d) {
-                    return d.sex;
-            })).sort());
-
-    y.domain([0, 250000]);
+    x.domain((objDataContainer.map(function (d) {
+        return d.sex;
+    })).sort());
+    console.log(objDataContainer)
+    y.domain([0, 850000]);
 
     g.append("g")
-        .attr("transform", "translate(0," + height + ")")
+        .attr("transform", "translate(50," + height + ")")
         .call(d3.axisBottom(x));
 
-    g.append("g")
+    var yAx = g.append("g")
+        .attr("width","900px")
+        .attr("transform", "translate(50,0)")
         .call(d3.axisLeft(y))
-        .append("text")
-        .style("fill", "white")
+
+    yAx.append("text")
+        .style("fill", "black")
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
+        .attr("y", "20")
+        .attr("x", "0")
         .attr("dy", "-.71em")
         .attr("text-anchor", "end")
         .text("tot_suicides");
 
-    g.selectAll(".bar")
+    var bar = g.selectAll(".bar")
         .data(objDataContainer)
-        .enter().append("rect")
+        .enter().append("g")
+        .attr("width", x.bandwidth())
+        .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
+
+        bar.append("rect")
         .attr("class", "bar")
         .attr("x", function (d) {return x(d.sex)+50;})
         .attr("y", function (d) {return y(Number(d.tot_suicides));})
         .attr("width", x.bandwidth())
         .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
-            .style("fill", function (d){
-                if (d.sex == "male"){
-                    return "#246fb1";}
-                else{
-                    return "#b1249e";}
-            });
+        .style("fill", function (d){
+            if (d.sex == "male"){
+                return "#246fb1";}
+            else{
+                return "#b1249e";}
+        });
+
+        bar.append("text")
+        .attr("y", function(d) {
+            return y(Number(d.tot_suicides)+5);
+        })
+        .attr("x", function(d) {
+            return x(d.sex)+60;
+        })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "8px")
+        .attr("fill", "white")
+        .text(function(d) {
+            return d.tot_suicides;
+        });
 
     var svgData = document.getElementById(label);
     return svgData;

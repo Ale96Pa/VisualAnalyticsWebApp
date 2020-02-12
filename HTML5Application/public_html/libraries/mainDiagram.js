@@ -276,6 +276,8 @@ function drawMainDiagram(visualElement, data) {
         var selection = d3.event.selection;
         //TODO: filter data by selection, then based on checked checkbox (document.getelement()) and with results build secondary diagram
         if (selection != null) {
+            selectedData = [[x.invert(selection[0][0]),y.invert(selection[0][1])],
+                [x.invert(selection[1][0]),y.invert(selection[1][1])]];
             focus.selectAll(".dot").transition()
                 .style("opacity", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
@@ -328,12 +330,33 @@ function drawMainDiagram(visualElement, data) {
 
             }
             if (document.getElementById("svgLinear") != null) {
-                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+
+                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate guardando anno corrente epr le x e le y poi tutti gli anni per renderizzare
+                /*var filteredData2 = [];
+                var dataNoNull = filterOutNullRecords(dataFull);
+                var tmpData = filterSelection(dataNoNull, selectedCountries);
+
+                var filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+
+                for(i=0; i<filteredData.length; i++){
+                    console.log(filteredData[i]["X"])
+                    if ((x(filteredData[i][header[0]]) > selection[0][0]) && (x(filteredData[i][header[0]]) < selection[1][0]) &&
+                        (y(filteredData[i][header[1]]) > selection[0][1]) && (y(filteredData[i][header[1]]) < selection[1][1])) {
+                        filteredData2.push(filteredData[i]);
+                    }
+                }
+
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                svg = drawLinearChart("#secondDiagram",filteredData)*/
             }
             if (document.getElementById("patternDiv") != null) {
                 //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
             }
         } else {
+
+            selectedData = null;
             //selection null
             if (document.getElementById("svgParallel") != null) {
                 d3.select("#svgParallel").selectAll(".innerPath")
@@ -347,12 +370,29 @@ function drawMainDiagram(visualElement, data) {
                     .style("opacity", "1");
             }
             if (document.getElementById("svgLinear") != null) {
-                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
-            }
+                console.log("entarto")
+                var dataNoNull = filterOutNullRecords(dataFull)
+                filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                svg = drawLinearChart("#secondDiagram",filteredData)
+
+        }
             if (document.getElementById("patternDiv") != null) {
-                //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
+
+                var dataYearNoNull = filterOutNullRecords(dataYear)
+                tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+
+                filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                svg = drawPatternBarchart("#secondDiagram",filteredData)
             }
         }
+        return svg;
     }
 
 
@@ -360,10 +400,9 @@ function drawMainDiagram(visualElement, data) {
 
 }
 
-
+/*
 function changeMainDiagram(visualElement, data) {
 
-    /*2 is hdi axes, 3 is gdp axes*/
     var margin = {top: 5, right: 45, bottom: 110, left: 150},
         margin2 = {top: 340, right: 45, bottom: 35, left: 150},
         margin3 = {top: 5, right: 935, bottom: 110, left: 55},
@@ -375,7 +414,6 @@ function changeMainDiagram(visualElement, data) {
     //qualitative scale from colorbrewer
     var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
-    /*Define values to show on axes*/
     var x = d3.scaleLinear().range([0, width]),
         x2 = d3.scaleLinear().range([0, width]),
         x3 = d3.scaleLinear().range([0, width3]),
@@ -383,7 +421,6 @@ function changeMainDiagram(visualElement, data) {
         y2 = d3.scaleLinear().range([height2, 0]),
         y3 = d3.scaleLinear().range([height, 0]);
 
-    /*define axes*/
     var xAxis = d3.axisBottom(x),
         xAxis2 = d3.axisBottom(x2),
         yAxis = d3.axisLeft(y),
@@ -648,4 +685,4 @@ function changeMainDiagram(visualElement, data) {
             //TODO: renderizzare da zero con nuovi dati, perchè dobbiamo rifare le somme per le countries selezionate
 
         }
-    }
+    }*/

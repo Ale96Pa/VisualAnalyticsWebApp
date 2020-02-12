@@ -5,6 +5,7 @@
 <html>
     <head>
         <title>Review your work</title>
+        <link rel="stylesheet" href="libraries/style.css">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="libraries/d3.js"></script>
@@ -14,12 +15,26 @@
         <script type="text/javascript" src="libraries/filtersParameter.js"></script>
     </head>
     <body>
-        <div id="review">
+        <div id="review" >
         </div>
+    <button class="reviewButton" onclick="saveSvg()"> Download </button>
     </body>
     
     <script>
         copyToReview("#review");
+
+        function saveSvg() {
+            var svgData = document.getElementById("review").innerHTML;
+            var preface = '<?xml version="1.0" standalone="no"?>\r\n';
+            var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
+            var svgUrl = URL.createObjectURL(svgBlob);
+            var downloadLink = document.createElement("a");
+            downloadLink.href = svgUrl;
+            downloadLink.download = "report.html";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
     </script>
        
 </html>

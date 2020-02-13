@@ -266,20 +266,47 @@ function drawLinearChart(visualElement, data){
 
 
 function drawScatterplot(visualElement, data){
-    var margin = {top: 25, right: 15, bottom: 40, left: 85},
+
+    var margin = {top: 25, right: 15, bottom: 25, left: 85},
         width = 850 - margin.left - margin.right,
         height = 390 - margin.top - margin.bottom;
-
     padding = 50;
+
+    var objDataContainer = [];
+    var tot_suicides_parameter = 0;
+    var oldCountry;
+    if(data.length != 0){oldCountry = data[0].country}
+    for(i=0; i<data.length; i++){
+        fractionalSuicides = parseFloat(data[i].suicide_100kpop);
+        population = parseInt(data[i].population);
+        totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
+
+        currentCountry = data[i].country;
+        if(currentCountry == oldCountry){
+            tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
+        } else {
+            var objRecord = {};
+            objRecord.X = data[i].X;
+            objRecord.Y = data[i].Y;
+            objRecord.country = data[i].country;
+            objRecord.tot_suicides = tot_suicides_parameter;
+            objRecord.hdi = data[i].hdi;
+            objRecord.gdp_per_capita = data[i].gdp_per_capita;
+            objDataContainer.push(objRecord);
+            oldCountry = currentCountry;
+            tot_suicides_parameter = 0;
+        }
+    }
+
 
     //scale function
     var xScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
-            .range([0, width]);
+        .domain([0, d3.max(objDataContainer, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
+        .range([0, width]);
 
     var yScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +d["tot_suicides"]; })])
-            .range([height , 0]);
+        .domain([0, d3.max(objDataContainer, function(d) {return +d["tot_suicides"]; })])
+        .range([height , 0]);
 
     var xAxis = d3.axisBottom().scale(xScale);
 
@@ -299,7 +326,7 @@ function drawScatterplot(visualElement, data){
         .style("visibility","hidden");
 
     svg.selectAll("circle")
-        .data(data)
+        .data(objDataContainer)
         .enter()
         .append("circle")
         .attr("cx", function(d) {
@@ -331,36 +358,36 @@ function drawScatterplot(visualElement, data){
                 .style("left", (d3.event.pageX + 5) + "px")
                 .style("top", (d3.event.pageY - 15) + "px");
 
-            })
-            .on('mouseout', function (d, i) {
-                var elem = d3.select(this)
-                elem.transition()
-                    .duration('50')
-                    .attr('opacity', '1');
+        })
+        .on('mouseout', function (d, i) {
+            var elem = d3.select(this)
+            elem.transition()
+                .duration('50')
+                .attr('opacity', '1');
 
-                elem.moveToBack();
+            elem.moveToBack();
 
-                div.transition()
-                    .duration('50')
-                    .style("visibility", "hidden");
-            });
+            div.transition()
+                .duration('50')
+                .style("visibility", "hidden");
+        });
 
 
     svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + (height+5) + ")")
-            .call(xAxis)
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + (height+5) + ")")
+        .call(xAxis)
         .append("text").text("Gdp per capita").attr("x",width/2)
-        .attr("y","30").style("font-size", "12px")
+        .attr("y","30").style("font-size", "10px")
         .style("fill", "#000");
 
     //y axis
     svg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(-5,0)")
-            .call(yAxis)
-        .append("text").text("Tot suicides").attr("y","-10")
-        .style("font-size", "12px")
+        .attr("class", "y axis")
+        .attr("transform", "translate(-5,0)")
+        .call(yAxis)
+        .append("text").text("Tot_suicides").attr("y","-10")
+        .style("font-size", "10px")
         .style("fill", "#000");
 
     var legend = ["High hdi(0.75-1)","Medium hdi(0.61-074)","Low hdi(0-0.60)"];
@@ -395,6 +422,7 @@ function drawScatterplot(visualElement, data){
 
     return document.getElementById("svgScatter");
 }
+
 
 
 function drawBarChart(visualElement, label, dataFull){

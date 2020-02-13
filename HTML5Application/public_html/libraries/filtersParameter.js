@@ -20,7 +20,7 @@ function filterOutNullRecords(data){
 
 function filters(visualElement, data) {
 
-    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+    var colors = {Europe:"#377eb8",Antartide:"#e41a1c",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
     function newFilterBar(data, name) {
 
@@ -131,24 +131,76 @@ function filters(visualElement, data) {
 
 
 function changeOnSecondary(tmpData){
+    var svgFromBrush=null;
     var filteredData = filterAllDataCheckbox(tmpData, male, female, age5_14, age15_24, age25_34,
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
         genMillenials, genZ);
 
-
     if(document.getElementById("svgParallel") != null) {
+        var dataNoNull = filterOutNullRecords(filteredData);
         d3.select("#secondDiagram").selectAll("svg").remove();
-        drawParallelCoordinatesChart("#secondDiagram",filteredData)}
+        svgFromBrush = drawParallelCoordinatesChart("#secondDiagram",dataNoNull)
+
+        if (selectedCountries.length != 0 || (selectionData != null && selectionData.length == 2)) {
+            d3.select("#svgParallel").selectAll(".innerPath").transition()
+                .style("opacity", function (d) {
+                    if (selectedCountries.includes(d.country)){
+                        return "1"
+                    }if ((selectionData != null && selectionData.length == 2)
+                        && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                        ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                            return "1"
+                    }else {
+                        return "0.3"
+                    }
+                })
+                .style("stroke", function (d) {
+                    if (selectedCountries.includes(d.country)){
+                        return "#1f78b4"
+                    }if ((selectionData != null && selectionData.length == 2)
+                        && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                        ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                            return "#1f78b4"
+                    }
+                    else {
+                        return "#2ca25f"}
+                })}
+    }
 
     if(document.getElementById("svgScatter") != null) {
+        var dataNoNull = filterOutNullRecords(filteredData);
         d3.select("#secondDiagram").selectAll("svg").remove();
-        drawScatterplot("#secondDiagram",filteredData)    }
+        svgFromBrush = drawScatterplot("#secondDiagram",dataNoNull);
+        if (selectedCountries.length != 0 || (selectionData != null && selectionData.length == 2)) {
+            d3.select("#svgScatter").selectAll("circle")
+                .style("opacity", function (d) {
+                    console.log(d)
+                    if (selectedCountries.includes(d.country)){
+                        return "1"
+                    }if ((selectionData != null && selectionData.length == 2)
+                        && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                        ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                            return "1"
+                    } else {
+                        return "0.1"}
+                })}
+    }
 
     if(document.getElementById("patternDiv") != null) {
+        var dataNoNull = filterOutNullRecords(filteredData);
+
+        var dataNoNull1 = filterCountry(dataNoNull, selectedCountries);
+
+
+        d3.select("#secondDiagram").selectAll("div").remove();
         d3.select("#secondDiagram").selectAll("svg").remove();
-        drawPatternBarchart("#secondDiagram",filteredData)
+        svgFromBrush = drawPatternBarchart("#secondDiagram",dataNoNull1)
     }
+
+    document.getElementById("saveOnProvenance").onclick=function(){
+        saveSvgFile("provenanceBar", svgFromBrush, svgs_to_save);}
 };
+
 
 function filterRangeHdi(data, min, max){
     var filteredData = [];
@@ -158,6 +210,7 @@ function filterRangeHdi(data, min, max){
     }
     return filteredData;
 }
+
 function filterRangePopulation(data, min, max){
     var filteredData = [];
     for(i=0; i<data.length; i++){
@@ -166,6 +219,7 @@ function filterRangePopulation(data, min, max){
     }
     return filteredData;
 }
+
 function filterRangeGdp(data, min, max){
     var filteredData = [];
     for(i=0; i<data.length; i++){
@@ -178,13 +232,26 @@ function filterRangeGdp(data, min, max){
 
 function filterSelection(data, selection){
     var filteredData = [];
-    for(i=0; i<data.length; i++){
-
-        if (((data[i]["X"]) > selection[0][0]) && ((data[i]["X"]) < selection[1][0]) &&
-            ((data[i]["Y"]) < selection[0][1]) && ((data[i]["Y"]) > selection[1][1])) {
+    if(selection != null && selection.length == 2) {
+        for (i = 0; i < data.length; i++) {
+            if (((data[i]["X"]) > selection[0][0]) && ((data[i]["X"]) < selection[1][0]) &&
+                ((data[i]["Y"]) < selection[0][1]) && ((data[i]["Y"]) > selection[1][1])) {
                 filteredData.push(data[i]);
+            }
         }
-    }
+    }else{ filteredData = data; }
+    return filteredData;
+}
+
+function filterCountry(data,countries){
+    var filteredData = [];
+    if(countries.length != 0) {
+        for (i = 0; i < data.length; i++) {
+            if (countries.includes(data[i].country)) {
+                filteredData.push(data[i]);
+            }
+        }
+    }else {filteredData = data;}
     return filteredData;
 }
 
@@ -215,6 +282,7 @@ function filterSex(data, male, female){
     */
     return filteredData;
 }
+
 function filterAge(data, age5_14, age15_24, age25_34, age35_54, age55_74, age75){
     var filteredData = [];
     for(i=0; i<data.length; i++){
@@ -264,8 +332,7 @@ function worldMap(visualElement) {
 
     var projection,path,svg,g;
     //color from colorbrewer qualitative scale
-    var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
-
+    var colors = {Europe:"#377eb8",Antartide:"#e41a1c",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
     var zoom = d3.zoom()
         .scaleExtent([1, 9])
@@ -352,21 +419,24 @@ function worldMap(visualElement) {
                     //if condition needed because this statement remove last element when index not found
                     selectedCountries.splice( selectedCountries.indexOf(m.properties.name), 1 );
                 }else{
-                    d3.select(this).style("stroke","#fff").style("stroke-width", ".9px");
+                    d3.select(this).style("stroke","red").style("stroke-width", ".9px");
                     selectedCountries.push(m.properties.name);}
 
+                //mainScatterplot
                 d3.select("#dotG").selectAll(".dot")
-                    .style("fill", function(d){
-                        if (selectedCountries.includes(d.country) || selectedCountries.length == 0){
-                            return colors[d.continent];}
-                        else{
-                            return "gray";}
-                    })
-                    .style("fill-opacity", function(d){
+                    .style("opacity", function(d){
                         if (selectedCountries.includes(d.country)){
                             return "1";}
                         else{
                             return "0.1";}
+                    })
+                    .style("stroke", function(d){
+                    if (selectedCountries.includes(d.country)) {
+                        return "red";}
+                     })
+                    .style("stroke-width",function(d){
+                        if (selectedCountries.includes(d.country)) {
+                            return ".9px";}
                     })
                     .each(function(d) {
                         if (selectedCountries.includes(d.country)) {
@@ -374,7 +444,126 @@ function worldMap(visualElement) {
                         }
                     });
 
-            });
+                //SecondaryDiagrams
+                var tmpDataMap = null,svgFromMap=null;
+
+                if (selectedCountries.length != 0 ||( selectionData != null && selectionData.length == 2)){
+
+                    if(document.getElementById("svgLinear") != null){
+                        var dataNoNull = filterOutNullRecords(dataFull)
+                        var dataNoNull1 = filterCountry(dataNoNull, selectedCountries);
+
+                        var filteredDataMap = filterAllDataCheckbox(dataNoNull1, male, female, age5_14, age15_24, age25_34,
+                            age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                            genMillenials, genZ);
+
+                        d3.select("#secondDiagram").selectAll("svg").remove();
+                        svgFromMap = drawLinearChart("#secondDiagram",filteredDataMap)
+                    }
+
+                    if (document.getElementById("svgParallel") != null) {
+
+                        d3.select("#svgParallel").selectAll(".innerPath").transition()
+                            .style("opacity", function (d) {
+                                if (selectedCountries.includes(d.country)) {
+                                    return "1"
+                                }if ((selectionData != null && selectionData.length == 2)
+                                    && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                                    ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                                    return "1"
+                                }
+                                else {
+                                    return "0.3"
+                                }
+                            })
+                            .style("stroke", function (d) {
+                                if (selectedCountries.includes(d.country)) {
+                                    return "#1f78b4"
+                                }if ((selectionData != null && selectionData.length == 2)
+                                    && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                                    ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                                    return "#1f78b4"
+                                }
+                                else {
+                                    return "#2ca25f"
+                                }
+                            })
+                    }
+
+                    if (document.getElementById("svgScatter") != null) {
+
+                        d3.select("#svgScatter").selectAll("circle")
+                            .style("opacity", function (d) {
+                                if (selectedCountries.includes(d.country)) {
+                                    return "1"
+                                }if ((selectionData != null && selectionData.length == 2)
+                                    && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                                    ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                                    return "1"
+                                }else {
+                                    return "0.1"
+                                }
+                            })
+
+                    }
+
+                    if (document.getElementById("patternDiv") != null) {
+                        var dataYearNoNull = filterOutNullRecords(dataYear)
+
+                        var dataYearNoNull1 = filterCountry(dataYearNoNull, selectedCountries);
+
+                        var tmpDataMap2 = filterAllDataBrusher(dataYearNoNull1, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+                        filteredDataMap = filterAllDataCheckbox(tmpDataMap2[1], male, female, age5_14, age15_24, age25_34,
+                            age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                            genMillenials, genZ);
+                        d3.select("#secondDiagram").selectAll("div").remove();
+                        d3.select("#secondDiagram").selectAll("svg").remove();
+                        svgFromMap = drawPatternBarchart("#secondDiagram",filteredDataMap)
+                    }
+
+                    document.getElementById("saveOnProvenance").onclick=function(){
+                        saveSvgFile("provenanceBar", svgFromMap, svgs_to_save);}
+
+                }
+                else {
+
+                if (document.getElementById("svgParallel") != null) {
+                    d3.select("#svgParallel").selectAll(".innerPath")
+                        .style("stroke", "#2ca25f");
+
+                    d3.select("#svgParallel").selectAll(".innerPath").transition()
+                        .style("opacity", "1");
+                }
+                if (document.getElementById("svgScatter") != null) {
+                    d3.select("#svgScatter").selectAll("circle")
+                        .style("opacity", "1");
+                }
+                if (document.getElementById("svgLinear") != null) {
+                    var dataNoNull = filterOutNullRecords(dataFull)
+                    filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
+                        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                        genMillenials, genZ);
+
+                    d3.select("#secondDiagram").selectAll("svg").remove();
+                    svgFromMap = drawLinearChart("#secondDiagram",filteredData)
+
+                }
+                if (document.getElementById("patternDiv") != null) {
+
+                    var dataYearNoNull = filterOutNullRecords(dataYear)
+                    tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+
+                    filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                        age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                        genMillenials, genZ);
+                    d3.select("#secondDiagram").selectAll("svg").remove();
+                    svgFromMap = drawPatternBarchart("#secondDiagram",filteredData)
+                }
+                    document.getElementById("saveOnProvenance").onclick=function(){
+                        saveSvgFile("provenanceBar", svgFromMap, svgs_to_save);}
+            }
+
+    });
 
 
         blankMap.style("fill", function(d, i) {

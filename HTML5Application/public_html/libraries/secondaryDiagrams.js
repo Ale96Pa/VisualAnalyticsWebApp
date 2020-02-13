@@ -474,13 +474,11 @@ function drawBarChart(visualElement, label, dataFull){
     objDataF.tot_suicides = totFemale;
     objDataContainer.push(objDataM);
     objDataContainer.push(objDataF);
-    console.log(objDataContainer)
 
 
     x.domain((objDataContainer.map(function (d) {
         return d.sex;
     })).sort());
-    console.log(objDataContainer)
     y.domain([0, 850000]);
 
     g.append("g")

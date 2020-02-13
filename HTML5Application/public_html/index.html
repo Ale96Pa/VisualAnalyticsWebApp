@@ -35,6 +35,10 @@ Academic Year: 2019-2020
             <div class="slidecontainer">
                 <div id="slider-step"></div>
             </div>
+            <form style="position:fixed; top:420px; left:35px;">
+                <input type="radio" id="tsneRadio" name="reduction" value="Tsne"  checked /> T-SNE
+                <input type="radio" id="pcaRadio" name="reduction" value="PCA" /> PCA
+            </form>
         </div>
 
         <div class="tab">
@@ -95,7 +99,7 @@ Academic Year: 2019-2020
     var rangeBrushes =[[],[],[]];
     var selectedCountries=[];
     var dataYear;
-    var dataFull;
+    var tsneData, dataPca, dataFull;
 
     var male = true,female = true;
     var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
@@ -103,20 +107,25 @@ Academic Year: 2019-2020
 
 
     async function loadData(){
-        return dataFull = await d3.csv("dataset/fullDataset.csv");
+        dataPca= await d3.csv("dataset/fullDatasetPca.csv");
+        return tsneData= await d3.csv("dataset/fullDatasetTsne.csv");
     }
 
-    loadData().then(dataFull =>{
-        
-        slideYear("#slider-step", dataFull);
+    loadData().then(tsneData=>{
+
+        dataFull = tsneData;
 
         dataYear = dataFull.filter(function(row) {
             return row['year'] == '1990';
         });
+        
+        slideYear("#slider-step", dataFull);
 
         filters("#filters", dataYear);
         drawMainDiagram("#mainDiagram", dataYear);
         worldMap("map");
+
+
 
         function filterOutNullRecords(data){
             var filteredData = [];
@@ -274,6 +283,41 @@ Academic Year: 2019-2020
             buttonSaveProvenance.onclick=function(){saveSvgFile("provenanceBar", currentSvg, svgs_to_save);}
         };
 
+        document.getElementById("pcaRadio").onclick = function(){
+            dataFull = dataPca;
+
+            dataYear = dataFull.filter(function(row) {
+                return row['year'] == dataYear[0].year;
+            });
+
+            d3.select("#slider-step").selectAll("svg").remove();
+            slideYear("#slider-step", dataFull);
+
+            d3.select("#mainDiagram").selectAll(".tooltip").remove();
+            d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+            d3.selectAll(".filterBrush").remove();
+
+            filters("#filters", dataYear);
+            drawMainDiagram("#mainDiagram", dataYear);
+        };
+        document.getElementById("tsneRadio").onclick = function(){
+            dataFull = tsneData;
+
+            dataYear = dataFull.filter(function(row) {
+                return row['year'] == dataYear[0].year;
+            });
+
+            d3.select("#slider-step").selectAll("svg").remove();
+            slideYear("#slider-step", dataFull);
+
+            d3.select("#mainDiagram").selectAll(".tooltip").remove();
+            d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+            d3.selectAll(".filterBrush").remove();
+
+            filters("#filters", dataYear);
+            drawMainDiagram("#mainDiagram", dataYear);
+        };
+
 
 
         function changeSecondOnCheckBox(){
@@ -331,7 +375,6 @@ Academic Year: 2019-2020
         }
 
     });
-
 
 
 </script>

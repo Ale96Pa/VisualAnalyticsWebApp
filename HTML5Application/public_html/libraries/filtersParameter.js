@@ -311,7 +311,8 @@ function worldMap(visualElement) {
 
     function draw(topo) {
 
-        var data = dataFull
+        var data = dataFull;
+        console.log(data)
 
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})

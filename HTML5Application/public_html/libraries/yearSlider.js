@@ -13,7 +13,7 @@ function slideYear(visualElement, data){
       .tickFormat(d3.format("d"))
       .ticks(26)
       .step(1)
-      .default(1990)
+      .default(dataYear[0].year)
       .on('onchange', function (val){parseYear(val)});
 
     var gStep = d3

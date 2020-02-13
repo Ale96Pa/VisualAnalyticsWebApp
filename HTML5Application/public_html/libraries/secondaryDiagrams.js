@@ -260,19 +260,46 @@ function drawLinearChart(visualElement, data){
 
 
 function drawScatterplot(visualElement, data){
+    
     var margin = {top: 25, right: 15, bottom: 25, left: 85},
         width = 850 - margin.left - margin.right,
         height = 390 - margin.top - margin.bottom;
-
     padding = 50;
+    
+    var objDataContainer = [];
+    var tot_suicides_parameter = 0;
+    var oldCountry;
+    if(data.length != 0){oldCountry = data[0].country}
+    for(i=0; i<data.length; i++){
+        fractionalSuicides = parseFloat(data[i].suicide_100kpop);
+        population = parseInt(data[i].population);
+        totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
+        
+        currentCountry = data[i].country;
+        if(currentCountry == oldCountry){
+            tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
+        } else {
+            var objRecord = {};
+            objRecord.X = data[i].X;
+            objRecord.Y = data[i].Y;
+            objRecord.country = data[i].country;
+            objRecord.tot_suicides = tot_suicides_parameter;
+            objRecord.hdi = data[i].hdi;
+            objRecord.gdp_per_capita = data[i].gdp_per_capita;
+            objDataContainer.push(objRecord);
+            oldCountry = currentCountry;
+            tot_suicides_parameter = 0;
+        }
+    }    
+
 
     //scale function
     var xScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
+            .domain([0, d3.max(objDataContainer, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
             .range([0, width]);
 
     var yScale = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +d["tot_suicides"]; })])
+            .domain([0, d3.max(objDataContainer, function(d) {return +d["tot_suicides"]; })])
             .range([height , 0]);
 
     var xAxis = d3.axisBottom().scale(xScale);
@@ -293,7 +320,7 @@ function drawScatterplot(visualElement, data){
         .style("visibility","hidden");
 
     svg.selectAll("circle")
-        .data(data)
+        .data(objDataContainer)
         .enter()
         .append("circle")
         .attr("cx", function(d) {
@@ -440,13 +467,10 @@ function drawBarChart(visualElement, label, dataFull){
     objDataF.tot_suicides = totFemale;
     objDataContainer.push(objDataM);
     objDataContainer.push(objDataF);
-    console.log(objDataContainer)
-
 
     x.domain((objDataContainer.map(function (d) {
         return d.sex;
     })).sort());
-    console.log(objDataContainer)
     y.domain([0, 850000]);
 
     g.append("g")

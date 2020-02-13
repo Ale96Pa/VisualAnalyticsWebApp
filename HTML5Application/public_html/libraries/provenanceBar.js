@@ -2,86 +2,57 @@
  * 
  */
 
-
-/*
-function saveLogicSvg(svgElement){
-    
-    var newSvg = svgElement.cloneNode(true);
-    newSvg.style.transform="scale(0.2,0.32)"
-    d3.select("#provenanceBar").append("svg")
-        .attr("class","provenanceElem")
-        .attr("width","200px").attr("height","auto")
-        .style("transform","translate(0,"+ (i*200 +15)+ ")")
-        .attr("id","svgContainer"+i);
-
-    document.getElementById("svgContainer"+i).appendChild(newSvg);
-    i += 1;
-
-    // To save the input that will be showed in page review
-    var strSvg = (new XMLSerializer).serializeToString(newSvg);
-    
-    return strSvg;
-}
-*/
-
 // Pick an svg and clone it to visualize it in the provenance bar
 function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
 
     var newSvg;
 // TODO: per array di barchart mettere tutto in una riga nella provenance
     if(Array.isArray(svgElement)){
-        //barchart case
         d3.select("#provenanceBar").append("div")
             .attr("class","provenanceElem")
             .style("display","inline-flex")
             .attr("width","200px")
             .style("transform","translate(0,"+ (provenanceContainer*200 +15)+ ")")
             .attr("id","divContainer"+provenanceContainer);
+            
+        var strSvg;
         for(i=0; i<svgElement.length; i++) {
-
-             newSvg = svgElement[i].cloneNode(true);
+            
+            newSvg = svgElement[i].cloneNode(true);
+            newSvg.setAttribute("id","cloned"+provenanceContainer+i)
             newSvg.setAttribute("height", 200);
-            newSvg.style.transform = "scaleY(0.06)"
-
-            document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
-
-
+            newSvg.style.transform = "scale(0.2,0.32)"//"scaleY(0.06)"
+            
+            document.getElementById("divContainer"+provenanceContainer).appendChild(newSvg);
+            
         }
         var strSvg = (new XMLSerializer).serializeToString(document.getElementById("divContainer"+provenanceContainer));
         arraySvgToSave.push(strSvg);
         provenanceContainer = provenanceContainer + 1;
 
-        try {
-            sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
-        } catch(err) {
-            //document.getElementById("demo").innerHTML = err.message;
-            console.log("Stop adding: memory full");
-        }
+        try {sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
+        } catch(err) {console.log("Stop adding: memory full");}
 
     } else {
-        newSvg = svgElement.cloneNode(true);
-        newSvg.setAttribute("id","cloned"+provenanceContainer)
-        newSvg.style.transform="scale(0.2,0.32)"
-
         d3.select("#provenanceBar").append("svg")
             .attr("class","provenanceElem")
             .attr("width","200px").attr("height","auto")
             .style("transform","translate(0,"+ (provenanceContainer*200 +15)+ ")")
             .attr("id","svgContainer"+provenanceContainer);
+    
+        newSvg = svgElement.cloneNode(true);
+        newSvg.setAttribute("id","cloned"+provenanceContainer)
+        newSvg.style.transform="scale(0.2,0.32)"
+    
         document.getElementById("svgContainer"+provenanceContainer).appendChild(newSvg);
         provenanceContainer = provenanceContainer + 1;
 
         // To save the input that will be showed in page review
         var strSvg = (new XMLSerializer).serializeToString(newSvg);
-        
         arraySvgToSave.push(strSvg);
 
-        try {
-            sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
-        } catch(err) {
-            console.log("Stop adding: memory full");
-            //document.getElementById("demo").innerHTML = err.message;
-        }
+        try {sessionStorage.setItem("svgFromProvenance", JSON.stringify(arraySvgToSave));
+        } catch(err) {console.log("Stop adding: memory full");}
 
     }
     

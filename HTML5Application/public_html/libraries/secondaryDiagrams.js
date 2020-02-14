@@ -286,18 +286,18 @@ function drawScatterplot(visualElement, data){
             tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
         } else {
             var objRecord = {};
-            objRecord.X = data[i].X;
-            objRecord.Y = data[i].Y;
-            objRecord.country = data[i].country;
+            objRecord.X = data[i-1].X;
+            objRecord.Y = data[i-1].Y;
+            objRecord.country = oldCountry;
             objRecord.tot_suicides = tot_suicides_parameter;
-            objRecord.hdi = data[i].hdi;
-            objRecord.gdp_per_capita = data[i].gdp_per_capita;
+            objRecord.hdi = data[i-1].hdi;
+            objRecord.gdp_per_capita = data[i-1].gdp_per_capita;
             objDataContainer.push(objRecord);
             oldCountry = currentCountry;
             tot_suicides_parameter = 0;
+            tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
         }
     }
-
 
     //scale function
     var xScale = d3.scaleLinear()
@@ -349,7 +349,7 @@ function drawScatterplot(visualElement, data){
                 .attr('opacity', '1')
 
             elem.moveToFront();
-
+console.log(d.country)
             div.transition()
                 .duration(50)
                 .style("visibility", "visible");
@@ -357,6 +357,25 @@ function drawScatterplot(visualElement, data){
             div.html(d.country)
                 .style("left", (d3.event.pageX + 5) + "px")
                 .style("top", (d3.event.pageY - 15) + "px");
+
+            d3.select("#dotG").selectAll(".dot")
+                .each( function (p){
+                    if(p.country == d.country){
+
+
+                        d3.select("#mainDiagram").select(".tooltip")
+                            .transition()
+                            .duration('50')
+                            .style("visibility", "visible");
+
+                        div.html("STATE:" + p.country + "<br>POP:" + p.population + "<br>SUICIDES:" +
+                            (((p.tot_suicides) * 100000) / (p.population)).toFixed(2) +
+                            "(per 100k)<br>GDP:" + p.gdp_per_year + "<br>HDI:" + p.hdi)
+                            .style("left", (d3.event.pageX + 5) + "px")
+                            .style("top", (d3.event.pageY - 25) + "px");
+                    }
+            })
+
 
         })
         .on('mouseout', function (d, i) {
@@ -368,6 +387,11 @@ function drawScatterplot(visualElement, data){
             elem.moveToBack();
 
             div.transition()
+                .duration('50')
+                .style("visibility", "hidden");
+
+            d3.select("#mainDiagram").select(".tooltip")
+                .transition()
                 .duration('50')
                 .style("visibility", "hidden");
         });
@@ -502,25 +526,29 @@ function drawBarChart(visualElement, label, dataFull){
     var bar = g.selectAll(".bar")
         .data(objDataContainer)
         .enter().append("g")
-        .attr("width", x.bandwidth())
-        .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
 
         bar.append("rect")
         .attr("class", "bar")
         .attr("x", function (d) {return x(d.sex)+50;})
-        .attr("y", function (d) {return y(Number(d.tot_suicides));})
+        .attr("height","0")
+        .attr("y", height)
         .attr("width", x.bandwidth())
-        .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
         .style("fill", function (d){
             if (d.sex == "male"){
                 return "#246fb1";}
             else{
                 return "#b1249e";}
-        });
+        })
+
+    bar.selectAll("rect")
+        .transition().duration("800")
+        .attr("height", function (d) {return height - y(Number(d.tot_suicides));})
+        .attr("y", function (d) {return y(Number(d.tot_suicides));})
+
 
         bar.append("text")
         .attr("y", function(d) {
-            return y(Number(d.tot_suicides)+5);
+            return height;
         })
         .attr("x", function(d) {
             return x(d.sex)+60;
@@ -532,6 +560,10 @@ function drawBarChart(visualElement, label, dataFull){
             return d.tot_suicides;
         });
 
+    bar.selectAll("text").transition().duration("800")
+        .attr("y", function(d) {
+            return y(Number(d.tot_suicides)+5);
+        })
 
     return document.getElementById(label);
 }

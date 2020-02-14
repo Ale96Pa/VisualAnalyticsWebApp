@@ -379,8 +379,6 @@ function worldMap(visualElement) {
     function draw(topo) {
 
         var data = dataFull;
-        console.log(data)
-
         var country = g.selectAll(".country").data(topo);
         var states = data.map(function(p){return p.country})
         var blankMap = country.enter().insert("path")
@@ -493,6 +491,7 @@ function worldMap(visualElement) {
                     if (document.getElementById("svgScatter") != null) {
 
                         d3.select("#svgScatter").selectAll("circle")
+                            .transition().duration("450")
                             .style("opacity", function (d) {
                                 if (selectedCountries.includes(d.country)) {
                                     return "1"
@@ -536,6 +535,7 @@ function worldMap(visualElement) {
                 }
                 if (document.getElementById("svgScatter") != null) {
                     d3.select("#svgScatter").selectAll("circle")
+                        .transition().duration("450")
                         .style("opacity", "1");
                 }
                 if (document.getElementById("svgLinear") != null) {

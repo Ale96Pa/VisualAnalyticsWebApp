@@ -81,6 +81,7 @@ function drawMainDiagram(visualElement, data) {
 
         var div = d3.select(visualElement)
             .append("div").attr("class", "tooltip")
+            .attr("id","mainTooltip")
             .style("visibility", "hidden");
 
         var context3 = svg.append("g")
@@ -127,7 +128,7 @@ function drawMainDiagram(visualElement, data) {
             })
             .attr("opacity", "0.1")
             .style("stroke", "#000")
-            .style("stroke-width", "0.1px")
+            .style("stroke-width", "0.2px")
             .attr("cx", function (d) {
                 return x(+d[header[0]]);
             })
@@ -141,8 +142,11 @@ function drawMainDiagram(visualElement, data) {
                 var elem = d3.select(this)
 
                 elem.transition()
-                    .duration('50')
+                    .duration(50)
                     .attr('opacity', '1')
+
+                elem.style("stroke","#fff")
+                    .style("stroke-width","1.5px")
 
                 elem.moveToFront();
 
@@ -154,7 +158,39 @@ function drawMainDiagram(visualElement, data) {
                     (((d.tot_suicides) * 100000) / (d.population)).toFixed(2) +
                     "(per 100k)<br>GDP:" + d.gdp_per_year + "<br>HDI:" + d.hdi)
                     .style("left", (d3.event.pageX + 5) + "px")
-                    .style("top", (d3.event.pageY - 25) + "px");
+                    .style("top", (d3.event.pageY +5) + "px");
+
+
+                    d3.select("#svgScatter").selectAll(".secondCircle")
+                        .each( function (p) {
+                            if (p.country == d.country) {
+
+                                var x=d3.select(this).attr("cx")
+                                var y= parseFloat(d3.select(this).attr("cy")) + 535
+                                console.log(x,y,p)
+
+                                d3.select(this).moveToFront()
+
+                                d3.select("#mainDiagram").select("#scatterTooltip")
+                                    .transition()
+                                    .duration('50')
+                                    .style("visibility", "visible");
+
+                                d3.select("#mainDiagram").select("#scatterTooltip")
+                                    .html(p.country)
+                                    .style("left", x + "px")
+                                    .style("top", y + "px");
+                            }
+                        })
+                        .style("stroke", function(p){
+                            if (p.country == d.country) {
+                                return "#fff";}
+                        })
+                        .style("stroke-width", function(p){
+                            if (p.country == d.country) {
+                                return "1.5px";}
+                        })
+
 
             })
             .on('mouseout', function (d, i) {
@@ -162,13 +198,37 @@ function drawMainDiagram(visualElement, data) {
 
                 elem.transition()
                     .duration('50')
-                    .attr('opacity', '1');
+                    .attr('opacity', '1')
+
+                    if (selectedCountries.includes(elem.country)){
+                        elem.style("stroke", "red")
+                            .style("stroke-width", "0.9px")
+                    }else{
+                    elem.style("stroke", "#000")
+                    .style("stroke-width", "0.2px")}
 
                 elem.moveToBack();
 
-                div.transition()
+
+                d3.select("#mainDiagram").selectAll(".tooltip")
+                    .transition()
                     .duration('50')
                     .style("visibility", "hidden");
+
+                d3.select("#svgScatter").selectAll(".secondCircle")
+                    .each( function (p) {
+                        if (p.country == d.country) {
+                            d3.select(this).moveToBack()
+                        }
+                    })
+                    .style("stroke", function(p){
+                        if (p.country == d.country) {
+                            return "#000";}
+                    })
+                    .style("stroke-width", function(p){
+                        if (p.country == d.country) {
+                            return "0.2px";}
+                    })
             });
 
 
@@ -651,7 +711,7 @@ function changeScatter(data) {
             selectionData = [[x.invert(selection[0][0]), y.invert(selection[0][1])],
                 [x.invert(selection[1][0]), y.invert(selection[1][1])]];
             //mainDiagram
-            focus.selectAll(".dot").transition()
+            focus.selectAll(".dot").transition().duration("250")
                 .style("fill", function (d) {
                     if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                         (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
@@ -727,6 +787,7 @@ function changeScatter(data) {
             if (document.getElementById("svgScatter") != null) {
 
                 d3.select("#svgScatter").selectAll("circle")
+                    .transition().duration("250")
                     .style("opacity", function (d) {
                         if (selectedCountries.includes(d.country)) {
                             return "1"

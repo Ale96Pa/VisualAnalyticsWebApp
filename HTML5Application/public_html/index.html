@@ -147,7 +147,7 @@ Academic Year: 2019-2020
 
             if (button.id == "linearChart") {
                 var dataNoNull = filterOutNullRecords(dataFull)
-                tmpDataMap = filterSelection(dataNoNull, selectionData)
+                tmpDataMap = filterCountry(dataNoNull, selectedCountries)
                 var filteredDataMap = filterAllDataCheckbox(tmpDataMap, male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
@@ -171,13 +171,18 @@ Academic Year: 2019-2020
 
                     d3.select("#svgScatter").selectAll("circle")
                         .style("opacity", function (d) {
-                            if (selectedCountries.includes(d.country)) {
+                            if (selectedCountries.length == 0 && selectionData == null){
                                 return "1"
-                            }if ((selectionData != null && selectionData.length == 2)
+                            }
+                            else if (selectedCountries.includes(d.country)) {
+                                return "1"
+                            }
+                            else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "1"
-                            } else {
+                            }
+                            else {
                                 return "0.1"
                             }
                         })
@@ -189,9 +194,13 @@ Academic Year: 2019-2020
 
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
                         .style("opacity", function (d) {
-                            if (selectedCountries.includes(d.country)) {
+                            if (selectedCountries.length == 0 && selectionData == null){
                                 return "1"
-                            }if ((selectionData != null && selectionData.length == 2)
+                            }
+                            else if (selectedCountries.includes(d.country)) {
+                                return "1"
+                            }
+                            else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "1"
@@ -201,9 +210,13 @@ Academic Year: 2019-2020
                             }
                         })
                         .style("stroke", function (d) {
-                            if (selectedCountries.includes(d.country)) {
+                            if (selectedCountries.length == 0 && selectionData == null){
+                                return "#2ca25f"
+                            }
+                            else if (selectedCountries.includes(d.country)) {
                                 return "#1f78b4"
-                            }if ((selectionData != null && selectionData.length == 2)
+                            }
+                            else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "#1f78b4"
@@ -219,8 +232,8 @@ Academic Year: 2019-2020
                     d3.select("#secondDiagram").selectAll("div").remove();
                     reviewSvg = drawPatternBarchart("#secondDiagram", tmpData);
                 }
-                return reviewSvg;
             }
+            return reviewSvg;
         }
 
 

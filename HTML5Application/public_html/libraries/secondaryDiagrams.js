@@ -1,4 +1,6 @@
-
+/**
+ * 
+ */
 
 function calculateRangeArray(numDiffValue, height){
     var rangeArray = [];

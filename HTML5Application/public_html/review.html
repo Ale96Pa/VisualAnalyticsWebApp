@@ -1,28 +1,30 @@
-<!DOCTYPE html>
 <!--
-***
+Web page for the management of the workflow of the user with all the diagrams he
+saved during the usage of the application.
 -->
+
+<!DOCTYPE html>
+
 <html>
     <head>
         <title>Review your work</title>
-        <link rel="stylesheet" href="libraries/style.css">
+        <link rel="stylesheet" href="style/style.css">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="libraries/d3.js"></script>
-        <script type="text/javascript" src="libraries/mainDiagram.js"></script>
-        <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
+        <script type="text/javascript" src="support-d3/d3.js"></script>
         <script type="text/javascript" src="libraries/provenanceBar.js"></script>
-        <script type="text/javascript" src="libraries/filtersParameter.js"></script>
     </head>
+    
     <body>
-        <div id="review" >
-        </div>
-    <button class="reviewButton" onclick="saveSvg()"> Download </button>
+        <div id="review" ></div>
+        <button class="reviewButton" onclick="saveSvg()"> Download </button>
     </body>
     
-    <script>
+    <script>   
+        // Report the svgs saved on provenance in the page review.html
         copyToReview("#review");
 
+        // Manage download of the page review.html
         function saveSvg() {
             var svgData = document.getElementById("review").innerHTML;
             var preface = '<?xml version="1.0" standalone="no"?>\r\n';
@@ -35,6 +37,5 @@
             downloadLink.click();
             document.body.removeChild(downloadLink);
         }
-    </script>
-       
+    </script>    
 </html>

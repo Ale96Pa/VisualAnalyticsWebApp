@@ -1,10 +1,14 @@
+/**
+ * This script manages the change of the year: in this case a shared dataset is 
+ * managed from all the views, since all of them (excpet linear chart) make
+ * analysis per single year.
+ */
 
 var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
 
+// Manage the slider containing the years
 function slideYear(visualElement, data){
-
-    var value = 0;
-    var years = data.map(function(d) { return d.year });
+    var years = data.map(function(d) { return d.year; });
 
     var sliderStep = d3.sliderBottom()
       .min(d3.min(years))
@@ -13,8 +17,8 @@ function slideYear(visualElement, data){
       .tickFormat(d3.format("d"))
       .ticks(26)
       .step(1)
-      .default(1990)
-      .on('onchange', function (val){parseYear(val)});
+      .default(dataYear[0].year)
+      .on('onchange', function (val){parseYear(val);});
 
     var gStep = d3
       .select(visualElement)
@@ -25,32 +29,28 @@ function slideYear(visualElement, data){
       .attr('transform', 'translate(60,15)')
       .call(sliderStep);
 
+    // Manage coordination when changing year
     function parseYear(year) {
-        var filteredData = data.filter(function(row) {
-            return row['year'] == year;
-        });
+        var filteredData = data.filter(function(row) {return row['year'] == year;});
 
         d3.select("#mainDiagram").selectAll(".tooltip").remove();
+        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
 
-       d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
-
-       d3.selectAll(".filterBrush").remove();
+        d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);
         drawMainDiagram("#mainDiagram", filteredData);
-        //changeMainDiagram("#mainDiagram", filteredData);
+        
+        //changeScatter(filteredData);
         if(selectedCountries.length != 0){
             d3.select("#dotG").selectAll(".dot")
                 .style("fill", function(d){
-                    if (selectedCountries.includes(d.country)){
-                        return colors[d.continent];}
-                    else{
-                        return "grey";}
-                })
+                    if (selectedCountries.includes(d.country)){return colors[d.continent];}
+                    else{return "grey";}
+                });
         }
+        
         dataYear = filteredData;
         selectionData = [];
-
         changeOnSecondary(dataYear);
     }
 }
-

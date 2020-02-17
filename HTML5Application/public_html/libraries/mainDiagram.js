@@ -1,33 +1,34 @@
+/**
+ * This script manages animation, drawing and coordination of main diagram
+ */
 
+// Function to put to back a point of the scatterplot
 d3.selection.prototype.moveToBack = function() {
     return this.each(function() {
         var firstChild = this.parentNode.firstChild;
-        if (firstChild) {
-            this.parentNode.insertBefore(this, firstChild);
-        }
+        if (firstChild) {this.parentNode.insertBefore(this, firstChild);}
     });
 };
-
+// Function to put to front a point of the scatterplot
 d3.selection.prototype.moveToFront = function() {
-    return this.each(function(){
-        this.parentNode.appendChild(this);
-    });
+    return this.each(function(){this.parentNode.appendChild(this);});
 };
 
+// Drawing of main diagram
 function drawMainDiagram(visualElement, data) {
 
-    header = d3.keys(data[0])
+    header = d3.keys(data[0]);
 
-    /*2 is hdi axes, 3 is gdp axes*/
+    // margin2 is hdi axes, margin3 is gdp axes
     var margin = {top: 5, right: 45, bottom: 110, left: 150},
         margin2 = {top: 340, right: 45, bottom: 35, left: 150},
         margin3 = {top: 5, right: 935, bottom: 110, left: 55},
         width = 1050 - margin.left - margin.right,
-        width3 = 1050 - margin3.left - margin3.right
+        width3 = 1050 - margin3.left - margin3.right,
         height = 430 - margin.top - margin.bottom,
         height2 = 430 - margin2.top - margin2.bottom;
 
-    //qualitative scale from colorbrewer
+    // Qualitative scale from colorbrewer
     var colors = {
         Europe: "#377eb8",
         Antartide: "#e41a1c",
@@ -37,10 +38,10 @@ function drawMainDiagram(visualElement, data) {
         Africa: "#ffff33"
     };
 
-
+    // Function to draw the main scatterplot with points
     function drawScatter(data) {
 
-        /*Define values to show on axes*/
+        // Define values to show on axes
         var x = d3.scaleLinear().range([0, width]),
             x2 = d3.scaleLinear().range([0, width]),
             x3 = d3.scaleLinear().range([0, width3]),
@@ -48,13 +49,13 @@ function drawMainDiagram(visualElement, data) {
             y2 = d3.scaleLinear().range([height2, 0]),
             y3 = d3.scaleLinear().range([height, 0]);
 
-        /*define axes*/
+        // Define axes
         var xAxis = d3.axisBottom(x),
             xAxis2 = d3.axisBottom(x2),
             yAxis = d3.axisLeft(y),
             yAxis3 = d3.axisLeft(y3);
 
-        /*brushes define the area to zoom and move between values (rettangolone su assi)*/
+        // Define the area to zoom and move between values (rectangles on axes)*/
         var brushX = d3.brushX()
             .extent([[0, 0], [width, height2]])
             .on("brush", brushedX);
@@ -76,7 +77,6 @@ function drawMainDiagram(visualElement, data) {
                 .attr("id", "generalSvg")
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom);
-
             svg.append("defs").append("clipPath")
                 .attr("id", "clip")
                 .append("rect")
@@ -88,62 +88,49 @@ function drawMainDiagram(visualElement, data) {
                 .attr("id", "mainTooltip")
                 .style("visibility", "hidden");
 
+            var context3 = svg.append("g")
+                .attr("class", "context")
+                .attr("transform", "rotate(90)")
+                .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")");
 
-            focus = svg.append("g")
-                .attr("class", "focus")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                focus = svg.append("g")
+                    .attr("class", "focus")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            var dom = d3.extent(data, function (d) {
-                return +d[header[0]];
-            })
-            x.domain([dom[0] - 2, dom[1] + 2]);
-            dom = d3.extent(data, function (d) {
-                return +d[header[1]];
-            })
-            y.domain([dom[0] - 2, dom[1] + 2]);
+                var dom = d3.extent(data, function (d) {return +d[header[0]];});
+                x.domain([dom[0] - 2, dom[1] + 2]);
+                dom = d3.extent(data, function (d) {return +d[header[1]];});
+                y.domain([dom[0] - 2, dom[1] + 2]);
 
-            x2.domain(x.domain());
-            y2.domain(y.domain());
-            x3.domain(x.domain());
-            y3.domain(y.domain());
+                x2.domain(x.domain());
+                y2.domain(y.domain());
+                x3.domain(x.domain());
+                y3.domain(y.domain());
 
 
-// append scatter plot to main chart area
+            // Append scatter plot to main chart area
             var dots = focus.append("g").attr("id", "dotG");
-
             dots.attr("class", "brushT")
                 .call(brushTot);
-
             dots.attr("clip-path", "url(#clip)");
             dots.selectAll("dot")
                 .data(data)
                 .enter().append("circle")
                 .attr('class', 'dot')
-                .attr("r", function (d) {
-                    return (((d.tot_suicides) * 100000) / (d.population));
-                })
+                .attr("r", function (d) {return (((d.tot_suicides) * 100000) / (d.population));})
                 .attr("opacity", "0.1")
                 .style("stroke", "#000")
                 .style("stroke-width", "0.2px")
-                .attr("cx", function (d) {
-                    return x(+d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y(+d[header[1]]);
-                })
-                .style("fill", function (d) {
-                    return colors[d["continent"]];
-                })
+                .attr("cx", function (d) {return x(+d[header[0]]);})
+                .attr("cy", function (d) {return y(+d[header[1]]);})
+                .style("fill", function (d) {return colors[d["continent"]];})
                 .on("mouseover", function (d, i) {
-                    var elem = d3.select(this)
-
+                    var elem = d3.select(this);
                     elem.transition()
                         .duration(50)
-                        .attr('opacity', '1')
-
-                    elem.style("stroke", "#fff")
-                        .style("stroke-width", "1.5px")
-
+                        .attr('opacity', '1');
+                    elem.style("stroke","#fff")
+                        .style("stroke-width","1.5px");
                     elem.moveToFront();
 
                     div.transition()
@@ -158,116 +145,93 @@ function drawMainDiagram(visualElement, data) {
 
 
                     d3.select("#svgScatter").selectAll(".secondCircle")
-                        .each(function (p) {
+                        .each( function (p) {
                             if (p.country == d.country) {
 
-                                var x = d3.select(this).attr("cx")
-                                var y = parseFloat(d3.select(this).attr("cy")) + 535
-                                console.log(x, y, p)
+                                var x=d3.select(this).attr("cx")
+                                var y= parseFloat(d3.select(this).attr("cy")) + 535
+                                console.log(x,y,p)
 
-                                d3.select(this).moveToFront()
-
-                                d3.select("#mainDiagram").select("#scatterTooltip")
-                                    .transition()
-                                    .duration('50')
-                                    .style("visibility", "visible");
-
-                                d3.select("#mainDiagram").select("#scatterTooltip")
-                                    .html(p.country)
-                                    .style("left", x + "px")
-                                    .style("top", y + "px");
+                            d3.select(this).moveToFront();
+                            d3.select("#mainDiagram").select("#scatterTooltip")
+                                .transition()
+                                .duration('50')
+                                .style("visibility", "visible");
+                            d3.select("#mainDiagram").select("#scatterTooltip")
+                                .html(p.country)
+                                .style("left", x + "px")
+                                .style("top", y + "px");
                             }
                         })
-                        .style("stroke", function (p) {
-                            if (p.country == d.country) {
-                                return "#fff";
-                            }
+                        .style("stroke", function(p){
+                            if (p.country == d.country) {return "#fff";}
                         })
-                        .style("stroke-width", function (p) {
-                            if (p.country == d.country) {
-                                return "1.5px";
-                            }
-                        })
-
-
+                        .style("stroke-width", function(p){
+                            if (p.country == d.country) {return "1.5px";}
+                        });
                 })
-                .on('mouseout', function (d, i) {
-                    var elem = d3.select(this)
-
-                    elem.transition()
-                        .duration('50')
-                        .attr('opacity', '1')
+            .on('mouseout', function (d, i) {
+                var elem = d3.select(this);
+                elem.transition()
+                    .duration('50')
+                    .attr('opacity', '1');
 
                     if (selectedCountries.includes(elem.country)) {
                         elem.style("stroke", "red")
-                            .style("stroke-width", "0.9px")
-                    } else {
-                        elem.style("stroke", "#000")
-                            .style("stroke-width", "0.2px")
-                    }
+                            .style("stroke-width", "0.9px");
+                    }else{
+                    elem.style("stroke", "#000")
+                    .style("stroke-width", "0.2px");}
+                elem.moveToBack();
 
-                    elem.moveToBack();
+                d3.select("#mainDiagram").selectAll(".tooltip")
+                    .transition()
+                    .duration('50')
+                    .style("visibility", "hidden");
 
-
-                    d3.select("#mainDiagram").selectAll(".tooltip")
-                        .transition()
-                        .duration('50')
-                        .style("visibility", "hidden");
-
-                    d3.select("#svgScatter").selectAll(".secondCircle")
-                        .each(function (p) {
-                            if (p.country == d.country) {
-                                d3.select(this).moveToBack()
-                            }
-                        })
-                        .style("stroke", function (p) {
-                            if (p.country == d.country) {
-                                return "#000";
-                            }
-                        })
-                        .style("stroke-width", function (p) {
-                            if (p.country == d.country) {
-                                return "0.2px";
-                            }
-                        })
-                });
+                d3.select("#svgScatter").selectAll(".secondCircle")
+                    .each( function (p) {
+                        if (p.country == d.country) {d3.select(this).moveToBack();}
+                    })
+                    .style("stroke", function(p){
+                        if (p.country == d.country) {return "#000";}
+                    })
+                    .style("stroke-width", function(p){
+                        if (p.country == d.country) {return "0.2px";}
+                    });
+            });
 
 
-            focus.append("g")
-                .attr("class", "axis axis--x")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
+        focus.append("g")
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+        focus.append("g")
+            .attr("class", "axis axis--y")
+            .call(yAxis);
+        focus.append("text")
+            .attr("y", 0 + margin.left)
+            .attr("x", 0 - (height / 2) + 35)
+            .attr("dy", "1em")
+            .style("transform", "rotate(90)")
+            .style("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "black")
+            .text("Y");
 
-            focus.append("g")
-                .attr("class", "axis axis--y")
-                .call(yAxis);
+        svg.append("text")
+            .attr("y", (height + margin.top + margin.bottom) - 10)
+            .attr("x", ((width + margin.right + margin.left) / 2) + 10)
+            .style("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "black")
+            .text("X");
 
-            focus.append("text")
-                .attr("y", 0 + margin.left)
-                .attr("x", 0 - (height / 2) + 35)
-                .attr("dy", "1em")
-                .style("transform", "rotate(90)")
-                .style("text-anchor", "middle")
-                .style("font-size", "14px")
-                .style("fill", "black")
-                .text("Y");
-
-            svg.append("text")
-                .attr("y", (height + margin.top + margin.bottom) - 10)
-                .attr("x", ((width + margin.right + margin.left) / 2) + 10)
-                .style("text-anchor", "middle")
-                .style("font-size", "14px")
-                .style("fill", "black")
-                .text("X");
         }
         else{
-            var dom = d3.extent(data, function (d) {
-                return +d[header[0]];
-            })
+            var dom = d3.extent(data, function (d) {return +d[header[0]];});
             x.domain([dom[0] - 2, dom[1] + 2]);
-            dom = d3.extent(data, function (d) {
-                return +d[header[1]];
-            })
+            dom = d3.extent(data, function (d) {return +d[header[1]];});
             y.domain([dom[0] - 2, dom[1] + 2]);
 
             x2.domain(x.domain());
@@ -294,15 +258,9 @@ function drawMainDiagram(visualElement, data) {
                 .attr('class', 'dotContext')
                 .attr("r", 2)
                 .style("opacity", "0.2")
-                .attr("cx", function (d) {
-                    return x2(d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y2(d[header[1]]);
-                })
-                .style("fill", function (d) {
-                    return colors[d.continent];
-                });
+                .attr("cx", function (d) {return x2(d[header[0]]);})
+                .attr("cy", function (d) {return y2(d[header[1]]);})
+                .style("fill", function (d) {return colors[d.continent];});
 
             context.append("g")
                 .attr("class", "axis axis--x")
@@ -319,12 +277,8 @@ function drawMainDiagram(visualElement, data) {
                 .data(data)
                 .transition()
                 .duration("500")
-                .attr("cx", function (d) {
-                    return x2(+d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y2(+d[header[1]]);
-                })
+                .attr("cx", function (d) {return x2(+d[header[0]]);})
+                .attr("cy", function (d) {return y2(+d[header[1]]);});
 
             //update axis X
             context = d3.select("#contextX");
@@ -354,15 +308,9 @@ function drawMainDiagram(visualElement, data) {
                 .attr('class', 'dotContext')
                 .attr("r", 2)
                 .style("opacity", .5)
-                .attr("cx", function (d) {
-                    return x3(d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y3(d[header[1]]);
-                })
-                .style("fill", function (d) {
-                    return colors[d.continent];
-                });
+                .attr("cx", function (d) {return x3(d[header[0]]);})
+                .attr("cy", function (d) {return y3(d[header[1]]);})
+                .style("fill", function (d) {return colors[d.continent];});
 
             context3.append("g")
                 .attr("class", "axis axis--y")
@@ -380,12 +328,8 @@ function drawMainDiagram(visualElement, data) {
                 .data(data)
                 .transition()
                 .duration("500")
-                .attr("cx", function (d) {
-                    return x3(+d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y3(+d[header[1]]);
-                })
+                .attr("cx", function (d) {return x3(+d[header[0]]);})
+                .attr("cy", function (d) {return y3(+d[header[1]]);})
 
             //update axis X Y
             context3 = d3.select("#contextY");
@@ -405,18 +349,10 @@ function drawMainDiagram(visualElement, data) {
                 .data(data)
                 .transition()
                 .duration("500")
-                .attr("cx", function (d) {
-                    return x(+d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y(+d[header[1]]);
-                })
-                .attr("r", function (d) {
-                    return (((d.tot_suicides) * 100000) / (d.population));
-                })
-                .style("fill", function (d) {
-                    return colors[d.continent];
-                });
+                .attr("cx", function (d) {return x(+d[header[0]]);})
+                .attr("cy", function (d) {return y(+d[header[1]]);})
+                .attr("r", function (d) {return (((d.tot_suicides) * 100000) / (d.population));})
+                .style("fill", function (d) {return colors[d.continent];});
 
             focus.select(".axis.axis--x")
                 .transition().duration("500")
@@ -432,17 +368,13 @@ function drawMainDiagram(visualElement, data) {
 
 
 
-        //create brush function redraw scatterplot with selection
+        // Redraw scatterplot with selection
         function brushedX() {
             var selection = d3.event.selection;
             x.domain(selection.map(x2.invert, x2));
             focus.selectAll(".dot")
-                .attr("cx", function (d) {
-                    return x(d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y(d[header[1]]);
-                });
+                .attr("cx", function (d) {return x(d[header[0]]);})
+                .attr("cy", function (d) {return y(d[header[1]]);});
             focus.select(".axis--x").call(xAxis);
         }
 
@@ -451,22 +383,18 @@ function drawMainDiagram(visualElement, data) {
             selection = [selection[1], selection[0]]
             y.domain(selection.map(y3.invert, y3));
             focus.selectAll(".dot")
-                .attr("cx", function (d) {
-                    return x(d[header[0]]);
-                })
-                .attr("cy", function (d) {
-                    return y(d[header[1]]);
-                });
+                .attr("cx", function (d) {return x(d[header[0]]);})
+                .attr("cy", function (d) {return y(d[header[1]]);});
             focus.select(".axis--y").call(yAxis);
         }
 
         function selected() {
             var selection = d3.event.selection, svgFromSelect=null;
-
+// Coordination MAIN DIAGRAM
+            // Case selection NOT null
             if (selection != null) {
                 selectionData = [[x.invert(selection[0][0]), y.invert(selection[0][1])],
                     [x.invert(selection[1][0]), y.invert(selection[1][1])]];
-                //mainDiagram
                 focus.selectAll(".dot").transition()
                     .style("fill", function (d) {
                         if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
@@ -484,7 +412,9 @@ function drawMainDiagram(visualElement, data) {
                             return "0.2"
                         }
                     })
-            } else {
+            }
+            // Case selection NULL
+            else {
                 selectionData = null;
                 var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
                 d3.select("#dotG").selectAll(".dot").transition().duration("50")
@@ -497,8 +427,11 @@ function drawMainDiagram(visualElement, data) {
                     .style("fill-opacity", "1.0")
             }
 
-            //secondaryDiagrams
+// Coordination STATISTICAL DIAGRAMS
+            // Case selection NOT null or there are SELECTED COUNTRIES
             if (selection != null || selectedCountries.length != 0) {
+
+    // Coordination LINEAR CHART
                 /*
                  if (document.getElementById("svgLinear") != null) {
                      var dataNoNull = filterOutNullRecords(dataFull)
@@ -512,6 +445,8 @@ function drawMainDiagram(visualElement, data) {
                      svgFromSelect = drawLinearChart("#secondDiagram", filteredDataMap)
                  }
                  */
+
+    // Coordination PARALLEL COORDINATES
                 if (document.getElementById("svgParallel") != null) {
 
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
@@ -543,6 +478,7 @@ function drawMainDiagram(visualElement, data) {
                         })
                 }
 
+    // Coordination SCATTER PLOT
                 if (document.getElementById("svgScatter") != null) {
 
                     d3.select("#svgScatter").selectAll("circle")
@@ -560,6 +496,8 @@ function drawMainDiagram(visualElement, data) {
                         })
 
                 }
+
+    // Coordination PATTERN BARCHARTS
                 /*  if (document.getElementById("patternDiv") != null) {
                       var dataYearNoNull = filterOutNullRecords(dataYear)
                       var dataYearNoNull1  = filterCountry(dataYearNoNull, selectedCountries);
@@ -573,7 +511,9 @@ function drawMainDiagram(visualElement, data) {
                       svgFromSelect = drawPatternBarchart("#secondDiagram", filteredDataMap)
                   }*/
 
-            } else {
+            }
+            // Case: selection NULL and NOT SELECTED COUNTRIES
+            else {
 
                 if (document.getElementById("svgParallel") != null) {
                     d3.select("#svgParallel").selectAll(".innerPath")

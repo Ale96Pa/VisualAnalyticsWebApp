@@ -1,11 +1,12 @@
 <!--
-Project name: SRACs.
+Project name: SRACs (Suicides Rates Analysis and Conditions).
 Description:SRACs is a visual analytics tool for studying and analysing suicides
             rates in order to get useful information for statistic and
             analytical purposes (more details in the final report).
 Authors: Alessandro Palma, Stefano Santinelli.
 Visual Analytics project: world wide suicide rate and analysis.
 Academic Year: 2019-2020
+University of Rome "La Sapienza"
 -->
 
 <!DOCTYPE html>
@@ -14,58 +15,58 @@ Academic Year: 2019-2020
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Suicides rate and analysis</title>
-    <link rel="stylesheet" href="libraries/style.css">
+    <link rel="stylesheet" href="style/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" src="libraries/d3.js"></script>
-    <script type="text/javascript" src="libraries/d3-geo.js"></script>
-    <script type="text/javascript" src="libraries/topojson.js"></script>
+    
+    <script type="text/javascript" src="support-d3/d3.js"></script>
+    <script type="text/javascript" src="support-d3/d3-geo.js"></script>
+    <script type="text/javascript" src="support-d3/topojson.js"></script>
+    <script type="text/javascript" src="support-d3/d3-slider.js"></script>
+    
     <script type="text/javascript" src="libraries/mainDiagram.js"></script>
     <script type="text/javascript" src="libraries/secondaryDiagrams.js"></script>
     <script type="text/javascript" src="libraries/provenanceBar.js"></script>
     <script type="text/javascript" src="libraries/filtersParameter.js"></script>
     <script type="text/javascript" src="libraries/yearSlider.js"></script>
-    <script type="text/javascript" src="libraries/d3-slider.js"></script>
 </head>
 
 <body>
-
+<!-- Part 1: main diagram-->
     <div id="mainWrapper">
-
         <div id="mainDiagram">
             <div class="slidecontainer">
                 <div id="slider-step"></div>
             </div>
             <form style="position:absolute; top:420px; left:35px;">
-                <input type="radio" id="tsneRadio" name="reduction" value="Tsne"  checked /> T-SNE
-                <input type="radio" id="pcaRadio" name="reduction" value="PCA" /> PCA
+                <input type="radio" id="tsneRadio" name="reduction" value="Tsne"  checked />t-sne
+                <input type="radio" id="pcaRadio" name="reduction" value="PCA" />PCA
             </form>
         </div>
-
+        
+<!-- Part 4: Statistical diagrams --> 
         <div class="tab">
-            <button id="parallelCoordinates" class="tablinks" >ParallelCoordinatesChart</button>
-            <button id="scatterPlot" class="tablinks" >Scatterplot</button>
-            <button  id="linearChart" class="tablinks" >LinearChart</button>
-            <button id="barChart" class="tablinks" >barChart</button>
-        </div>
+            <button  id="linearChart" class="tablinks" >Linear chart (by generation)</button>
+            <button id="parallelCoordinates" class="tablinks" >Parallel coordinates</button>
+            <button id="scatterPlot" class="tablinks" >Scatter plot (by gdp)</button>
+            <button id="barChart" class="tablinks" >Bar chart (by sex and age)</button>
+        </div>      
         <div id="secondDiagram" class="tabcontents">
-            <button class="provenanceButton" id="saveOnProvenance">Save on provenance</button>
-        </div>
+            <button class="provenanceButton" id="saveOnProvenance">Save on provenance bar</button>
+        </div>      
     </div>
 
+<!-- Part 2: filter bar -->
     <div id="filterBar">
-        <div id="filters">
-        </div>
-
-        <div id="map">
-        </div>
+        <div id="filters"></div>
+        <div id="map"></div>
         <hr>
         <div id="selection">
-            <div id="sexContainer" class="container" transform="translate( 30 , 10)">
+            <div id="sexContainer" class="container" transform="translate(30,10)">
                 <legend>Sex</legend>
                 <label>Male<input id="male" type="checkbox" checked></label>
                 <label>Female<input id="female" type="checkbox" checked></label>
             </div>
-            <div id="ageContainer" class="container" transform="translate( 30 , 10)">
+            <div id="ageContainer" class="container" transform="translate(30,10)">
                 <legend>Age</legend>
                 <label>05-14 years<input id="5-14" type="checkbox" checked></label>
                 <label>15-24 years<input id="15-24" type="checkbox" checked></label>
@@ -74,7 +75,7 @@ Academic Year: 2019-2020
                 <label>55-74 years<input id="55-74" type="checkbox" checked></label>
                 <label>over 75 years<input id="75+" type="checkbox" checked></label>
             </div>
-            <div id="generationContainer" class="container" transform="translate( 30 , 10)">
+            <div id="generationContainer" class="container" transform="translate(30,10)">
                 <legend>Generation</legend>
                 <label>G.I. generation (born: 1900 to 1924)<input id="genGI" type="checkbox" checked></label>
                 <label>Silent generation (born: 1925 to 1945)<input id="genSilent" type="checkbox" checked></label>
@@ -86,6 +87,7 @@ Academic Year: 2019-2020
         </div>
     </div>
 
+<!-- Part 3: Provenance bar-->
     <div id="provenanceBar" style="child-align: top">
         <button onclick="window.location.href = 'review.html';">Review</button>
     </div>
@@ -93,17 +95,23 @@ Academic Year: 2019-2020
 
 <script>
     
-    var provenanceContainer = 0;
-    var svgs_to_save = [];
-    var selectionData = null;
-    var rangeBrushes =[[],[],[]];
-    var selectedCountries=[];
-    var dataYear;
-    var tsneData, dataPca, dataFull;
-
+/* Shared data and parameters for coordination and models */
+    var tsneData, dataPca, dataFull; // Shared dataset for coordination
+    
+    var dataYear; // Year selected from slider
+        
+    var selectionData = null; // Data selected from main diagram
+    var rangeBrushes =[[],[],[]]; // Values currently in brushers
+    var selectedCountries=[]; // Countries selected from map
+    
+    // Parameters selected with chekboxes
     var male = true,female = true;
     var age5_14=true,age15_24=true,age25_34=true,age35_54 = true,age55_74=true,age75=true;
     var genGi = true,genSilent = true,genBoomers = true,genX = true,genMillenials = true,genZ = true;
+
+    var provenanceContainer = 0; // Counter how many svg are saved on provenance
+    var svgs_to_save = []; // Container of svgs to save on provenance
+
 
 
     async function loadData(){
@@ -112,23 +120,20 @@ Academic Year: 2019-2020
     }
 
     loadData().then(tsneData=> {
-
+        
+// Initialization of main UI
         dataFull = tsneData;
-
-        dataYear = dataFull.filter(function (row) {
-            return row['year'] == '1990';
-        });
-
+        dataYear = dataFull.filter(function (row) {return row['year'] == '1990';});
         slideYear("#slider-step", dataFull);
-
         filters("#filters", dataYear);
         drawMainDiagram("#mainDiagram", dataYear);
         worldMap("map");
 
-
+// Filter all records having "null" values
         function filterOutNullRecords(data) {
             var filteredData = [];
-            for (i = 0; i < data.length; i++) {
+            var dlen = data.length
+            for (i = 0; i < dlen; i++) {
                 if (data[i].sex != "null" && data[i].age != "null" &&
                     data[i].generation != "null" && data[i].suicide_100kpop != "null"
                     && data[i].gdp_per_capita != "null") {
@@ -138,13 +143,15 @@ Academic Year: 2019-2020
             return filteredData;
         }
 
-
+// Management of change of tab (statistical diagrams)
         function changeSecDiagram(button) {
+            
             var reviewSvg = null;
 
             d3.selectAll(".tablinks").style("background-color", "darkgray");
             d3.select("#" + button.id).style("background-color", "gray")
 
+            // Linear chart has in input data of all years, all the others data of one year
             if (button.id == "linearChart") {
                 var dataNoNull = filterOutNullRecords(dataFull)
                 tmpDataMap = filterCountry(dataNoNull, selectedCountries)
@@ -155,15 +162,13 @@ Academic Year: 2019-2020
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 d3.select("#secondDiagram").selectAll("div").remove();
                 reviewSvg = drawLinearChart("#secondDiagram", filteredDataMap)
-            } else {
-
-                var dataYearNoNull = filterOutNullRecords(dataYear)
-                var  brushedData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+            }else{
+                var dataYearNoNull = filterOutNullRecords(dataYear);
+                var brushedData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1]);
                 var dataYearNoNull1  = filterAllDataCheckbox(brushedData[1], male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
-
-
+// Scatter plot management on tab click
                 if (button.id == "scatterPlot") {
                     d3.select("#secondDiagram").selectAll("svg").remove();
                     d3.select("#secondDiagram").selectAll("div").remove();
@@ -171,22 +176,17 @@ Academic Year: 2019-2020
 
                     d3.select("#svgScatter").selectAll("circle")
                         .style("opacity", function (d) {
-                            if (selectedCountries.length == 0 && selectionData == null){
-                                return "1"
-                            }
-                            else if (selectedCountries.includes(d.country)) {
-                                return "1"
-                            }
+                            if (selectedCountries.length == 0 && selectionData == null){return "1"}
+                            else if (selectedCountries.includes(d.country)) {return "1"}
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "1"
                             }
-                            else {
-                                return "0.1"
-                            }
+                            else {return "0.1"}
                         })
                 }
+// Parallel coordinates management on tab click
                 if (button.id == "parallelCoordinates") {
                     d3.select("#secondDiagram").selectAll("svg").remove();
                     d3.select("#secondDiagram").selectAll("div").remove();
@@ -194,38 +194,27 @@ Academic Year: 2019-2020
 
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
                         .style("opacity", function (d) {
-                            if (selectedCountries.length == 0 && selectionData == null){
-                                return "1"
-                            }
-                            else if (selectedCountries.includes(d.country)) {
-                                return "1"
-                            }
+                            if (selectedCountries.length == 0 && selectionData == null){return "1"}
+                            else if (selectedCountries.includes(d.country)) {return "1"}
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "1"
                             }
-                            else{
-                                return "0.3"
-                            }
+                            else{return "0.3"}
                         })
                         .style("stroke", function (d) {
-                            if (selectedCountries.length == 0 && selectionData == null){
-                                return "#2ca25f"
-                            }
-                            else if (selectedCountries.includes(d.country)) {
-                                return "#1f78b4"
-                            }
+                            if (selectedCountries.length == 0 && selectionData == null){return "#2ca25f"}
+                            else if (selectedCountries.includes(d.country)) {return "#1f78b4"}
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                 return "#1f78b4"
                             }
-                            else {
-                                return "#2ca25f"
-                            }
+                            else {return "#2ca25f"}
                         })
                 }
+// Pattern of Bar charts management on tab click
                 if (button.id == "barChart") {
                     var tmpData = filterCountry(dataYearNoNull1, selectedCountries);
                     d3.select("#secondDiagram").selectAll("svg").remove();
@@ -237,6 +226,7 @@ Academic Year: 2019-2020
         }
 
 
+// Tab listeners management and activation
         var currentTabSvg = null;
         var buttonSaveProvenance = document.getElementById("saveOnProvenance");
 
@@ -265,7 +255,7 @@ Academic Year: 2019-2020
             }
         };
 
-
+// Management of checkboxes listener and activation
         var currentSvg = null;
         document.getElementById("male").onclick = function () {
             if (this.checked) {
@@ -423,30 +413,33 @@ Academic Year: 2019-2020
             }
         };
 
+// Radio button management to change t-sne <--> PCA
         document.getElementById("pcaRadio").onclick = function () {
+            
+            // Initialization
             dataFull = dataPca;
+            dataYear = dataFull.filter(function (row) {return row['year'] == dataYear[0].year;});
 
-            dataYear = dataFull.filter(function (row) {
-                return row['year'] == dataYear[0].year;
-            });
-
+            // Cleaning and update
             d3.select("#slider-step").selectAll("svg").remove();
             slideYear("#slider-step", dataFull);
 
             d3.select("#mainDiagram").selectAll(".tooltip").remove();
             d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
             d3.selectAll(".filterBrush").remove();
-
+            
+            // Redraw main UI
             filters("#filters", dataYear);
             drawMainDiagram("#mainDiagram", dataYear);
         };
+        
         document.getElementById("tsneRadio").onclick = function () {
+            
+            // Initializaion
             dataFull = tsneData;
+            dataYear = dataFull.filter(function (row) {return row['year'] == dataYear[0].year;});
 
-            dataYear = dataFull.filter(function (row) {
-                return row['year'] == dataYear[0].year;
-            });
-
+            // Cleaning and update
             d3.select("#slider-step").selectAll("svg").remove();
             slideYear("#slider-step", dataFull);
 
@@ -454,73 +447,90 @@ Academic Year: 2019-2020
             d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
             d3.selectAll(".filterBrush").remove();
 
+            // Redraw main UI
             filters("#filters", dataYear);
             drawMainDiagram("#mainDiagram", dataYear);
         };
 
-
+// Management of checkboxes: update of data and filtering
         function changeSecondOnCheckBox() {
+            
             var svgChecked = null;
             var filteredData = null;
-
+            
+    // Update of linear chart
             if (document.getElementById("svgLinear") != null) {
-
                 var dataNoNull = filterOutNullRecords(dataFull);
-
                 var dataNoNull1 = filterCountry(dataNoNull, selectedCountries);
-
                 filteredData = filterAllDataCheckbox(dataNoNull1, male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
-
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 svgChecked = drawLinearChart("#secondDiagram", filteredData)
             }
-
+            
+    // Update parallel coordinates
             if (document.getElementById("svgParallel") != null) {
-
                 var dataYearNoNull = filterOutNullRecords(dataYear)
                 tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
-
                 filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 svgChecked = drawParallelCoordinatesChart("#secondDiagram", filteredData)
-
+                
+                // Check if there are countries that are seleted previously to keep track the selection
                 if (selectedCountries.length != 0 || (selectionData != null && selectionData.length == 2)) {
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
                         .style("opacity", function (d) {
-                            if (selectedCountries.includes(d.country)) {
-                                return "1"
-                            }if ((selectionData != null && selectionData.length == 2)
+                            if (selectedCountries.includes(d.country)) {return "1"}
+                            if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                     return "1"
-                            } else {
-                                return "0.3"
-                            }
+                            } else {return "0.3"}
                         })
                         .style("stroke", function (d) {
-                            if (selectedCountries.includes(d.country)){
-                                return "#1f78b4"
-                            }if ((selectionData != null && selectionData.length == 2)
+                            if (selectedCountries.includes(d.country)){return "#1f78b4"}
+                            if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                     return "#1f78b4"
-                            } else {
-                                return "#2ca25f"
-                            }
+                            } else {return "#2ca25f"}
                         })
                 }
             }
 
+    // Update Scatter plot
             if (document.getElementById("svgScatter") != null) {
-
                 var dataYearNoNull = filterOutNullRecords(dataYear)
                 tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
-
                 filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
+                    genMillenials, genZ);
+                d3.select("#secondDiagram").selectAll("svg").remove();
+                svgChecked = drawScatterplot("#secondDiagram", filteredData)
+                
+                // Check if there are countries that are seleted previously to keep track the selection
+                if (selectedCountries.length != 0) {
+                    d3.select("#svgScatter").selectAll("circle")
+                        .style("opacity", function (d) {
+                            if (selectedCountries.includes(d.country)) {return "1"}
+                            if ((selectionData != null && selectionData.length == 2)
+                                && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
+                                ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
+                                    return "1"
+                            } else {return "0.1"}
+                        })
+                }
+            }
+    
+    // Update patter of barcharts
+            if (document.getElementById("patternDiv") != null) {
+                var dataYearNoNull = filterOutNullRecords(dataYear)
+                var dataYearNoNull1 = filterCountry(dataYearNoNull, selectedCountries);
+                tmpData = filterAllDataBrusher(dataYearNoNull1, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+                var filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
 
@@ -558,11 +568,10 @@ Academic Year: 2019-2020
                 d3.select("#secondDiagram").selectAll("div").remove();
                 svgChecked = drawPatternBarchart("#secondDiagram", filteredData)
             }
+            
+            // Return the current svg changed with checkbox for saving it on provenance
             return svgChecked;
         }
-
     });
-
 </script>
-
 </html>

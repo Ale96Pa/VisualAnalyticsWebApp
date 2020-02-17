@@ -1,5 +1,13 @@
 
-var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+//qualitative scale from colorbrewer
+var colors = {
+    Europe: "#377eb8",
+    Antartide: "#e41a1c",
+    Asia: "#4daf4a",
+    Americas: "#984ea3",
+    Oceania: "#ff7f00",
+    Africa: "#ffff33"
+};
 
 function slideYear(visualElement, data){
 
@@ -14,7 +22,7 @@ function slideYear(visualElement, data){
       .ticks(26)
       .step(1)
       .default(dataYear[0].year)
-      .on('onchange', function (val){parseYear(val)});
+      .on('onchange', function (val){console.log("here");parseYear(val);});
 
     var gStep = d3
       .select(visualElement)
@@ -26,31 +34,44 @@ function slideYear(visualElement, data){
       .call(sliderStep);
 
     function parseYear(year) {
-        var filteredData = data.filter(function(row) {
+        console.log("changeYear")
+        var filteredData = data.filter(function (row) {
             return row['year'] == year;
         });
 
-        d3.select("#mainDiagram").selectAll(".tooltip").remove();
 
-        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+        //d3.select("#mainDiagram").selectAll(".tooltip").remove();
 
-       d3.selectAll(".filterBrush").remove();
+        //d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
+        d3.selectAll(".filterBrush").remove();
+
         filters("#filters", filteredData);
         drawMainDiagram("#mainDiagram", filteredData);
-        //changeScatter(filteredData);
-        if(selectedCountries.length != 0){
+
+        if (selectedCountries.length != 0) {
             d3.select("#dotG").selectAll(".dot")
-                .style("fill", function(d){
-                    if (selectedCountries.includes(d.country)){
-                        return colors[d.continent];}
-                    else{
-                        return "grey";}
+                .style("stroke", function (d) {
+                    if (selectedCountries.includes(d.country)) {
+                        return "red";
+                    }
+                })
+                .style("stroke-width", function (d) {
+                    if (selectedCountries.includes(d.country)) {
+                        return ".9px"
+                    }
+                })
+                .each(function (d) {
+                    if (selectedCountries.includes(d.country)) {
+                        d3.select(this).moveToFront()
+                    }
                 })
         }
+
         dataYear = filteredData;
         selectionData = [];
 
         changeOnSecondary(dataYear);
+
     }
 }
-

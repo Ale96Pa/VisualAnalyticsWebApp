@@ -59,7 +59,7 @@ function filters(visualElement, data) {
         svg.append("text")
             .attr("transform", "translate(30,30)")
             .style("text-anchor", "middle")
-            .style("fill", "white")
+            .style("fill", "black")
             .text(name + ":");
 
         var context = svg.append("g")
@@ -69,7 +69,7 @@ function filters(visualElement, data) {
         context.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", "translate(0,17)")
-            .style("fill", "white")
+            .style("fill", "black")
             .call(xAxis)
             .selectAll("text")
             .attr("y", 0)

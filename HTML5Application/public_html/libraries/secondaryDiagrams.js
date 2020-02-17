@@ -1,5 +1,4 @@
 
-
 function calculateRangeArray(numDiffValue, height){
     var rangeArray = [];
     for(i=0; i<=numDiffValue; i++){rangeArray.push(height*(i/(numDiffValue)));}
@@ -123,51 +122,51 @@ function drawParallelCoordinatesChart(visualElement,data){
         .text(function(d) { return d; });
     
     svg.selectAll("text")
-        .style("fill", "white");
+        .style("fill", "black");
 
     return document.getElementById("svgParallel");
 }
 
 
 
-function drawLinearChart(visualElement, data){
+function drawLinearChart(visualElement, data) {
     // set the dimensions and margins of the graph
     var margin = {top: 25, right: 15, bottom: 45, left: 85},
         width = 850 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
-    filteredDataBoomers = data.filter(function(row) {
+    filteredDataBoomers = data.filter(function (row) {
         return row['generation'] === 'Boomers';
     });
-    filteredDataSilent = data.filter(function(row) {
+    filteredDataSilent = data.filter(function (row) {
         return row['generation'] === 'Silent';
     });
-    filteredDataGenX = data.filter(function(row) {
+    filteredDataGenX = data.filter(function (row) {
         return row['generation'] === 'Generation X';
     });
-    filteredDataMillenials = data.filter(function(row) {
+    filteredDataMillenials = data.filter(function (row) {
         return row['generation'] === 'Millenials';
     });
-    filteredDataGenGI = data.filter(function(row) {
+    filteredDataGenGI = data.filter(function (row) {
         return row['generation'] === 'G.I. Generation';
     });
-    filteredDataGenZ = data.filter(function(row) {
+    filteredDataGenZ = data.filter(function (row) {
         return row['generation'] === 'Generation Z';
     });
 
-    var gen = [filteredDataGenGI, filteredDataSilent, filteredDataBoomers,filteredDataGenX,
+    var gen = [filteredDataGenGI, filteredDataSilent, filteredDataBoomers, filteredDataGenX,
         filteredDataMillenials, filteredDataGenZ];
-    var legendKeys = ["G.I. Generation","Silent","Boomers", "Generation X", "Millenials", "Generation Z"];
+    var legendKeys = ["G.I. Generation", "Silent", "Boomers", "Generation X", "Millenials", "Generation Z"];
 
-    gen.forEach(function(generation, index){
+    gen.forEach(function (generation, index) {
         var count = {};
         for (var i = 0; i < generation.length; i++) {
             var arr = generation[i];
-            
+
             fractionalSuicides = parseFloat(arr["suicide_100kpop"]);
             population = parseInt(arr["population"]);
-            totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-            
+            totSuicidesPerRecord = Math.round(fractionalSuicides * population / 100000);
+
             if (arr['year'] in count) {
                 count[arr['year']] = parseInt(count[arr['year']]) + totSuicidesPerRecord;
             } else {
@@ -177,7 +176,8 @@ function drawLinearChart(visualElement, data){
         generation = [];
         for (var key in count) {
             generation.push({year: key, tot_suicides: count[key]});
-        };
+        }
+        ;
 
         gen[index] = generation;
     });
@@ -186,80 +186,117 @@ function drawLinearChart(visualElement, data){
     var y = d3.scaleLinear().range([height, 0]);
 
     // Scale the range of the data
-    var years = data.map(function(d) { return d.year });
+    var years = data.map(function (d) {
+        return d.year
+    });
     var int_years = years.map(Number);
     x.domain(d3.extent(int_years));
-    
+
     var maxValue = 0;
-    for(i=0; i<gen.length; i++){
-        var suicNum = gen[i].map(function(d) { return d.tot_suicides });
+    for (i = 0; i < gen.length; i++) {
+        var suicNum = gen[i].map(function (d) {
+            return d.tot_suicides
+        });
         var int_suic = suicNum.map(Number);
         maxGen = d3.max(int_suic);
-        if (maxGen > maxValue){maxValue = maxGen;}
+        if (maxGen > maxValue) {
+            maxValue = maxGen;
+        }
     }
     /*var suicNum = gen[0].map(function(d) { return d.tot_suicides });
     var int_suic = suicNum.map(Number);*/
     y.domain([0, maxValue]);
 
     var valueline = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.tot_suicides); });
+        .x(function (d) {
+            return x(d.year);
+        })
+        .y(function (d) {
+            return y(d.tot_suicides);
+        });
 
     var color = ["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"];
 
-    var svg = d3.select(visualElement).append("svg")
-        .attr("id", "svgLinear")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+    if (document.getElementById("svgLinear") == null) {
+        var svg = d3.select(visualElement).append("svg")
+            .attr("id", "svgLinear")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
-    var legend = d3.select(visualElement).append("svg")
-        .attr("width", "125px")
-        .attr("top",  margin.top)
-        .attr("left", width + margin.left + 55);
+        var legend = d3.select(visualElement).append("svg")
+            .attr("width", "125px")
+            .attr("top", margin.top)
+            .attr("left", width + margin.left + 55);
 
-    gen.forEach(function(generation, index) {
-        // Add the valueline path.
-        svg.append("path")
-            .data([generation])
+        gen.forEach(function (generation, index) {
+            // Add the valueline path.
+            var line = svg.append("path")
+                .data([generation])
+                .attr("class", "line")
+                .style("stroke", function(){ return color[index]})
+                .style("fill", "none")
+                .style("stroke-width","2.5")
+                .attr("d", valueline);
+
+            legend.append('rect')
+                .attr("width", "13px")
+                .attr("height", "13px")
+                .attr('y', function () {
+                    return (index * 20);
+                })
+                .style("fill", function () {
+                    return color[index]
+                });
+
+            legend.append('text')
+                .attr("x", "20")
+                .attr("font-size", " small")
+                .attr('y', function () {
+                    return (index * 20) + 12;
+                })
+                .text(legendKeys[index]);
+
+            var totalLength = line.node().getTotalLength();
+
+            line.attr("stroke-dasharray", totalLength)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .duration("3500")
+                .attr("stroke-dashoffset", 0);
+
+        });
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).tickSize(-height).tickFormat(d3.format("d")))
+            .attr("cx", years)
+            .append("text").text("years").attr("x", width / 2)
+            .attr("y", "30").style("font-size", "12px")
+            .style("fill", "#000");
+
+
+        // Add the Y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .attr("cy", suicNum)
+            .append("text").text("Tot suicides").attr("y", "-10")
+            .style("font-size", "12px")
+            .style("fill", "#000");
+    }
+    else{
+        d3.select("#svgLinear").selectAll(".line")
+            .data([generation]).enter()
+            .append("path")
             .attr("class", "line")
-            .style("stroke", function(){ return color[index]})
-            .style("fill", "none")
-            .style("stroke-width","2.5")
+            .transition().duration("1000")
             .attr("d", valueline);
 
-        legend.append('rect')
-            .attr("width", "13px")
-            .attr("height", "13px")
-            .attr('y', function(){ return (index * 20);})
-            .style("fill",function(){ return color[index]});
 
-        legend.append('text')
-            .attr("x", "20")
-            .attr("font-size"," small")
-            .attr('y', function(){ return (index * 20) + 12;})
-            .text(legendKeys[index]);
-    });
-    // Add the X Axis
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(-height).tickFormat(d3.format("d")))
-        .attr("cx", years)
-        .append("text").text("years").attr("x",width/2)
-        .attr("y","30").style("font-size", "12px")
-        .style("fill", "#000");;
-
-    // Add the Y Axis
-    svg.append("g")
-        .call(d3.axisLeft(y))
-        .attr("cy", suicNum)
-        .append("text").text("Tot suicides").attr("y","-10")
-        .style("font-size", "12px")
-        .style("fill", "#000");
-
+    }
 
     return document.getElementById("svgLinear");
 }
@@ -594,7 +631,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge){
             })
             .attr("font-family", "sans-serif")
             .attr("font-size", "8px")
-            .attr("fill", "white")
+            .attr("fill", "black")
             .text(function(d) {
                 return d.tot_suicides;
             });

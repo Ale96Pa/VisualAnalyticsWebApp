@@ -4,7 +4,7 @@
  * analysis per single year.
  */
 
-var colors = {Europe:"#e41a1c",Antartide:"#377eb8",Asia:"#4daf4a",Americas:"#984ea3",Oceania:"#ff7f00",Africa:"#ffff33"};
+var colors = {Europe: "#377eb8",Antartide: "#e41a1c",Asia: "#4daf4a",Americas: "#984ea3",Oceania: "#ff7f00",Africa: "#ffff33"};
 
 // Manage the slider containing the years
 function slideYear(visualElement, data){

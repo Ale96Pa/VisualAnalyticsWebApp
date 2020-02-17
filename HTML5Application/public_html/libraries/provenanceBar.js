@@ -44,7 +44,7 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
 
         d3.select("#provenanceBar").append("svg")
             .attr("class","provenanceElem")
-            .attr("width","200px").attr("height","auto")
+            //.attr("width","200px").attr("height","auto")
             .style("transform","translate(0,"+ (provenanceContainer*200 +15)+ ")")
             .attr("id","svgContainer"+provenanceContainer);
         document.getElementById("svgContainer"+provenanceContainer).appendChild(newSvg);

@@ -7,7 +7,6 @@
 // This function save a miniature of the diagram in the provenance bar
 function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
     var newSvg;
-// TODO: per array di barchart mettere tutto in una riga nella provenance
     // Case of array of barcharts
     if(Array.isArray(svgElement)){
         d3.select("#provenanceBar").append("div")
@@ -16,14 +15,18 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
             .attr("width","200px")
             .style("transform","translate(0,"+ (provenanceContainer*200 +15)+ ")")
             .attr("id","divContainer"+provenanceContainer);
-    
+        /*
         for(i=0; i<svgElement.length; i++) {
             newSvg = svgElement[i].cloneNode(true);
             newSvg.setAttribute("height", 200);
-            newSvg.style.transform = "scaleY(0.06)"
+            newSvg.style.transform = "scaleY(0.06)";
 
             document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
         }
+        */
+        newSvg = document.createElement("P");
+        newSvg.innerHTML = "<br>No icon available<br>";      
+        document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
         
         var strSvg = (new XMLSerializer).serializeToString(document.getElementById("divContainer"+provenanceContainer));
         arraySvgToSave.push(strSvg);

@@ -15,7 +15,7 @@ function calculateRangeArray(numDiffValue, height){
 function drawParallelCoordinatesChart(visualElement,data){
 
     var margin = {top: 50, right: 15, bottom: 35, left: 90},
-        width = 1100 - margin.left - margin.right,
+        width = 1200 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var svg = d3.select(visualElement).append("svg")
@@ -80,7 +80,7 @@ function drawParallelCoordinatesChart(visualElement,data){
         .attr("d",  path)
         .style("fill", "none")
         .style("stroke", "#2ca25f")
-        .style("opacity", 0.5);
+        .style("opacity", 0.3);
 
     // Draw the axes
     svg.selectAll("myAxis")
@@ -106,7 +106,7 @@ function drawParallelCoordinatesChart(visualElement,data){
         .text(function(d) { return d; });
     
     svg.selectAll("text")
-        .style("fill", "white");
+        .style("fill", "black");
 
     return document.getElementById("svgParallel");
 }
@@ -115,7 +115,7 @@ function drawParallelCoordinatesChart(visualElement,data){
 function drawLinearChart(visualElement, data){
     
     var margin = {top: 25, right: 15, bottom: 45, left: 85},
-        width = 850 - margin.left - margin.right,
+        width = 900 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     filteredDataBoomers = data.filter(function(row) {return row['generation'] === 'Boomers';});
@@ -129,14 +129,15 @@ function drawLinearChart(visualElement, data){
         filteredDataMillenials, filteredDataGenZ];
     var legendKeys = ["G.I. Generation","Silent","Boomers", "Generation X", "Millenials", "Generation Z"];
 
-    gen.forEach(function(generation, index){
+    gen.forEach(function (generation, index) {
         var count = {};
         for (var i = 0; i < generation.length; i++) {
             var arr = generation[i];
+
             fractionalSuicides = parseFloat(arr["suicide_100kpop"]);
             population = parseInt(arr["population"]);
-            totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-            
+            totSuicidesPerRecord = Math.round(fractionalSuicides * population / 100000);
+
             if (arr['year'] in count) {
                 count[arr['year']] = parseInt(count[arr['year']]) + totSuicidesPerRecord;
             } else {
@@ -147,84 +148,125 @@ function drawLinearChart(visualElement, data){
         for (var key in count) {
             generation.push({year: key, tot_suicides: count[key]});
         };
+
         gen[index] = generation;
     });
 
-    // Define the scales
     var x = d3.scaleLinear().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
 
-    var years = data.map(function(d) { return d.year; });
+    // Scale the range of the data
+    var years = data.map(function (d) {
+        return d.year
+    });
     var int_years = years.map(Number);
     x.domain(d3.extent(int_years));
-    
-    // Calculate the maximum value of #suicides for dimensionate the scales
+
     var maxValue = 0;
-    for(i=0; i<gen.length; i++){
-        var suicNum = gen[i].map(function(d) { return d.tot_suicides; });
+    for (i = 0; i < gen.length; i++) {
+        var suicNum = gen[i].map(function (d) {
+            return d.tot_suicides
+        });
         var int_suic = suicNum.map(Number);
         maxGen = d3.max(int_suic);
-        if (maxGen > maxValue){maxValue = maxGen;}
+        if (maxGen > maxValue) {
+            maxValue = maxGen;
+        }
     }
+    /*var suicNum = gen[0].map(function(d) { return d.tot_suicides });
+    var int_suic = suicNum.map(Number);*/
     y.domain([0, maxValue]);
 
     var valueline = d3.line()
-        .x(function(d) { return x(d.year); })
-        .y(function(d) { return y(d.tot_suicides); });
+        .x(function (d) {
+            return x(d.year);
+        })
+        .y(function (d) {
+            return y(d.tot_suicides);
+        });
 
-    var color = ["#b2df8a", "#ffff99", "#e31a1c", "#6a3d9a", "#a6cee3", "#b15928"];
+    var color = ["#4bc928", "#ffff99", "#e31a1c", "#6a3d9a", "#2098d6", "#b15928"];
 
-    var svg = d3.select(visualElement).append("svg")
-        .attr("id", "svgLinear")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
+    if (document.getElementById("svgLinear") == null) {
+        var svg = d3.select(visualElement).append("svg")
+            .attr("id", "svgLinear")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
-    var legend = d3.select(visualElement).append("svg")
-        .attr("width", "125px")
-        .attr("top",  margin.top)
-        .attr("left", width + margin.left + 55);
+        var legend = d3.select(visualElement).append("svg")
+            .attr("width", "125px")
+            .attr("top", margin.top)
+            .attr("left", width + margin.left + 55);
 
-    gen.forEach(function(generation, index) {
-        // Add valueline path
-        svg.append("path")
-            .data([generation])
+        gen.forEach(function (generation, index) {
+            // Add the valueline path.
+            var line = svg.append("path")
+                .data([generation])
+                .attr("class", "line")
+                .style("stroke", function(){ return color[index]})
+                .style("fill", "none")
+                .style("stroke-width","2.5")
+                .attr("d", valueline);
+
+            legend.append('rect')
+                .attr("width", "13px")
+                .attr("height", "13px")
+                .attr('y', function () {
+                    return (index * 20);
+                })
+                .style("fill", function () {
+                    return color[index]
+                });
+
+            legend.append('text')
+                .attr("x", "20")
+                .attr("font-size", " small")
+                .attr('y', function () {
+                    return (index * 20) + 12;
+                })
+                .text(legendKeys[index]);
+
+            var totalLength = line.node().getTotalLength();
+
+            line.attr("stroke-dasharray", totalLength)
+                .attr("stroke-dashoffset", totalLength)
+                .transition()
+                .duration("3500")
+                .attr("stroke-dashoffset", 0);
+
+        });
+        // Add the X Axis
+        svg.append("g")
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).tickSize(-height).tickFormat(d3.format("d")))
+            .attr("cx", years)
+            .append("text").text("years").attr("x", width / 2)
+            .attr("y", "30").style("font-size", "12px")
+            .style("fill", "#000");
+
+
+        // Add the Y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y))
+            .attr("cy", suicNum)
+            .append("text").text("Tot suicides").attr("y", "-10")
+            .style("font-size", "12px")
+            .style("fill", "#000");
+    }
+    else{
+        d3.select("#svgLinear").selectAll(".line")
+            .data([generation]).enter()
+            .append("path")
             .attr("class", "line")
-            .style("stroke", function(){ return color[index];})
-            .style("fill", "none")
-            .style("stroke-width","2.5")
+            .transition().duration("1000")
             .attr("d", valueline);
-        legend.append('rect')
-            .attr("width", "13px")
-            .attr("height", "13px")
-            .attr('y', function(){ return (index * 20);})
-            .style("fill",function(){ return color[index];});
-        legend.append('text')
-            .attr("x", "20")
-            .attr("font-size"," small")
-            .attr('y', function(){ return (index * 20) + 12;})
-            .text(legendKeys[index]);
-    });
-    
-    // Add X Axis
-    svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickSize(-height).tickFormat(d3.format("d")))
-        .attr("cx", years)
-        .append("text").text("years").attr("x",width/2)
-        .attr("y","30").style("font-size", "12px")
-        .style("fill", "#000");;
 
-    // Add Y Axis
-    svg.append("g")
-        .call(d3.axisLeft(y))
-        .attr("cy", suicNum)
-        .append("text").text("Tot suicides").attr("y","-10")
-        .style("font-size", "12px")
-        .style("fill", "#000");
+
+    }
 
     return document.getElementById("svgLinear");
 }
@@ -232,9 +274,9 @@ function drawLinearChart(visualElement, data){
 // Drawing function for SCATTER PLOT DIAGRAM
 function drawScatterplot(visualElement, data){
 
-    var margin = {top: 25, right: 15, bottom: 25, left: 85},
-        width = 850 - margin.left - margin.right,
-        height = 390 - margin.top - margin.bottom;
+    var margin = {top: 25, right: 15, bottom: 45, left: 85},
+        width = 900 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
     padding = 50;
 
     var objDataContainer = []; // Container of data based on passed parameters
@@ -427,7 +469,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge){
     var data = dataFull; // Clone data to do not modify the shared dataset
     var objDataContainer = []; // Data parametric on user choices
     var margin = {top: 5, right: 5, bottom: 5, left: 5},
-        width = 150 - margin.left - margin.right,
+        width = 130 - margin.left - margin.right,
         height = 250 - margin.top - margin.bottom;
 
     var svg = d3.select(visualElement).append("svg")
@@ -475,7 +517,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge){
         .call(d3.axisBottom(x));
 
     var yAx = g.append("g")
-        .attr("width","900px")
+        .attr("width","850px")
         .attr("transform", "translate(50,0)")
         .call(d3.axisLeft(y));
     yAx.append("text")
@@ -512,7 +554,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge){
             .attr("x", function(d) {return x(d.sex)+60;})
             .attr("font-family", "sans-serif")
             .attr("font-size", "8px")
-            .attr("fill", "white")
+            .attr("fill", "black")
             .text(function(d) {return d.tot_suicides;});
 
         bar.selectAll("text")
@@ -541,7 +583,7 @@ function calculateMaxValueAge(data){
 // Draw all the barcharts in a pattern manner
 function drawPatternBarchart(visualElement, data){
     var margin = {top: 25, right: 25, bottom: 25, left: 5},
-        width = 1050 - margin.left - margin.right,
+        width = 950 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var div = d3.select(visualElement)
@@ -592,5 +634,6 @@ function drawPatternBarchart(visualElement, data){
     patternBars.push(svg4);
     patternBars.push(svg5);
     patternBars.push(svg6);
+
     return patternBars;
 }

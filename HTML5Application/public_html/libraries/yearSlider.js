@@ -33,8 +33,10 @@ function slideYear(visualElement, data){
     function parseYear(year) {
         var filteredData = data.filter(function(row) {return row['year'] == year;});
 
-        //d3.select("#mainDiagram").selectAll(".tooltip").remove();
-        //d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
+        d3.select("#mainDiagram").selectAll(".tooltip").remove();
+        d3.select("#mainDiagram").selectAll("#mainChange").selectAll("svg").remove();
+
 
         d3.selectAll(".filterBrush").remove();
         filters("#filters", filteredData);

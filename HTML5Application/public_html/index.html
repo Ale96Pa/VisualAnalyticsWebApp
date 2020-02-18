@@ -37,9 +37,10 @@ University of Rome "La Sapienza"
             <div class="slidecontainer">
                 <div id="slider-step"></div>
             </div>
-            <form style="position:absolute; top:420px; left:35px;">
-                <input type="radio" id="tsneRadio" name="reduction" value="Tsne"  checked />t-sne
-                <input type="radio" id="pcaRadio" name="reduction" value="PCA" />PCA
+            <form style="position:absolute; top:435px; left:35px; text-align-last: left;">
+                <input class="radioButton" type="radio" id="tsneRadio" name="reduction" value="Tsne"  checked />t-sne
+                <br>
+                <input class="radioButton" type="radio" id="pcaRadio" name="reduction" value="PCA" />PCA
             </form>
         </div>
         
@@ -51,45 +52,48 @@ University of Rome "La Sapienza"
             <button id="barChart" class="tablinks" >Bar chart (by sex and age)</button>
         </div>      
         <div id="secondDiagram" class="tabcontents">
-            <button class="provenanceButton" id="saveOnProvenance">Save on provenance bar</button>
+            <button class="provenanceButton" id="saveOnProvenance"> </button>
         </div>      
     </div>
 
 <!-- Part 2: filter bar -->
     <div id="filterBar">
+        <br>
         <div id="filters"></div>
+        <br>
         <div id="map"></div>
-        <hr>
+        <br><br>
         <div id="selection">
-            <div id="sexContainer" class="container" transform="translate(30,10)">
-                <legend>Sex</legend>
-                <label>Male<input id="male" type="checkbox" checked></label>
-                <label>Female<input id="female" type="checkbox" checked></label>
-            </div>
-            <div id="ageContainer" class="container" transform="translate(30,10)">
-                <legend>Age</legend>
-                <label>05-14 years<input id="5-14" type="checkbox" checked></label>
-                <label>15-24 years<input id="15-24" type="checkbox" checked></label>
-                <label>25-34 years<input id="25-34" type="checkbox" checked></label>
-                <label>35-54 years<input id="35-54" type="checkbox" checked></label>
-                <label>55-74 years<input id="55-74" type="checkbox" checked></label>
-                <label>over 75 years<input id="75+" type="checkbox" checked></label>
-            </div>
-            <div id="generationContainer" class="container" transform="translate(30,10)">
-                <legend>Generation</legend>
-                <label>G.I. generation (born: 1900 to 1924)<input id="genGI" type="checkbox" checked></label>
-                <label>Silent generation (born: 1925 to 1945)<input id="genSilent" type="checkbox" checked></label>
-                <label>Baby Boomers (born: 1946 to 1964)<input id="genBoomers" type="checkbox" checked></label>
-                <label>Generation X (born: 1965 to 1979)<input id="genX" type="checkbox" checked></label>
-                <label>Millenials (born: 1980 to 2000)<input id="genMillenials" type="checkbox" checked></label>
-                <label>Generation Z (born post 2000)<input id="genZ" type="checkbox" checked></label>
-            </div>
+            <fieldset id="sexContainer" class="container" >
+                <legend style="font-weight: bold;">Sex</legend>
+                <label><input id="male" type="checkbox" checked>Male</label><br>
+                <label><input id="female" type="checkbox" checked>Female</label><br>
+            </fieldset>
+            <fieldset id="ageContainer" class="container" >
+                <legend style="font-weight: bold;">Age</legend>
+                <label><input id="5-14" type="checkbox" checked>05-14 years</label><br>
+                <label><input id="15-24" type="checkbox" checked>15-24 years</label><br>
+                <label><input id="25-34" type="checkbox" checked>25-34 years</label><br>
+                <label><input id="35-54" type="checkbox" checked>35-54 years</label><br>
+                <label><input id="55-74" type="checkbox" checked>55-74 years</label><br>
+                <label><input id="75+" type="checkbox" checked>over 75 years</label><br>
+            </fieldset>
+            <fieldset id="generationContainer" class="container">
+                <legend style="font-weight: bold;">Generation</legend>
+                <label><input id="genGI" type="checkbox" checked>G.I. generation (born: 1900 to 1924)</label><br>
+                <label><input id="genSilent" type="checkbox" checked>Silent (born: 1925 to 1945)</label><br>
+                <label><input id="genBoomers" type="checkbox" checked>Baby Boomers (born: 1946 to 1964)</label><br>
+                <label><input id="genX" type="checkbox" checked>Generation X (born: 1965 to 1979)</label><br>
+                <label><input id="genMillenials" type="checkbox" checked>Millenials (born: 1980 to 2000)</label><br>
+                <label><input id="genZ" type="checkbox" checked>Generation Z (born post 2000)</label><br>
+            </fieldset>
         </div>
     </div>
 
 <!-- Part 3: Provenance bar-->
     <div id="provenanceBar" style="child-align: top">
-        <button onclick="window.location.href = 'review.html';">Review</button>
+        <button id="reviewButton" onclick="window.location.href = 'review.html';"></button>
+        <br><br><br><br>
     </div>
 </body>
 
@@ -128,6 +132,12 @@ University of Rome "La Sapienza"
         filters("#filters", dataYear);
         drawMainDiagram("#mainDiagram", dataYear);
         worldMap("map");
+
+        // Draw linear chart as first visualization: it has data of all years
+        var svgFirst = drawLinearChart("#secondDiagram", dataFull);
+        document.getElementById("saveOnProvenance").onclick = function () {
+            saveSvgFile("provenanceBar", svgFirst, svgs_to_save);
+        }
 
 // Filter all records having "null" values
         function filterOutNullRecords(data) {
@@ -194,7 +204,7 @@ University of Rome "La Sapienza"
 
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
                         .style("opacity", function (d) {
-                            if (selectedCountries.length == 0 && selectionData == null){return "1"}
+                            if (selectedCountries.length == 0 && selectionData == null){return "0.3"}
                             else if (selectedCountries.includes(d.country)) {return "1"}
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
@@ -205,11 +215,11 @@ University of Rome "La Sapienza"
                         })
                         .style("stroke", function (d) {
                             if (selectedCountries.length == 0 && selectionData == null){return "#2ca25f"}
-                            else if (selectedCountries.includes(d.country)) {return "#1f78b4"}
+                            else if (selectedCountries.includes(d.country)) {return "#e41a1c"}
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
-                                return "#1f78b4"
+                                return "#e41a1c"
                             }
                             else {return "#2ca25f"}
                         })
@@ -491,11 +501,11 @@ University of Rome "La Sapienza"
                             } else {return "0.3"}
                         })
                         .style("stroke", function (d) {
-                            if (selectedCountries.includes(d.country)){return "#1f78b4"}
+                            if (selectedCountries.includes(d.country)){return "#e41a1c"}
                             if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
-                                    return "#1f78b4"
+                                    return "#e41a1c"
                             } else {return "#2ca25f"}
                         })
                 }

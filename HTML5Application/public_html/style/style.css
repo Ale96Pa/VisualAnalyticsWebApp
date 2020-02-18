@@ -5,16 +5,16 @@ body {
 }
 
 #mainWrapper {
-    width: 1050px;
-    height: 910px;
+    width: 1070px;
+    height: 900px;
     min-width: 1050px;
     display: table-cell;
     vertical-align: top;
 }
 
 #mainDiagram {
-    width: 1050px;
-    height: 500px;
+    width: 1070px;
+    height: 490px;
     text-align: center;
     border: 1px solid white;
     margin-right: -2px;
@@ -22,15 +22,15 @@ body {
 
 #secondDiagram {
     position: relative;
-    width: 1050px;
+    width: 1070px;
     height: 400px;
     text-align: left;
     border: 1px solid white;
 }
 
 #filterBar {
-    width:600px;
-    min-width: 610px;
+    width:550px;
+    min-width: 590px;
     display:table-cell;
     text-align: center;
     border: 1px solid white;
@@ -39,7 +39,7 @@ body {
 }
 
 #provenanceBar {
-    width:250px;
+    width:200px;
     min-width: 200px;
     padding-left: 0px;
     padding-right: 0px;
@@ -49,6 +49,8 @@ body {
 }
 
 .provenanceElem {
+    width: 150px;
+    max-width: 150px;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 20px;
@@ -57,12 +59,8 @@ body {
 
 #selection {
     display: inline-flex;
-    height: 300px;
-    padding-left: 30px;
-    padding-right: 20px;
-    bottom: 5px;
+    height: 250px;
     align-content: center;
-
 }
 
 #map {
@@ -72,6 +70,7 @@ body {
 
 #review {
     width: 1050px;
+    padding-left: 50px;
     height: 910px;
     min-width: 1050px;
     display: table;
@@ -84,6 +83,7 @@ body {
     margin-left: -1px;
     margin-right: -1px;
 }
+
 
 /*---------------------------------------*/
 
@@ -123,25 +123,33 @@ body {
     border: 1px solid #ccc;
     border-top: none;
 }
-hr {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    bottom: 405px;
-    border-style: inset;
-    border-width: 2px;
-}
-
 
 .provenanceButton {
     position: absolute;
     top: 10px;
     right: 10px;
+    min-height: 55px;
+    min-width: 55px;
+    width: fit-content;
+    background: url('saveBtn.png') no-repeat;
 }
 
-.reviewButton {
-    position: absolute;
-    top: 50px;
-    right: 50px;
+#reviewButton {
+    position: relative;
+    left: 45px;
+    top:15px;
+    width: 120px;
+    height:40px;
+    border-radius: 5%;
+    background: url('reviewBtn.png') no-repeat;
+}
+.downloadButton {
+    position: fixed;
+    top: 15px;
+    right: 300px;
+    width: 124px;
+    height: 35px;
+    background: url('downloadBtn.png') no-repeat;
 }
 
 
@@ -187,18 +195,16 @@ div.tooltip {
     pointer-events: none;
 }
 
-/*---------------------------------------*/
+/*---------------------------------------CHECKBOX*/
 
 .container{
-    width: auto;
+    width: max-content;
     border: 2px solid white;
     border-radius: 3%;
+    text-align-last: left;
 }
-
-input, label{
-    padding-top: 5px;
-    display: -webkit-box;
-    text-align: right;
+.label{
+    font-size: 10px;
 }
 
 .grid line {

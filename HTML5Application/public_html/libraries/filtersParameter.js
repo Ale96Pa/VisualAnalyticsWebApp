@@ -130,7 +130,7 @@ function changeOnSecondary(tmpData){
         genMillenials, genZ);
 
     // Parallel coordinates management
-    if(document.getElementById("svgParallel") !== null) {
+    if(document.getElementById("svgParallel") != null) {
         var dataNoNull = filterOutNullRecords(filteredData);
         d3.select("#secondDiagram").selectAll("svg").remove();
         svgFromBrush = drawParallelCoordinatesChart("#secondDiagram",dataNoNull);
@@ -139,18 +139,18 @@ function changeOnSecondary(tmpData){
             d3.select("#svgParallel").selectAll(".innerPath").transition()
                 .style("opacity", function (d) {
                     if (selectedCountries.includes(d.country)){return "1";}
-                    if ((selectionData !== null && selectionData.length === 2)
+                    if ((selectionData != null && selectionData.length == 2)
                         && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                         ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                             return "1";
                     }else {return "0.3";}
                 })
                 .style("stroke", function (d) {
-                    if (selectedCountries.includes(d.country)){return "#1f78b4";}
-                    if ((selectionData !== null && selectionData.length === 2)
+                    if (selectedCountries.includes(d.country)){return "#e41a1c";}
+                    if ((selectionData != null && selectionData.length == 2)
                         && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                         ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
-                            return "#1f78b4";
+                            return "#e41a1c";
                     }else {return "#2ca25f";}
                 });
         }
@@ -335,8 +335,7 @@ function worldMap(visualElement) {
         .append("svg")
         .attr("width", width)
         .attr("height", height)
-        .attr("transform", "translate( 20 , 10)")
-        .style( "border-radius", "10%")
+        .attr("transform", "translate( 25 , 10)")
         .call(zoom)
         .append("g");
     svg.append("rect")
@@ -344,7 +343,6 @@ function worldMap(visualElement) {
         .attr("height", height).attr("width", width)
         .style("stroke", "white")
         .style("fill", "none")
-        .style( "stroke-radius", "10%")
         .style("stroke-width", "3");
 
     var div = d3.select("#"+visualElement)
@@ -439,7 +437,7 @@ function worldMap(visualElement) {
                         d3.select("#svgParallel").selectAll(".innerPath").transition()
                             .style("opacity", function (d) {
                                 if (selectedCountries.includes(d.country)) {return "1";}
-                                if ((selectionData !== null && selectionData.length === 2)
+                                if ((selectionData != null && selectionData.length == 2)
                                     && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                     ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                     return "1";
@@ -447,14 +445,16 @@ function worldMap(visualElement) {
                                 else {return "0.3";}
                             })
                             .style("stroke", function (d) {
-                                if (selectedCountries.includes(d.country)) {return "#1f78b4";}
-                                if ((selectionData !== null && selectionData.length === 2)
+                                if (selectedCountries.includes(d.country)) {return "#e41a1c";}
+                                if ((selectionData != null && selectionData.length == 2)
                                     && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                     ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
-                                    return "#1f78b4";
+                                    return "#e41a1c";
                                 }
                                 else {return "#2ca25f";}
                             });
+                        svgFromMap =  document.getElementById("svgParallel");
+
                     }
 
     // Coordination SCATTER PLOT
@@ -470,6 +470,7 @@ function worldMap(visualElement) {
                                 }
                                 else {return "0.1";}
                             });
+                        svgFromMap =  document.getElementById("svgScatter");
                     }
 
     // Coordination PATTERN OF BARCHARTS
@@ -491,18 +492,20 @@ function worldMap(visualElement) {
                 }
 // Case of NO SELECTION in map
                 else {
-                    if (document.getElementById("svgParallel") !== null) {
+                    if (document.getElementById("svgParallel") !==null) {
                         d3.select("#svgParallel").selectAll(".innerPath")
                             .style("stroke", "#2ca25f");
                         d3.select("#svgParallel").selectAll(".innerPath").transition()
                             .style("opacity", "1");
+                        svgFromMap =  document.getElementById("svgParallel");
                     }
-                    if (document.getElementById("svgScatter") !== null) {
+                    if (document.getElementById("svgScatter") != null) {
                         d3.select("#svgScatter").selectAll("circle")
                             .transition().duration("450")
                             .style("opacity", "1");
+                        svgFromMap =  document.getElementById("svgScatter");
                     }
-                    if (document.getElementById("svgLinear") !== null) {
+                    if (document.getElementById("svgLinear") != null) {
                         var dataNoNull = filterOutNullRecords(dataFull);
                         filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
                             age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,

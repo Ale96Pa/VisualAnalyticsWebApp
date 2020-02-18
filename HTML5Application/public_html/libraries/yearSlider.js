@@ -49,11 +49,11 @@ function slideYear(visualElement, data){
                     if (selectedCountries.includes(d.country)) {return "red";}
                 })
                 .style("stroke-width", function (d) {
-                    if (selectedCountries.includes(d.country)) {return ".9px"}
+                    if (selectedCountries.includes(d.country)) {return ".9px";}
                 })
                 .each(function (d) {
-                    if (selectedCountries.includes(d.country)) {d3.select(this).moveToFront()}
-                })
+                    if (selectedCountries.includes(d.country)) {d3.select(this).moveToFront();}
+                });
         }
 
         dataYear = filteredData;

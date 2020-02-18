@@ -157,7 +157,7 @@ function drawLinearChart(visualElement, data){
 
     // Scale the range of the data
     var years = data.map(function (d) {
-        return d.year
+        return d.year;
     });
     var int_years = years.map(Number);
     x.domain(d3.extent(int_years));
@@ -165,7 +165,7 @@ function drawLinearChart(visualElement, data){
     var maxValue = 0;
     for (i = 0; i < gen.length; i++) {
         var suicNum = gen[i].map(function (d) {
-            return d.tot_suicides
+            return d.tot_suicides;
         });
         var int_suic = suicNum.map(Number);
         maxGen = d3.max(int_suic);
@@ -206,7 +206,7 @@ function drawLinearChart(visualElement, data){
             var line = svg.append("path")
                 .data([generation])
                 .attr("class", "line")
-                .style("stroke", function(){ return color[index]})
+                .style("stroke", function(){ return color[index];})
                 .style("fill", "none")
                 .style("stroke-width","2.5")
                 .attr("d", valueline);
@@ -214,19 +214,13 @@ function drawLinearChart(visualElement, data){
             legend.append('rect')
                 .attr("width", "13px")
                 .attr("height", "13px")
-                .attr('y', function () {
-                    return (index * 20);
-                })
-                .style("fill", function () {
-                    return color[index]
-                });
+                .attr('y', function () {return (index * 20);})
+                .style("fill", function () {return color[index];});
 
             legend.append('text')
                 .attr("x", "20")
                 .attr("font-size", " small")
-                .attr('y', function () {
-                    return (index * 20) + 12;
-                })
+                .attr('y', function () {return (index * 20) + 12;})
                 .text(legendKeys[index]);
 
             var totalLength = line.node().getTotalLength();
@@ -264,10 +258,7 @@ function drawLinearChart(visualElement, data){
             .attr("class", "line")
             .transition().duration("1000")
             .attr("d", valueline);
-
-
     }
-
     return document.getElementById("svgLinear");
 }
 
@@ -308,7 +299,7 @@ function drawScatterplot(visualElement, data){
         }
     }
 
-    // Scale function
+    // Scale function and axes
     var xScale = d3.scaleLinear()
         .domain([0, d3.max(objDataContainer, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
         .range([0, width]);
@@ -343,9 +334,9 @@ function drawScatterplot(visualElement, data){
         .attr("stroke", "#000")
         .attr("stroke-width","0.2px")
         .style("fill", function(d) {
-            if(parseFloat(d["hdi"]) <= 0.60) {return 'red';}
-            if(parseFloat(d["hdi"]) >= 0.75){return 'green';}
-            else {return 'yellow';}
+            if(parseFloat(d["hdi"]) <= 0.60) {return '#e3230e';}
+            if(parseFloat(d["hdi"]) >= 0.75){return '#0aab0d';}
+            else {return '#fff200';}
         })
         .on("mouseover", function(d) {
             var elem = d3.select(this);
@@ -372,19 +363,15 @@ function drawScatterplot(visualElement, data){
                             .duration('50')
                             .style("visibility", "visible");
                         d3.select("#mainDiagram").select("#mainTooltip")
-                        .html("STATE:" + p.country + "<br>POP:" + p.population + "<br>SUICIDES:" +
+                        .html(p.country + "<br>POPULATION:" + p.population + "<br>SUICIDES:" +
                             (((p.tot_suicides) * 100000) / (p.population)).toFixed(2) +
                             "(per 100k)<br>GDP:" + p.gdp_per_year + "<br>HDI:" + p.hdi)
                             .style("left", (d3.select(this).attr("cx") + 5) + "px")
                             .style("top", (d3.select(this).attr("cy")  +5) + "px");
                     }
                 })
-                .style("stroke", function(p){
-                        if (p.country == d.country) {return "#fff";}
-                })
-                .style("stroke-width", function(p){
-                        if (p.country == d.country) {return "1.5px";}
-                });
+                .style("stroke", function(p){if (p.country == d.country) {return "#fff";}})
+                .style("stroke-width", function(p){if (p.country == d.country) {return "1.5px";}});
         })
         .on('mouseout', function (d, i) {
             var elem = d3.select(this);
@@ -405,9 +392,7 @@ function drawScatterplot(visualElement, data){
                 .style("visibility", "hidden");
 
             d3.select("#dotG").selectAll(".dot")
-                .each( function (p) {
-                    if (p.country == d.country) {d3.select(this).moveToBack();}
-                })
+                .each( function (p) {if (p.country == d.country) {d3.select(this).moveToBack();}})
                 .style("stroke", function(p){
                     if (p.country == d.country) {
                         if (selectedCountries.includes(p.country)){return "red";}
@@ -440,7 +425,7 @@ function drawScatterplot(visualElement, data){
 
     // Legend based on hdi
     var legend = ["High hdi(0.75-1)","Medium hdi(0.61-074)","Low hdi(0-0.60)"];
-    var legendColor =  ["red","yellow","green"];
+    var legendColor =  ["#0aab0d", "#fff200", "#e3230e"];
 
     var legendSvg = d3.select(visualElement).append("svg")
         .attr("width", "165px")

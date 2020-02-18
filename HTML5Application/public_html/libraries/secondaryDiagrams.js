@@ -546,7 +546,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge, transParam){
 
         bar.selectAll("text")
             //.transition().duration("400")
-            .attr("y", function(d) {return y(Number(d.tot_suicides)+5);});
+            .attr("y", function(d) {return y(Number(d.tot_suicides)+7);});
     }
     return document.getElementById(label);
 }
@@ -592,7 +592,7 @@ function calculateMeanStd(data) {
 
     var mean = sumSuic / counter;
     for(k=0; k<ranges.length; k++){
-        var tmpVar = Math.pow(ranges[k]-mean, 2)
+        var tmpVar = Math.pow(ranges[k]-mean, 2);
         sumVariance = sumVariance + tmpVar;
     }
     var stdDev = Math.sqrt(sumVariance/counter);
@@ -604,7 +604,7 @@ function calculateMeanStd(data) {
 function drawPatternBarchart(visualElement, data) {
     var margin = {top: 60, right: 25, bottom: 25, left: 5},
         width = 1090 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        height = 415 - margin.top - margin.bottom;
 
     var div = d3.select(visualElement)
         .append("svg").attr("id", "patternDiv")
@@ -659,6 +659,7 @@ function drawPatternBarchart(visualElement, data) {
     var svg6 = drawBarChart("#patternDiv", "75+ years", filteredData75, maxAge, 850);
 
     if (data.length != 0) {
+
         var y = d3.scaleLinear()
             .rangeRound([240, 0])
             .domain([0, maxAge]);
@@ -671,14 +672,14 @@ function drawPatternBarchart(visualElement, data) {
             .style("stroke-dasharray", ("3,3"))
             .attr("x1", "50")
             .attr("x2", width - 24)
-            .attr("y1", y(stats[0]))
-            .attr("y2", y(stats[0]));
+            .attr("y1", y(stats[0])+30)
+            .attr("y2", y(stats[0])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
             .style("font-size", "15px")
             .style("fill", "red")
             .attr("x", width - 13)
-            .attr("y", y(stats[0]))
+            .attr("y", y(stats[0])+30)
             .html('&mu;');
 
         div.append("line")
@@ -687,14 +688,14 @@ function drawPatternBarchart(visualElement, data) {
             .style("stroke-dasharray", ("2,2"))
             .attr("x1", "52")
             .attr("x2", width - 24)
-            .attr("y1", y(stats[0] - stats[1]))
-            .attr("y2", y(stats[0] - stats[1]));
+            .attr("y1", y(stats[0] - stats[1])+30)
+            .attr("y2", y(stats[0] - stats[1])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
             .style("font-size", "12px")
             .style("fill", "green")
             .attr("x", width - 13)
-            .attr("y", y(stats[0] - stats[1]))
+            .attr("y", y(stats[0] - stats[1])+30)
             .html('&mu;-&sigma;');
 
         div.append("line")
@@ -703,16 +704,20 @@ function drawPatternBarchart(visualElement, data) {
             .style("stroke-dasharray", ("2,2"))
             .attr("x1", "55")
             .attr("x2", width - 24)
-            .attr("y1", y(stats[0] + stats[1]))
-            .attr("y2", y(stats[0] + stats[1]));
+            .attr("y1", y(stats[0] + stats[1])+30)
+            .attr("y2", y(stats[0] + stats[1])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
             .style("font-size", "12px")
             .style("fill", "green")
             .attr("x", width -13)
-            .attr("y", y(stats[0] + stats[1]))
+            .attr("y", y(stats[0] + stats[1])+30)
             .html('&mu;+&sigma;');
     }
+
+    console.log(y(800000) , y(0))
+    console.log(stats[0] + stats[1], y(stats[0] + stats[1]))
+    console.log(stats[0] - stats[1], y(stats[0] - stats[1]))
 
     var patternBars = [];
     patternBars.push(svg1);

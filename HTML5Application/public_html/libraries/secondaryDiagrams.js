@@ -668,7 +668,7 @@ function drawPatternBarchart(visualElement, data) {
 
         div.append("line")
             .style("stroke", "red")
-            .style("stroke-width", "0.55")
+            .style("stroke-width", "0.6")
             .style("stroke-dasharray", ("3,3"))
             .attr("x1", "50")
             .attr("x2", width - 24)
@@ -676,7 +676,7 @@ function drawPatternBarchart(visualElement, data) {
             .attr("y2", y(stats[0])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
-            .style("font-size", "15px")
+            .style("font-size", "14px")
             .style("fill", "red")
             .attr("x", width - 13)
             .attr("y", y(stats[0])+30)
@@ -684,7 +684,7 @@ function drawPatternBarchart(visualElement, data) {
 
         div.append("line")
             .style("stroke", "green")
-            .style("stroke-width", "0.55")
+            .style("stroke-width", "0.7")
             .style("stroke-dasharray", ("2,2"))
             .attr("x1", "52")
             .attr("x2", width - 24)
@@ -692,7 +692,7 @@ function drawPatternBarchart(visualElement, data) {
             .attr("y2", y(stats[0] - stats[1])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
-            .style("font-size", "12px")
+            .style("font-size", "13px")
             .style("fill", "green")
             .attr("x", width - 13)
             .attr("y", y(stats[0] - stats[1])+30)
@@ -700,7 +700,7 @@ function drawPatternBarchart(visualElement, data) {
 
         div.append("line")
             .style("stroke", "green")
-            .style("stroke-width", "0.55")
+            .style("stroke-width", "0.7")
             .style("stroke-dasharray", ("2,2"))
             .attr("x1", "55")
             .attr("x2", width - 24)
@@ -708,7 +708,7 @@ function drawPatternBarchart(visualElement, data) {
             .attr("y2", y(stats[0] + stats[1])+30);
         div.append('text')
             .attr('text-anchor', 'middle')
-            .style("font-size", "12px")
+            .style("font-size", "13px")
             .style("fill", "green")
             .attr("x", width -13)
             .attr("y", y(stats[0] + stats[1])+30)

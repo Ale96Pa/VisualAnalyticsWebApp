@@ -399,21 +399,20 @@ function worldMap(visualElement) {
                     selectedCountries.push(m.properties.name);}
 
 // Coordination MAIN DIAGRAM
+
                 d3.select("#dotG").selectAll(".dot")
-                    .style("opacity", function(d){
-                        if (selectedCountries.includes(d.country)){return "1";}
-                        else{return "0.1";}
+                    .style("opacity", function (d) {
+                        if (selectedCountries.includes(d.country)) {return "1";}
+                        else {return "0.2";}
                     })
-                    .style("stroke", function(d){
-                    if (selectedCountries.includes(d.country)) {return "red";}
+                    .style("stroke", function (d) {
+                        if (selectedCountries.includes(d.country)) {return "red";}
                     })
-                    .style("stroke-width",function(d){
+                    .style("stroke-width", function (d) {
                         if (selectedCountries.includes(d.country)) {return ".9px";}
                     })
-                    .each(function(d) {
-                        if (selectedCountries.includes(d.country)) {
-                            d3.select(this).moveToFront();
-                        }
+                    .each(function (d) {
+                        if (selectedCountries.includes(d.country)) {d3.select(this).moveToFront();}
                     });
 
 // Coordination STATISTICAL DIAGRAMS

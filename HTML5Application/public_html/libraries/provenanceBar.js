@@ -20,11 +20,11 @@ function saveSvgFile(visualElement, svgElement, arraySvgToSave) {
 
             document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
         }
-
-       // newSvg = document.createElement("P");
-        //newSvg.innerHTML = "<br>Generation Barchart<br>";
-        //document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
-
+        /*
+        newSvg = document.createElement("P");
+        newSvg.innerHTML = "<br>Generation Barchart<br>";
+        document.getElementById("divContainer" + provenanceContainer).appendChild(newSvg);
+        */
         var strSvg = (new XMLSerializer).serializeToString(document.getElementById("divContainer"+provenanceContainer));
         arraySvgToSave.push(strSvg);
         provenanceContainer = provenanceContainer + 1;
@@ -87,7 +87,7 @@ function copyToReview(divId){
             .style("transform", "scale(0.8)")
             .attr("width","1000px");
 
-        var pattern = (d3.select("#svg" + j).selectAll("svg")._groups)[0]
+        var pattern = (d3.select("#svg" + j).selectAll("svg")._groups)[0];
 
         pattern.forEach(function (d) {
                 if (d.id == "5-14 years"){ d.style.transform ="translate(-5px)";}

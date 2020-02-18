@@ -1,5 +1,6 @@
 /**
- * This script manages animation, drawing and coordination of main diagram
+ * This script manages animation, drawing and coordination of main diagram: it 
+ * is a scatterplot with coordinates t-sne or PCA
  */
 
 // Function to put to back a point of the scatterplot
@@ -248,7 +249,7 @@ function drawMainDiagram(visualElement, data) {
 
         d3.select("#dotG").selectAll(".dot")
             .transition().duration("800")
-                .attr("r", function (d) {return (((d.tot_suicides) * 100000) / (d.population));})
+                .attr("r", function (d) {return (((d.tot_suicides) * 100000) / (d.population));});
 
         focus.append("g")
             .attr("class", "axis axis--x")
@@ -337,7 +338,7 @@ function drawMainDiagram(visualElement, data) {
 
             context.select(".brush")
                 .call(brushX)
-                .call(brushX.move, x2.range())
+                .call(brushX.move, x2.range());
 
         }
 
@@ -429,7 +430,7 @@ function drawMainDiagram(visualElement, data) {
 
         function brushedY() {
             var selection = d3.event.selection;
-            selection = [selection[1], selection[0]]
+            selection = [selection[1], selection[0]];
             y.domain(selection.map(y3.invert, y3));
             focus.selectAll(".dot")
                 .attr("cx", function (d) {return x(d[header[0]]);})
@@ -456,16 +457,16 @@ function drawMainDiagram(visualElement, data) {
                     .style("fill-opacity", function (d) {
                         if ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                             (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1])) {
-                            return "1.0"
+                            return "1.0";
                         } else {
-                            return "0.2"
+                            return "0.2";
                         }
-                    })
+                    });
             }
             // Case selection NULL
             else {
                 selectionData = null;
-                var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+                var filteredData = filterAllDataBrusher(data, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1]);
                 d3.select("#dotG").selectAll(".dot").transition().duration("50")
                     .style("fill", function(d){
                         if (filteredData[0].includes(d["country"])){
@@ -473,7 +474,7 @@ function drawMainDiagram(visualElement, data) {
                         else{
                             return "gray";}
                     })
-                    .style("fill-opacity", "1.0")
+                    .style("fill-opacity", "1.0");
             }
 
 // Coordination STATISTICAL DIAGRAMS
@@ -501,30 +502,30 @@ function drawMainDiagram(visualElement, data) {
                     d3.select("#svgParallel").selectAll(".innerPath").transition()
                         .style("opacity", function (d) {
                             if (selectedCountries.includes(d.country)) {
-                                return "1"
+                                return "1";
                             }
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                                     (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1]))){
-                                return "1"
+                                return "1";
                             }
                             else{
-                                return "0.3"
+                                return "0.3";
                             }
                         })
                         .style("stroke", function (d) {
                             if (selectedCountries.includes(d.country)) {
-                                return "#e41a1c"
+                                return "#e41a1c";
                             }
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                                     (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1]))){
-                                return "#e41a1c"
+                                return "#e41a1c";
                             }
                             else {
-                                return "#2ca25f"
+                                return "#2ca25f";
                             }
-                        })
+                        });
 
                     svgFromSelect =  document.getElementById("svgParallel");
 
@@ -536,16 +537,16 @@ function drawMainDiagram(visualElement, data) {
                     d3.select("#svgScatter").selectAll("circle")
                         .style("opacity", function (d) {
                             if (selectedCountries.includes(d.country)) {
-                                return "1"
+                                return "1";
                             }
                             else if ((selectionData != null && selectionData.length == 2)
                                 && ((x(d[header[0]]) > selection[0][0]) && (x(d[header[0]]) < selection[1][0]) &&
                                     (y(d[header[1]]) > selection[0][1]) && (y(d[header[1]]) < selection[1][1]))){
-                                return "1"
+                                return "1";
                             } else {
-                                return "0.1"
+                                return "0.1";
                             }
-                        })
+                        });
                 svgFromSelect =  document.getElementById("svgScatter");
                 }
 
@@ -581,33 +582,29 @@ function drawMainDiagram(visualElement, data) {
                     svgFromSelect =  document.getElementById("svgScatter");
                 }
                 if (document.getElementById("svgLinear") != null) {
-                    var dataNoNull = filterOutNullRecords(dataFull)
+                    var dataNoNull = filterOutNullRecords(dataFull);
                     filteredData = filterAllDataCheckbox(dataNoNull, male, female, age5_14, age15_24, age25_34,
                         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                         genMillenials, genZ);
 
                     d3.select("#secondDiagram").selectAll("svg").remove();
-                    svgFromSelect = drawLinearChart("#secondDiagram", filteredData)
+                    svgFromSelect = drawLinearChart("#secondDiagram", filteredData);
 
                 }
                 if (document.getElementById("patternDiv") != null) {
-
-                    var dataYearNoNull = filterOutNullRecords(dataYear)
-                    tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+                    var dataYearNoNull = filterOutNullRecords(dataYear);
+                    tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1]);
 
                     filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
                         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                         genMillenials, genZ);
                     d3.select("#secondDiagram").selectAll("svg").remove();
-                    svgFromSelect = drawPatternBarchart("#secondDiagram", filteredData)
+                    svgFromSelect = drawPatternBarchart("#secondDiagram", filteredData);
                 }
             }
             document.getElementById("saveOnProvenance").onclick=function(){
-                saveSvgFile("provenanceBar", svgFromSelect, svgs_to_save);}
+                saveSvgFile("provenanceBar", svgFromSelect, svgs_to_save);};
         }
-
     }
-
-    drawScatter(data)
+    drawScatter(data);
 }
-

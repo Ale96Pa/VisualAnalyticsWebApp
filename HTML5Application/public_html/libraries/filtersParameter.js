@@ -27,10 +27,7 @@ function filters(visualElement, data) {
 // This function generate a new brusher bar (used for brushers HDI, GDP and population)
     function newFilterBar(data, name) {
 
-        var header = d3.keys(data[0]);
-        var index = header.indexOf(name);
-        var width = 550,
-            height = 95;
+        var width = 580;
 
         var x = d3.scaleLinear()
             .range([0, width-150])
@@ -43,10 +40,13 @@ function filters(visualElement, data) {
 
         if (name == 'gdp_per_year'){
             name="gdp";
+            height = 105;
             brush.on("brush", brushedGDP);}
         else if (name == 'hdi'){
+            height = 70;
             brush.on("brush", brushedHdi);}
         else if (name == 'population'){
+            height = 95;
             brush.on("brush", brushedPop);}
 
         // svg for bars
@@ -56,15 +56,17 @@ function filters(visualElement, data) {
             .attr("width", width)
             .attr("height", height);
         svg.append("text")
-            .attr("transform", "translate(30,30)")
-            .style("text-anchor", "middle")
+            .attr("transform", "translate(20,30)")
+            .style("text-anchor", "left")
             .style("fill", "black")
-            .text(name + ":");
+            .style("font-weight","bold")
+            .style("font-size","11px")
+            .text(name + ": ");
 
         // Context for brushing
         var context = svg.append("g")
             .attr("class", "context")
-            .attr("transform", "translate(90,15)");
+            .attr("transform", "translate(90,10)");
         context.append("g")
             .attr("class", "axis axis--x")
             .attr("transform", "translate(0,17)")

@@ -57,7 +57,7 @@ function slideYear(visualElement, data){
         }
 
         dataYear = filteredData;
-        selectionData = [];
+        selectionData = null;
         changeOnSecondary(dataYear);
     }
 }

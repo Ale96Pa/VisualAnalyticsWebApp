@@ -129,9 +129,10 @@ function drawMainDiagram(visualElement, data) {
                     elem.transition()
                         .duration(50)
                         .attr('opacity', '1');
+
                     elem.style("stroke","#fff")
                         .style("stroke-width","1.5px");
-                    //elem.moveToFront();
+                    elem.moveToFront();
 
                     div.transition()
                         .duration(50)

@@ -256,7 +256,7 @@ function drawLinearChart(visualElement, data){
             .data([generation]).enter()
             .append("path")
             .attr("class", "line")
-            .transition().duration("1000")
+            .transition().duration("600")
             .attr("d", valueline);
     }
     return document.getElementById("svgLinear");
@@ -332,7 +332,7 @@ function drawScatterplot(visualElement, data){
         .attr("cy", function(d) {return yScale(d["tot_suicides"]);})
         .attr("r", 5)
         .attr("stroke", "#000")
-        .attr("stroke-width","0.2px")
+        .attr("stroke-width","1.0px")
         .style("fill", function(d) {
             if(parseFloat(d["hdi"]) <= 0.60) {return '#e3230e';}
             if(parseFloat(d["hdi"]) >= 0.75){return '#0aab0d';}
@@ -379,8 +379,8 @@ function drawScatterplot(visualElement, data){
                 .duration('50')
                 .attr('opacity', '1')
                 .style("stroke","#000")
-                .style("stroke-width","0.2px");
-            elem.moveToBack();
+                .style("stroke-width","1.0px");
+            //elem.moveToBack();
 
             div.transition()
                 .duration('50')
@@ -392,7 +392,7 @@ function drawScatterplot(visualElement, data){
                 .style("visibility", "hidden");
 
             d3.select("#dotG").selectAll(".dot")
-                .each( function (p) {if (p.country == d.country) {d3.select(this).moveToBack();}})
+                //.each( function (p) {if (p.country == d.country) {d3.select(this).moveToBack();}})
                 .style("stroke", function(p){
                     if (p.country == d.country) {
                         if (selectedCountries.includes(p.country)){return "red";}

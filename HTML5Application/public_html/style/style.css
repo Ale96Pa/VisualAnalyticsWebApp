@@ -1,12 +1,12 @@
 body {
     background-image: linear-gradient(to bottom, darkgray, lightgray);
     display: table;
-    justify-content: left; /*horizontal*/
+    justify-content: left;
 }
 
 #mainWrapper {
     width: 1070px;
-    height: 900px;
+    height: 890px;
     min-width: 1050px;
     display: table-cell;
     vertical-align: top;
@@ -23,7 +23,7 @@ body {
 #secondDiagram {
     position: relative;
     width: 1070px;
-    height: 400px;
+    height: 390px;
     text-align: left;
     border: 1px solid white;
 }
@@ -45,7 +45,6 @@ body {
     padding-right: 0px;
     display:table-cell;
     border: 1px solid white;
-
 }
 
 .provenanceElem {
@@ -79,9 +78,9 @@ body {
 
 .reviewRow {
     text-align: center;
-    border: 1px solid white;
-    margin-left: -1px;
-    margin-right: -1px;
+    border: 2px solid white;
+    margin-left: -2px;
+    margin-right: -2px;
 }
 
 

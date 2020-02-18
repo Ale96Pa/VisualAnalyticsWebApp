@@ -15,7 +15,7 @@ function calculateRangeArray(numDiffValue, height){
 function drawParallelCoordinatesChart(visualElement,data){
 
     var margin = {top: 50, right: 15, bottom: 35, left: 90},
-        width = 1200 - margin.left - margin.right,
+        width = 1250 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var svg = d3.select(visualElement).append("svg")
@@ -102,7 +102,9 @@ function drawParallelCoordinatesChart(visualElement,data){
         })
         .append("text")
         .style("text-anchor", "middle")
-        .attr("y", -9)
+        .style("font-weight","bold")
+        .style("font-size", "12px")
+        .attr("y", -15)
         .text(function(d) { return d; });
     
     svg.selectAll("text")
@@ -265,7 +267,7 @@ function drawLinearChart(visualElement, data){
 // Drawing function for SCATTER PLOT DIAGRAM
 function drawScatterplot(visualElement, data){
 
-    var margin = {top: 25, right: 15, bottom: 45, left: 85},
+    var margin = {top: 35, right: 15, bottom: 55, left: 90},
         width = 900 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     padding = 50;
@@ -410,8 +412,12 @@ function drawScatterplot(visualElement, data){
         .attr("class", "x axis")
         .attr("transform", "translate(0," + (height+5) + ")")
         .call(xAxis)
-        .append("text").text("Gdp per capita").attr("x",width/2)
-        .attr("y","30").style("font-size", "10px")
+        .append("text")
+        .style("font-weight","bold")
+        .style("font-size", "12px")
+        .text("Gdp per capita")
+        .attr("x",width/2)
+        .attr("y","30")
         .style("fill", "#000");
 
     // Y axis
@@ -419,8 +425,11 @@ function drawScatterplot(visualElement, data){
         .attr("class", "y axis")
         .attr("transform", "translate(-5,0)")
         .call(yAxis)
-        .append("text").text("Tot_suicides").attr("y","-10")
-        .style("font-size", "10px")
+        .append("text")
+        .style("font-weight","bold")
+        .style("font-size", "12px")
+        .text("Tot_suicides")
+        .attr("y","-10")
         .style("fill", "#000");
 
     // Legend based on hdi
@@ -462,7 +471,10 @@ function drawBarChart(visualElement, label, dataFull, maxValAge, transParam){
         .attr("width","300px")
         .attr("height","330px")
         .attr("transform", "translate("+ transParam+")");
-    svg.append("text").text(label)
+    svg.append("text")
+        .style("font-weight","bold")
+        .style("font-size", "12px")
+        .text(label)
         .attr("transform", "translate("+width/2+",10)");
     g = svg.append("g")
         .attr("transform", "translate(" + margin.left + ",30)");
@@ -714,10 +726,6 @@ function drawPatternBarchart(visualElement, data) {
             .attr("y", y(stats[0] + stats[1])+30)
             .html('&mu;+&sigma;');
     }
-
-    console.log(y(800000) , y(0))
-    console.log(stats[0] + stats[1], y(stats[0] + stats[1]))
-    console.log(stats[0] - stats[1], y(stats[0] - stats[1]))
 
     var patternBars = [];
     patternBars.push(svg1);

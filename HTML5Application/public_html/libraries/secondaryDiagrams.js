@@ -449,7 +449,7 @@ function drawScatterplot(visualElement, data){
 }
 
 // Drawing function for A SINGLE BARCHART
-function drawBarChart(visualElement, label, dataFull, maxValAge){
+function drawBarChart(visualElement, label, dataFull, maxValAge, transParam){
 
     var data = dataFull; // Clone data to do not modify the shared dataset
     var objDataContainer = []; // Data parametric on user choices
@@ -459,7 +459,9 @@ function drawBarChart(visualElement, label, dataFull, maxValAge){
 
     var svg = d3.select(visualElement).append("svg")
         .attr("id", label)
-        .attr("height","330px");
+        .attr("width","300px")
+        .attr("height","330px")
+        .attr("transform", "translate("+ transParam+")");
     svg.append("text").text(label)
         .attr("transform", "translate("+width/2+",10)");
     g = svg.append("g")
@@ -565,19 +567,51 @@ function calculateMaxValueAge(data){
     return Math.max(totMale, totFemale);
 }
 
+//function to calculate mean and standard deviation
+function calculateMeanStd(data) {
+    var ranges = [],totFemale=0,totMale=0;
+    var sumSuic = 0, counter=0, sumVariance=0;
+    var dlenAges = data.length;
+    for(j=0; j<dlenAges; j++){
+        var dlen = data[j].length;
+        for(i=0; i<dlen; i++){
+            var fractionalSuicides = parseFloat(data[j][i].suicide_100kpop);
+            var population = parseInt(data[j][i].population);
+            var totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
+            if(data[j][i].sex == "male"){totMale = totMale + totSuicidesPerRecord;}
+            if(data[j][i].sex == "female"){totFemale = totFemale + totSuicidesPerRecord;}
+        }
+        if(totMale != 0){counter = counter + 1}
+        if(totFemale != 0){counter = counter + 1}
+        ranges.push(totMale);
+        ranges.push(totFemale);
+        sumSuic = sumSuic + totMale + totFemale;
+        totMale = 0;
+        totFemale = 0;
+    }
+
+    var mean = sumSuic / counter;
+    for(k=0; k<ranges.length; k++){
+        var tmpVar = Math.pow(ranges[k]-mean, 2)
+        sumVariance = sumVariance + tmpVar;
+    }
+    var stdDev = Math.sqrt(sumVariance/counter);
+
+    return [mean, stdDev]
+}
+
 // Draw all the barcharts in a pattern manner
-function drawPatternBarchart(visualElement, data){
-    var margin = {top: 25, right: 25, bottom: 25, left: 5},
-        width = 950 - margin.left - margin.right,
+function drawPatternBarchart(visualElement, data) {
+    var margin = {top: 60, right: 25, bottom: 25, left: 5},
+        width = 1090 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var div = d3.select(visualElement)
-        .append("div").attr("id", "patternDiv")
-        .attr("width",width)
-        .attr("height",height)
+        .append("svg").attr("id", "patternDiv")
+        .attr("width", width)
+        .attr("height", height)
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-        .style("display","inline-flex")
-        .style("padding-top","80px");
+        .style("display", "inline-flex");
 
     // Filter all data per each age
     var filteredData05 = [];
@@ -587,13 +621,25 @@ function drawPatternBarchart(visualElement, data){
     var filteredData55 = [];
     var filteredData75 = [];
     var dlen = data.length;
-    for(i=0; i<dlen; i++){
-        if(data[i].age == "5-14 years"){filteredData05.push(data[i]);}
-        if(data[i].age == "15-24 years"){filteredData15.push(data[i]);}
-        if(data[i].age == "25-34 years"){filteredData25.push(data[i]);}
-        if(data[i].age == "35-54 years"){filteredData35.push(data[i]);}
-        if(data[i].age == "55-74 years"){filteredData55.push(data[i]);}
-        if(data[i].age == "75+ years"){filteredData75.push(data[i]);}
+    for (i = 0; i < dlen; i++) {
+        if (data[i].age == "5-14 years") {
+            filteredData05.push(data[i]);
+        }
+        if (data[i].age == "15-24 years") {
+            filteredData15.push(data[i]);
+        }
+        if (data[i].age == "25-34 years") {
+            filteredData25.push(data[i]);
+        }
+        if (data[i].age == "35-54 years") {
+            filteredData35.push(data[i]);
+        }
+        if (data[i].age == "55-74 years") {
+            filteredData55.push(data[i]);
+        }
+        if (data[i].age == "75+ years") {
+            filteredData75.push(data[i]);
+        }
     }
 
     // Calculate the maximum value of number suicides for y axis in pattern
@@ -605,12 +651,68 @@ function drawPatternBarchart(visualElement, data){
     var val75 = calculateMaxValueAge(filteredData75);
     var maxAge = Math.max(val05, val15, val25, val35, val55, val75);
 
-    var svg1 = drawBarChart("#patternDiv", "5-14 years", filteredData05, maxAge);
-    var svg2 = drawBarChart("#patternDiv", "15-24 years", filteredData15, maxAge);
-    var svg3 = drawBarChart("#patternDiv", "25-34 years", filteredData25, maxAge);
-    var svg4 = drawBarChart("#patternDiv", "35-54 years",filteredData35, maxAge);
-    var svg5 = drawBarChart("#patternDiv", "55-74 years", filteredData55, maxAge);
-    var svg6 = drawBarChart("#patternDiv", "75+ years", filteredData75, maxAge);
+    var svg1 = drawBarChart("#patternDiv", "5-14 years", filteredData05, maxAge, 0);
+    var svg2 = drawBarChart("#patternDiv", "15-24 years", filteredData15, maxAge, 170);
+    var svg3 = drawBarChart("#patternDiv", "25-34 years", filteredData25, maxAge, 340);
+    var svg4 = drawBarChart("#patternDiv", "35-54 years", filteredData35, maxAge, 510);
+    var svg5 = drawBarChart("#patternDiv", "55-74 years", filteredData55, maxAge, 680);
+    var svg6 = drawBarChart("#patternDiv", "75+ years", filteredData75, maxAge, 850);
+
+    if (data.length != 0) {
+        var y = d3.scaleLinear()
+            .rangeRound([240, 0])
+            .domain([0, maxAge]);
+
+        var stats = calculateMeanStd([filteredData05, filteredData15, filteredData25, filteredData35, filteredData55, filteredData75]);
+
+        div.append("line")
+            .style("stroke", "red")
+            .style("stroke-width", "0.55")
+            .style("stroke-dasharray", ("3,3"))
+            .attr("x1", "50")
+            .attr("x2", width - 24)
+            .attr("y1", y(stats[0]))
+            .attr("y2", y(stats[0]));
+        div.append('text')
+            .attr('text-anchor', 'middle')
+            .style("font-size", "15px")
+            .style("fill", "red")
+            .attr("x", width - 13)
+            .attr("y", y(stats[0]))
+            .html('&mu;');
+
+        div.append("line")
+            .style("stroke", "green")
+            .style("stroke-width", "0.55")
+            .style("stroke-dasharray", ("2,2"))
+            .attr("x1", "52")
+            .attr("x2", width - 24)
+            .attr("y1", y(stats[0] - stats[1]))
+            .attr("y2", y(stats[0] - stats[1]));
+        div.append('text')
+            .attr('text-anchor', 'middle')
+            .style("font-size", "12px")
+            .style("fill", "green")
+            .attr("x", width - 13)
+            .attr("y", y(stats[0] - stats[1]))
+            .html('&mu;-&sigma;');
+
+        div.append("line")
+            .style("stroke", "green")
+            .style("stroke-width", "0.55")
+            .style("stroke-dasharray", ("2,2"))
+            .attr("x1", "55")
+            .attr("x2", width - 24)
+            .attr("y1", y(stats[0] + stats[1]))
+            .attr("y2", y(stats[0] + stats[1]));
+        div.append('text')
+            .attr('text-anchor', 'middle')
+            .style("font-size", "12px")
+            .style("fill", "green")
+            .attr("x", width -13)
+            .attr("y", y(stats[0] + stats[1]))
+            .html('&mu;+&sigma;');
+    }
 
     var patternBars = [];
     patternBars.push(svg1);

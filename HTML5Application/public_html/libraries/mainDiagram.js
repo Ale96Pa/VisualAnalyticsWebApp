@@ -249,7 +249,7 @@ function drawMainDiagram(visualElement, data) {
                 });
 
         d3.select("#dotG").selectAll(".dot")
-            .transition().duration("800")
+            .transition().duration("650")
                 .attr("r", function (d) {return (((d.tot_suicides) * 100000) / (d.population));});
 
         focus.append("g")

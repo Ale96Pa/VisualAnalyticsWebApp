@@ -131,6 +131,9 @@ function changeOnSecondary(tmpData){
         age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
         genMillenials, genZ);
 
+    if(document.getElementById("svgLinear") != null) {
+        svgFromBrush = document.getElementById("svgLinear");}
+
     // Parallel coordinates management
     if(document.getElementById("svgParallel") != null) {
         var dataNoNull = filterOutNullRecords(filteredData);

@@ -128,6 +128,7 @@ University of Rome "La Sapienza"
 // Initialization of main UI
         dataFull = tsneData;
         dataYear = dataFull.filter(function (row) {return row['year'] == '1990';});
+
         slideYear("#slider-step", dataFull);
         filters("#filters", dataYear);
         drawMainDiagram("#mainDiagram", dataYear);
@@ -138,7 +139,6 @@ University of Rome "La Sapienza"
         document.getElementById("saveOnProvenance").onclick = function () {
             saveSvgFile("provenanceBar", svgFirst, svgs_to_save);
         }
-
 // Filter all records having "null" values
         function filterOutNullRecords(data) {
             var filteredData = [];

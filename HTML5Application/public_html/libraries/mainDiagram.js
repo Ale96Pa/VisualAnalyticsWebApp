@@ -17,7 +17,6 @@ d3.selection.prototype.moveToFront = function() {
 
 // Drawing of main diagram
 function drawMainDiagram(visualElement, data) {
-
     header = d3.keys(data[0]);
 
     // margin2 is hdi axes, margin3 is gdp axes
@@ -72,7 +71,6 @@ function drawMainDiagram(visualElement, data) {
         var focus;
 
         if(document.getElementById("dotG") == null) {
-
             var svg = d3.select(visualElement).append("div").attr("id", "mainChange")
                 .append("svg")
                 .attr("id", "generalSvg")
@@ -148,7 +146,6 @@ function drawMainDiagram(visualElement, data) {
                         d3.select("#svgScatter").selectAll(".secondCircle")
                             .each(function (p) {
                                 if (p.country == d.country) {
-
                                     var x = parseFloat(d3.select(this).attr("cx")) + 45;
                                     var y = parseFloat(d3.select(this).attr("cy")) + 535;
 
@@ -164,14 +161,10 @@ function drawMainDiagram(visualElement, data) {
                                 }
                             })
                             .style("stroke", function (p) {
-                                if (p.country == d.country) {
-                                    return "#fff";
-                                }
+                                if (p.country == d.country) {return "#fff";}
                             })
                             .style("stroke-width", function (p) {
-                                if (p.country == d.country) {
-                                    return "1.5px";
-                                }
+                                if (p.country == d.country) {return "1.5px";}
                             });
                     }
                     if (document.getElementById("svgParallel") != null) {
@@ -209,19 +202,13 @@ function drawMainDiagram(visualElement, data) {
                     if (document.getElementById("svgScatter") != null) {
                         d3.select("#svgScatter").selectAll(".secondCircle")
                             .each(function (p) {
-                                if (p.country == d.country) {
-                                    d3.select(this).moveToBack();
-                                }
+                                if (p.country == d.country) {d3.select(this).moveToBack();}
                             })
                             .style("stroke", function (p) {
-                                if (p.country == d.country) {
-                                    return "#000";
-                                }
+                                if (p.country == d.country) {return "#000";}
                             })
                             .style("stroke-width", function (p) {
-                                if (p.country == d.country) {
-                                    return "0.2px";
-                                }
+                                if (p.country == d.country) {return "0.2px";}
                             });
                     }
                     if (document.getElementById("svgParallel") != null) {
@@ -290,7 +277,6 @@ function drawMainDiagram(visualElement, data) {
 
             //update axis X Y
             focus = d3.select(".focus");
-
         }
 
         if(document.getElementById("contextX") == null) {
@@ -298,7 +284,8 @@ function drawMainDiagram(visualElement, data) {
                 .attr("class", "context")
                 .attr("id", "contextX")
                 .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-            // append scatter plot to brush chart areaX
+        
+            // Append scatter plot to brush chart areaX
             var dots = context.append("g");
             dots.attr("clip-path", "url(#clip)");
             dots.selectAll("dot")
@@ -315,7 +302,6 @@ function drawMainDiagram(visualElement, data) {
                 .attr("class", "axis axis--x")
                 .attr("transform", "translate(0," + height2 + ")")
                 .call(xAxis2);
-
             context.append("g")
                 .attr("class", "brush")
                 .call(brushX)
@@ -330,16 +316,14 @@ function drawMainDiagram(visualElement, data) {
                 .attr("cy", function (d) {return y2(+d[header[1]]);})
                 .style("fill", function (d) {return colors[d.continent];});
 
-            //update axis X
+            // Update axis X
             context = d3.select("#contextX");
             context.select(".axis.axis--x")
                 .transition().duration("500")
                 .call(xAxis2);
-
             context.select(".brush")
                 .call(brushX)
                 .call(brushX.move, x2.range());
-
         }
 
         if(document.getElementById("contextY") == null) {
@@ -349,7 +333,7 @@ function drawMainDiagram(visualElement, data) {
                 .attr("transform", "rotate(90)")
                 .attr("transform", "translate(" + margin3.left + "," + margin3.top + ")");
 
-            // append scatter plot to brush chart areaY
+            // Append scatter plot to brush chart areaY
             var dots = context3.append("g");
             dots.attr("clip-path", "url(#clip)");
             dots.selectAll("dot")
@@ -365,7 +349,6 @@ function drawMainDiagram(visualElement, data) {
             context3.append("g")
                 .attr("class", "axis axis--y")
                 .call(yAxis3);
-
             context3.append("g")
                 .attr("class", "brush")
                 .call(brushY)
@@ -382,7 +365,7 @@ function drawMainDiagram(visualElement, data) {
                 .attr("cy", function (d) {return y3(+d[header[1]]);})
                 .style("fill", function (d) {return colors[d.continent];});
 
-            //update axis X Y
+            // Update axis X Y
             context3 = d3.select("#contextY");
             context3.select(".axis.axis--y")
                 .transition().duration("500")
@@ -395,7 +378,7 @@ function drawMainDiagram(visualElement, data) {
                 .attr("y", 0)
                 .attr("height", height);
 
-            //main diagram update
+    // Main diagram update
             d3.select("#dotG").selectAll(".dot")
                 .data(data)
                 .transition()
@@ -408,15 +391,12 @@ function drawMainDiagram(visualElement, data) {
             focus.select(".axis.axis--x")
                 .transition().duration("500")
                 .call(xAxis);
-
             focus.select(".axis.axis--y")
                 .transition().duration("500")
                 .call(yAxis);
-
             focus.select(".brushT")
                 .call(brushTot);
         }
-
 
         // Redraw scatterplot with selection
         function brushedX() {

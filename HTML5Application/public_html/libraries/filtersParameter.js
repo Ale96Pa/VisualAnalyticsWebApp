@@ -26,13 +26,11 @@ function filters(visualElement, data) {
 
 // This function generate a new brusher bar (used for brushers HDI, GDP and population)
     function newFilterBar(data, name) {
-
         var width = 580;
-
+        
         var x = d3.scaleLinear()
             .range([0, width-150])
             .domain([0, d3.max(data, function (d) {return +d[name];})]);
-
         var xAxis = d3.axisBottom(x);
 
         var brush = d3.brushX()
@@ -170,7 +168,6 @@ function changeOnSecondary(tmpData){
         if (selectedCountries.length !== 0 || (selectionData !== null && selectionData.length === 2)) {
             d3.select("#svgScatter").selectAll("circle")
                 .style("opacity", function (d) {
-                    console.log(d)
                     if (selectedCountries.includes(d.country)){return "1";}
                     if ((selectionData !== null && selectionData.length === 2)
                         && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
@@ -491,12 +488,12 @@ function worldMap(visualElement) {
                         svgFromMap = drawPatternBarchart("#secondDiagram",filteredDataMap);
                     }
                     document.getElementById("saveOnProvenance").onclick=function(){
-                        saveSvgFile("provenanceBar", svgFromMap, svgs_to_save);}
+                        saveSvgFile("provenanceBar", svgFromMap, svgs_to_save);};
 
                 }
 // Case of NO SELECTION in map
                 else {
-                    if (document.getElementById("svgParallel") !==null) {
+                    if (document.getElementById("svgParallel") != null) {
                         d3.select("#svgParallel").selectAll(".innerPath")
                             .style("stroke", "#2ca25f");
                         d3.select("#svgParallel").selectAll(".innerPath").transition()
@@ -519,7 +516,7 @@ function worldMap(visualElement) {
                         svgFromMap = drawLinearChart("#secondDiagram",filteredData);
 
                     }
-                    if (document.getElementById("patternDiv") !== null) {
+                    if (document.getElementById("patternDiv") != null) {
                         var dataYearNoNull = filterOutNullRecords(dataYear);
                         tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1]);
                         filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
@@ -539,7 +536,7 @@ function worldMap(visualElement) {
             if (states.includes(d.properties.name)){
                 var dlen = data.length;
                 for(i=0; i<dlen; i++){
-                   if(data[i].country === d.properties.name){return colors[data[i].continent];}
+                   if(data[i].country == d.properties.name){return colors[data[i].continent];}
                }
             }
             else { return "gray";}

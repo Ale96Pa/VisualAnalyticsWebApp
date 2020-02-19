@@ -36,28 +36,28 @@ function drawParallelCoordinatesChart(visualElement,data){
     var y = {};
     for (i in dimensions) {
         var name = dimensions[i];
-        if (name === "gdp_per_capita"){
+        if (name == "gdp_per_capita"){
             y[name] = d3.scaleLinear()
                 .domain(d3.extent(data, function (d) {return +d[name];}))
                 .range([height, 0]);}
-        if (name === "hdi"){
+        if (name == "hdi"){
             y[name] = d3.scaleLinear()
             .domain(d3.extent(data, function (d) {return +d[name];}))
             .range([height, 0]);}
-        if (name === "suicide_100kpop") {
+        if (name == "suicide_100kpop") {
             y[name] = d3.scaleLinear()
                 .domain(d3.extent(data, function (d) {return +d[name];}))
                 .range([height, 0]);}
-        if (name === "gni") {
+        if (name == "gni") {
             y[name] = d3.scaleLinear()
                 .domain(d3.extent(data, function (d) {return +d[name];}))
                 .range([height, 0]);}
-        if (name === "generation"){
+        if (name == "generation"){
             range = rangeGeneration;
             y[name] = d3.scaleOrdinal()
                 .range(range)
                 .domain(data.map(function(d) {return d[name];}).sort());}
-        if (name === "age"){
+        if (name == "age"){
             range = rangeAge;
             y[name] = d3.scaleOrdinal()
                 .range(range)
@@ -120,12 +120,12 @@ function drawLinearChart(visualElement, data){
         width = 900 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
-    filteredDataBoomers = data.filter(function(row) {return row['generation'] === 'Boomers';});
-    filteredDataSilent = data.filter(function(row) {return row['generation'] === 'Silent';});
-    filteredDataGenX = data.filter(function(row) {return row['generation'] === 'Generation X';});
-    filteredDataMillenials = data.filter(function(row) {return row['generation'] === 'Millenials';});
-    filteredDataGenGI = data.filter(function(row) {return row['generation'] === 'G.I. Generation';});
-    filteredDataGenZ = data.filter(function(row) {return row['generation'] === 'Generation Z';});
+    filteredDataBoomers = data.filter(function(row) {return row['generation'] == 'Boomers';});
+    filteredDataSilent = data.filter(function(row) {return row['generation'] == 'Silent';});
+    filteredDataGenX = data.filter(function(row) {return row['generation'] == 'Generation X';});
+    filteredDataMillenials = data.filter(function(row) {return row['generation'] == 'Millenials';});
+    filteredDataGenGI = data.filter(function(row) {return row['generation'] == 'G.I. Generation';});
+    filteredDataGenZ = data.filter(function(row) {return row['generation'] == 'Generation Z';});
 
     var gen = [filteredDataGenGI, filteredDataSilent, filteredDataBoomers,filteredDataGenX,
         filteredDataMillenials, filteredDataGenZ];
@@ -601,8 +601,8 @@ function calculateMeanStd(data) {
             if(data[j][i].sex == "male"){totMale = totMale + totSuicidesPerRecord;}
             if(data[j][i].sex == "female"){totFemale = totFemale + totSuicidesPerRecord;}
         }
-        if(totMale != 0){counter = counter + 1}
-        if(totFemale != 0){counter = counter + 1}
+        if(totMale != 0){counter = counter + 1;}
+        if(totFemale != 0){counter = counter + 1;}
         ranges.push(totMale);
         ranges.push(totFemale);
         sumSuic = sumSuic + totMale + totFemale;
@@ -617,7 +617,7 @@ function calculateMeanStd(data) {
     }
     var stdDev = Math.sqrt(sumVariance/counter);
 
-    return [mean, stdDev]
+    return [mean, stdDev];
 }
 
 // Draw all the barcharts in a pattern manner

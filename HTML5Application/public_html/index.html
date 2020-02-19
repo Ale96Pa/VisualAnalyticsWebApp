@@ -526,7 +526,7 @@ University of Rome "La Sapienza"
                 if (selectedCountries.length != 0) {
                     d3.select("#svgScatter").selectAll("circle")
                         .style("opacity", function (d) {
-                            if (selectedCountries.includes(d.country)) {return "1"}
+                            if (selectedCountries.includes(d.country) || (selectionData != null && selectionData.length == 2)) {return "1"}
                             if ((selectionData != null && selectionData.length == 2)
                                 && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                 ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {

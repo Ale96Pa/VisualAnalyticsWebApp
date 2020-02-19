@@ -462,6 +462,7 @@ University of Rome "La Sapienza"
             drawMainDiagram("#mainDiagram", dataYear);
         };
 
+
 // Management of checkboxes: update of data and filtering
         function changeSecondOnCheckBox() {
             
@@ -514,13 +515,13 @@ University of Rome "La Sapienza"
     // Update Scatter plot
             if (document.getElementById("svgScatter") != null) {
                 var dataYearNoNull = filterOutNullRecords(dataYear)
-                tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
-                filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
+                var tmpData = filterAllDataBrusher(dataYearNoNull, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
+                var filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
                     age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
                     genMillenials, genZ);
                 d3.select("#secondDiagram").selectAll("svg").remove();
                 svgChecked = drawScatterplot("#secondDiagram", filteredData)
-                
+
                 // Check if there are countries that are seleted previously to keep track the selection
                 if (selectedCountries.length != 0) {
                     d3.select("#svgScatter").selectAll("circle")
@@ -534,34 +535,9 @@ University of Rome "La Sapienza"
                         })
                 }
             }
-    
-    // Update patter of barcharts
-            if (document.getElementById("svgScatter") != null) {
-                var dataYearNoNull = filterOutNullRecords(dataYear)
-                var dataYearNoNull1 = filterCountry(dataYearNoNull, selectedCountries);
-                tmpData = filterAllDataBrusher(dataYearNoNull1, rangeBrushes[2], rangeBrushes[0], rangeBrushes[1])
-                var filteredData = filterAllDataCheckbox(tmpData[1], male, female, age5_14, age15_24, age25_34,
-                    age35_54, age55_74, age75, genGi, genSilent, genBoomers, genX,
-                    genMillenials, genZ);
 
-                d3.select("#secondDiagram").selectAll("svg").remove();
-                svgChecked = drawScatterplot("#secondDiagram", filteredData)
-                if (selectedCountries.length != 0) {
-                    d3.select("#svgScatter").selectAll("circle")
-                        .style("opacity", function (d) {
-                            if (selectedCountries.includes(d.country)) {
-                                return "1"
-                            }if ((selectionData != null && selectionData.length == 2)
-                                && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
-                                ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
-                                    return "1"
-                            } else {
-                                return "0.1"
-                            }
-                        })
-                }
-            }
 
+            // Update patter of barcharts
             if (document.getElementById("patternDiv") != null) {
 
                 var dataYearNoNull = filterOutNullRecords(dataYear)

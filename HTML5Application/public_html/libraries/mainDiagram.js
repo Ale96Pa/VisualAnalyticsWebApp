@@ -141,7 +141,7 @@ function drawMainDiagram(visualElement, data) {
                     div.html(d.country + "<br>POPULATION: " + d.population + "<br>SUICIDES: " +
                         (((d.tot_suicides) * 100000) / (d.population)).toFixed(2) +
                         "(per 100k)<br>GDP: " + d.gdp_per_year + "<br>HDI: " + d.hdi)
-                        .style("left", (d3.event.pageX + 5) + "px")
+                        .style("left", (d3.event.pageX ) + "px")
                         .style("top", (d3.event.pageY + 5) + "px");
 
                     if (document.getElementById("svgScatter") != null) {
@@ -149,9 +149,8 @@ function drawMainDiagram(visualElement, data) {
                             .each(function (p) {
                                 if (p.country == d.country) {
 
-                                    var x = d3.select(this).attr("cx")
-                                    var y = parseFloat(d3.select(this).attr("cy")) + 535
-                                    console.log(x, y, p)
+                                    var x = parseFloat(d3.select(this).attr("cx")) + 45;
+                                    var y = parseFloat(d3.select(this).attr("cy")) + 535;
 
                                     d3.select(this).moveToFront();
                                     d3.select("#mainDiagram").select("#scatterTooltip")

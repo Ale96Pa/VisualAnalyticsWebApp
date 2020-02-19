@@ -14,8 +14,8 @@ function calculateRangeArray(numDiffValue, height){
 // Drawing function for PARALLEL COORDINATES DIAGRAM
 function drawParallelCoordinatesChart(visualElement,data){
 
-    var margin = {top: 50, right: 15, bottom: 35, left: 90},
-        width = 1250 - margin.left - margin.right,
+    var margin = {top: 50, right: 10, bottom: 35, left: 100},
+        width = 1070 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
     var svg = d3.select(visualElement).append("svg")
@@ -65,7 +65,7 @@ function drawParallelCoordinatesChart(visualElement,data){
     }
 
     // Build  X scale
-     x = d3.scaleBand().rangeRound([0, width-125]).padding(.1).domain(dimensions);
+     x = d3.scaleBand().rangeRound([0, width]).padding(0.1).domain(dimensions);
 
     // The path function take a row of data and return x and y coordinates of the line to draw for this raw.
     function path(d) {
@@ -270,24 +270,23 @@ function drawScatterplot(visualElement, data){
     var margin = {top: 35, right: 15, bottom: 55, left: 90},
         width = 900 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
-    padding = 50;
 
     var objDataContainer = []; // Container of data based on passed parameters
     var tot_suicides_parameter = 0;
-    var oldCountry;
+    var oldCountry,  objRecord = {};;
     
     var dlen = data.length;
     if(dlen != 0){oldCountry = data[0].country;}
-    for(i=0; i<dlen; i++){
-        fractionalSuicides = parseFloat(data[i].suicide_100kpop);
-        population = parseInt(data[i].population);
-        totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
-        currentCountry = data[i].country;
+    for(var i=0; i<dlen; i++){
+        var fractionalSuicides = parseFloat(data[i].suicide_100kpop);
+        var population = parseInt(data[i].population);
+        var totSuicidesPerRecord = Math.round(fractionalSuicides*population/100000);
+        var currentCountry = data[i].country;
         
         if(currentCountry == oldCountry){
             tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
         } else {
-            var objRecord = {};
+            objRecord = {};
             objRecord.X = data[i-1].X;
             objRecord.Y = data[i-1].Y;
             objRecord.country = oldCountry;
@@ -300,7 +299,16 @@ function drawScatterplot(visualElement, data){
             tot_suicides_parameter = tot_suicides_parameter + totSuicidesPerRecord;
         }
     }
-
+    if(dlen != 0) {
+        objRecord = {};
+        objRecord.X = data[i - 1].X;
+        objRecord.Y = data[i - 1].Y;
+        objRecord.country = oldCountry;
+        objRecord.tot_suicides = tot_suicides_parameter;
+        objRecord.hdi = data[i - 1].hdi;
+        objRecord.gdp_per_capita = data[i - 1].gdp_per_capita;
+        objDataContainer.push(objRecord);
+    }
     // Scale function and axes
     var xScale = d3.scaleLinear()
         .domain([0, d3.max(objDataContainer, function(d) { return +(parseInt(d["gdp_per_capita"])); })])
@@ -368,7 +376,7 @@ function drawScatterplot(visualElement, data){
                         .html(p.country + "<br>POPULATION:" + p.population + "<br>SUICIDES:" +
                             (((p.tot_suicides) * 100000) / (p.population)).toFixed(2) +
                             "(per 100k)<br>GDP:" + p.gdp_per_year + "<br>HDI:" + p.hdi)
-                            .style("left", (d3.select(this).attr("cx") + 5) + "px")
+                            .style("left", (d3.select(this).attr("cx") ) + "px")
                             .style("top", (d3.select(this).attr("cy")  +5) + "px");
                     }
                 })
@@ -468,7 +476,7 @@ function drawBarChart(visualElement, label, dataFull, maxValAge, transParam){
 
     var svg = d3.select(visualElement).append("svg")
         .attr("id", label)
-        .attr("width","300px")
+        .attr("width","200px")
         .attr("height","330px")
         .attr("transform", "translate("+ transParam+")");
     svg.append("text")
@@ -614,7 +622,7 @@ function calculateMeanStd(data) {
 
 // Draw all the barcharts in a pattern manner
 function drawPatternBarchart(visualElement, data) {
-    var margin = {top: 60, right: 25, bottom: 25, left: 5},
+    var margin = {top: 65, right: 25, bottom: 20, left: 5},
         width = 1090 - margin.left - margin.right,
         height = 415 - margin.top - margin.bottom;
 

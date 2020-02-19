@@ -467,7 +467,7 @@ function worldMap(visualElement) {
                             .transition().duration("450")
                             .style("opacity", function (d) {
                                 if (selectedCountries.includes(d.country)) {return "1";}
-                                if ((selectionData !== null && selectionData.length === 2)
+                                if ((selectionData !== null && selectionData.length == 2)
                                     && ((d["X"]) > selectionData[0][0]) && ((d["X"]) < selectionData[1][0]) &&
                                     ((d["Y"]) < selectionData[0][1]) && ((d["Y"]) > selectionData[1][1])) {
                                     return "1";
